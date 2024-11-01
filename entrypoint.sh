@@ -40,22 +40,22 @@ else
     echo "No backup created."
 fi
 
+# Configure Git with the provided user name and email
+git config --global user.name "$GIT_USER_NAME"
+git config --global user.email "$GIT_USER_EMAIL"
+git checkout $BRANCH
+git status
+
 # Check if there are changes to commit
 if git diff --exit-code "$VALUES_FILE"; then
     echo "No changes to commit."
     exit 0
 fi
 
-# Configure Git with the provided user name and email
-git config --global user.name "$GIT_USER_NAME"
-git config --global user.email "$GIT_USER_EMAIL"
-
 # Commit and push changes
 FULL_PATH="$TARGET_PATH/$VALUES_FILE"
 COMMIT_MESSAGE="$COMMIT_MESSAGE $FULL_PATH"
 git checkout "$BRANCH"
-
-pwd
-git add .
+git add $VALUES_FILE
 git commit -m "$COMMIT_MESSAGE"
 git push "https://x-access-token:$GITHUB_TOKEN@github.com/$REPO" "$BRANCH"

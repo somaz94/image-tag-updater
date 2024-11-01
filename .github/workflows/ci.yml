@@ -60,6 +60,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GIT_USER_NAME: somaz
           GIT_USER_EMAIL: genius5711@gmail.com
+          BRANCH: main
         run: |
           docker run \
           --env TARGET_PATH="${{ env.TARGET_PATH}}" \
@@ -69,5 +70,6 @@ jobs:
           --env GITHUB_TOKEN="${{ env.GITHUB_TOKEN }}" \
           --env GIT_USER_NAME="${{ env.GIT_USER_NAME }}" \
           --env GIT_USER_EMAIL="${{ env.GIT_USER_EMAIL }}" \
+          --env BRANCH="${{ env.BRANCH }}" \
           --volume ${{ github.workspace }}:/usr/src \
           --rm ${{ env.TEST_TAG }}
