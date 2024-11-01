@@ -12,16 +12,24 @@ REPO=$7
 BRANCH=$8
 GIT_USER_NAME=$9
 GIT_USER_EMAIL=${10}
-BACKUP=${11} # "true" or "false"
+BACKUP=${11}  # "true" or "false"
+
+# Debugging: Print values to confirm they are passed correctly
+echo "Debug Info:"
+echo "TARGET_PATH: $TARGET_PATH"
+echo "TARGET_VALUES_FILE: $TARGET_VALUES_FILE"
+echo "Constructed VALUES_FILE: $TARGET_VALUES_FILE.values.yaml"
 
 # Navigate to the target directory
-cd "$TARGET_PATH" || { 
+echo "Navigating to TARGET_PATH: $TARGET_PATH"
+cd "$TARGET_PATH" || {
     echo "Directory not found: $TARGET_PATH"
-    exit 1 
+    exit 1
 }
 
-# Confirm Root Path
-ls
+# Confirm directory contents
+echo "Listing contents in $TARGET_PATH:"
+ls -al
 
 # Check if the target values file exists
 VALUES_FILE="$TARGET_VALUES_FILE.values.yaml"
