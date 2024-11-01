@@ -32,7 +32,7 @@ jobs:
         with:
           target_path: charts/somaz/api 
           new_tag: ${{ steps.vars.outputs.short_sha }}
-          target_values_file: dev1 # File name without .values.yaml extension
+          target_values_file: dev1 
           github_token: ${{ secrets.PAT }}
           git_user_name: somaz
           git_user_email: genius5711@gmail.com

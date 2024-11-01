@@ -1,17 +1,16 @@
 #!/bin/bash
-set -e
 
 # Allow git operations in the current directory
 git config --global --add safe.directory /usr/src
 # Explicitly set safe directory for git operations
 git config --global --add safe.directory /github/workspace
 
-# Debugging: Print values to confirm they are passed correctly
-echo "Debug Info:"
-echo "TARGET_PATH: $TARGET_PATH"
-echo "TARGET_VALUES_FILE: $TARGET_VALUES_FILE"
-echo "Constructed VALUES_FILE: $TARGET_VALUES_FILE.values.yaml"
-echo "TAG_STRING: $TAG_STRING"
+# # Debugging: Print values to confirm they are passed correctly
+# echo "Debug Info:"
+# echo "TARGET_PATH: $TARGET_PATH"
+# echo "TARGET_VALUES_FILE: $TARGET_VALUES_FILE"
+# echo "Constructed VALUES_FILE: $TARGET_VALUES_FILE.values.yaml"
+# echo "TAG_STRING: $TAG_STRING"
 
 # Navigate to the target directory
 echo "Navigating to TARGET_PATH: $TARGET_PATH"

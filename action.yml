@@ -53,9 +53,17 @@ inputs:
     required: true
 
 runs:
-  using: 'composite'
-  steps:
-    - name: 'Run Image Tag Updater Script'
-      shell: bash
-      run: |
-        ./entrypoint.sh "${{ inputs.target_path }}" "${{ inputs.tag_string }}" "${{ inputs.new_tag }}" "${{ inputs.target_values_file }}" "${{ inputs.github_token }}" "${{ inputs.commit_message }}" "${{ github.repository }}" "${{ inputs.branch }}" "${{ inputs.git_user_name }}" "${{ inputs.git_user_email }}" "${{ inputs.backup }}"
+  using: 'docker'
+  image: 'Dockerfile'
+  env:
+    TARGET_PATH: ${{ inputs.target_path }}
+    TAG_STRING: ${{ inputs.tag_string }}
+    NEW_TAG: ${{ inputs.new_tag}}
+    TARGET_VALUES_FILE: ${{ inputs.target_values_file }}
+    GITHUB_TOKEN: ${{ inputs.github_token }}
+    COMMIT_MESSAGE: ${{ inputs.commit_message }}
+    BRANCH: ${{ inputs.branch }}
+    GIT_USER_NAME: ${{ inputs.git_user_name }}
+    GIT_USER_EMAIL: ${{ inputs.git_user_email }}
+    BACKUP: ${{ inputs.backup }}
+    REPO: ${{ inputs.REPO }}

@@ -46,38 +46,49 @@ an image tag in an infrastructure repository. It:
    repository.
 
 ```yaml
-name: 'Update Image Tag in Infrastructure Repo'
+name: Example Workflow using Image Tag Updater
 
 on:
   workflow_dispatch:
     inputs:
-      tag:
-        description: 'The new image tag to set'
+      run:
+        description: 'workflow run'
         required: true
-        default: 'v1.0.1'
+        default: 'true'
+
+permissions:
+  contents: write
 
 jobs:
-  update-image-tag:
+  acton-module:
     runs-on: ubuntu-latest
-
     steps:
-      # Step 1: Check out the infrastructure repository
       - name: Checkout infrastructure repository
         uses: actions/checkout@v4
         with:
-          repository: your-org/infrastructure-repo # Replace with the target repository
-          token: ${{ secrets.GITHUB_TOKEN }} # Use a GitHub token with write permissions
+          repository: somaz94/image-tag-updater 
+          token: ${{ secrets.PAT }}  
+
+      - name: Set short sha
+        id: vars
+        run: |
+          echo "short_sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
 
       # Step 2: Run Image Tag Updater in the infrastructure repository
       - name: Update Image Tag in Infrastructure Repo
         uses: somaz94/image-tag-updater@v1
         with:
-          target_path: 'charts/my-app' # Directory where values.yaml is located
-          new_tag: ${{ github.event.inputs.tag }} # New image tag to set
-          target_values_file: 'dev1' # File name without .values.yaml extension
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          git_user_name: 'Your Name'
-          git_user_email: 'your.email@example.com'
+          target_path: charts/somaz/api 
+          new_tag: ${{ steps.vars.outputs.short_sha }}
+          target_values_file: dev1 
+          github_token: ${{ secrets.PAT }}
+          git_user_name: somaz
+          git_user_email: genius5711@gmail.com
+
+      - name: Confirm Git log
+        run: |
+          git log -1
+
 ```
 
 ## Notes
