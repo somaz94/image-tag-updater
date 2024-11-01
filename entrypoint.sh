@@ -11,6 +11,7 @@ echo "Debug Info:"
 echo "TARGET_PATH: $TARGET_PATH"
 echo "TARGET_VALUES_FILE: $TARGET_VALUES_FILE"
 echo "Constructed VALUES_FILE: $TARGET_VALUES_FILE.values.yaml"
+echo "TARGET_TAG: $TARGET_TAG"
 
 # Navigate to the target directory
 echo "Navigating to TARGET_PATH: $TARGET_PATH"
@@ -20,7 +21,7 @@ cd "$TARGET_PATH" || {
 }
 
 # Confirm directory contents
-echo "Listing contents in $TARGET_PATH:"
+echo "Listing contents in $TARGET_PATH"
 ls -al
 
 # Check if the target values file exists
@@ -32,10 +33,10 @@ fi
 
 # Update the image tag in the specified values file
 if [[ "$BACKUP" == "true" ]]; then
-    sed -i.bak "s|$TAG_STRING:.*|$TAG_STRING: \"$NEW_TAG\"|g" "$VALUES_FILE"
+    sed -i.bak "/^\s*$TAG_STRING:/s|:.*|: \"$NEW_TAG\"|" "$VALUES_FILE"
     echo "Backup created: $VALUES_FILE.bak"
 else
-    sed -i "s|$TAG_STRING:.*|$TAG_STRING: \"$NEW_TAG\"|g" "$VALUES_FILE"
+     sed -i "/^\s*$TAG_STRING:/s|:.*|: \"$NEW_TAG\"|" "$VALUES_FILE"
     echo "No backup created."
 fi
 
