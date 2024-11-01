@@ -33,9 +33,9 @@ repositories.
 This example demonstrates how to use the **Image Tag Updater** Action to update
 an image tag in an infrastructure repository. It:
 
-1. Checks out the infrastructure repository where the image tag update will be
+- Checks out the infrastructure repository where the image tag update will be
    applied.
-2. Runs the Action to update the specified image tag in the infrastructure
+- Runs the Action to update the specified image tag in the infrastructure
    repository.
 
 ```yaml

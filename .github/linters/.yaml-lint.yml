@@ -1,3 +1,12 @@
+yaml-files:
+  - '*.yaml'
+  - '*.yml'
+  - '.yamllint'
+
+ignore: |
+  .github/
+  charts/
+
 rules:
   # Allow/disallow end of document marker (---)
   document-end: disable

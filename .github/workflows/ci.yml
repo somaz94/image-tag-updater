@@ -67,5 +67,5 @@ jobs:
           --env GITHUB_TOKEN="${{ env.GITHUB_TOKEN }}" \
           --env GIT_USER_NAME="${{ env.GIT_USER_NAME }}" \
           --env GIT_USER_EMAIL="${{ env.GIT_USER_EMAIL }}" \
-          --volume ${{ github.workspace }}:${{ github.workspace }} \
+          --volume ${{ github.workspace }}:/usr/src \
           --rm ${{ env.TEST_TAG }}

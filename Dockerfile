@@ -8,11 +8,11 @@ RUN apk add --no-cache \
     gawk=5.3.0-r1 \
     sed=4.9-r2 
 
-# Copy the entrypoint script into the container
-COPY entrypoint.sh /entrypoint.sh
+# Set the working directory inside the container    
+WORKDIR /usr/src
 
-# Make the entrypoint script executable
-RUN chmod +x /entrypoint.sh
+# Copy any source file(s) required for the action
+COPY entrypoint.sh .
 
-# Set the default entrypoint
-ENTRYPOINT ["/entrypoint.sh"]
+# Configure the container to be run as an executable
+ENTRYPOINT ["/usr/src/entrypoint.sh"]
