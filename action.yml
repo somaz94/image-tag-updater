@@ -48,6 +48,9 @@ inputs:
     description: 'Whether to create a backup file (true/false)'
     required: false
     default: 'false'
+  repo:
+    description: 'Git repository for commits'
+    required: true
 
 runs:
   using: 'composite'

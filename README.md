@@ -27,6 +27,7 @@ repositories.
 | `git_user_name`      | No       | The Git username for commits                                                  | `"GitHub Action"`      |
 | `git_user_email`     | No       | The Git email for commits                                                     | `"actions@github.com"` |
 | `backup`             | No       | Specifies whether to create a backup file (true/false)                        | `"false"`              |
+| `repo`               | Yes      | Git repository for commits                                                    | N/A           |
 
 ## Example Workflow
 

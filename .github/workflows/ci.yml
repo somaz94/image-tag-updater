@@ -61,6 +61,7 @@ jobs:
           GIT_USER_NAME: somaz
           GIT_USER_EMAIL: genius5711@gmail.com
           BRANCH: main
+          REPO: somaz94/image-tag-updater
         run: |
           docker run \
           --env TARGET_PATH="${{ env.TARGET_PATH}}" \
@@ -71,5 +72,6 @@ jobs:
           --env GIT_USER_NAME="${{ env.GIT_USER_NAME }}" \
           --env GIT_USER_EMAIL="${{ env.GIT_USER_EMAIL }}" \
           --env BRANCH="${{ env.BRANCH }}" \
+          --env REPO="${{ env.REPO }}" \
           --volume ${{ github.workspace }}:/usr/src \
           --rm ${{ env.TEST_TAG }}
