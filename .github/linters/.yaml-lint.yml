@@ -1,10 +1,60 @@
 rules:
+  # Allow/disallow end of document marker (---)
   document-end: disable
+
+  # Allow/disallow start of document marker (---)
   document-start:
     level: warning
     present: false
+
+  # Configure line length
   line-length:
     level: warning
     max: 80
     allow-non-breakable-words: true
     allow-non-breakable-inline-mappings: true
+
+  # Ensure indentation is a multiple of 2 spaces
+  indentation:
+    level: error
+    spaces: 2
+
+  # Check for trailing spaces at the end of lines
+  trailing-spaces:
+    level: error
+
+  # Disallow tabs for indentation
+  tabs:
+    level: error
+
+  # Ensure key duplication is not allowed
+  key-duplicates:
+    level: error
+
+  # Ensure that arrays are properly indented
+  array-indentation:
+    level: error
+
+  # Disallow the use of empty values for keys (key: without value)
+  empty-values:
+    level: error
+
+  # Ensure no inline comments within YAML blocks
+  comments:
+    level: warning
+
+  # Check for consistent use of quoted strings (use quotes when necessary)
+  quoted-strings:
+    level: warning
+    required: false
+
+  # Ensure that booleans are not used as strings
+  boolean-values:
+    level: error
+    allowed-values: [true, false]
+
+  # Validate that colons are properly spaced in mappings
+  colons:
+    level: error
+    max-spaces-before: 0
+    max-spaces-after: 1
