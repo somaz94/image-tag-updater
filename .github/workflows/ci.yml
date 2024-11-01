@@ -49,11 +49,11 @@ jobs:
       - name: Set short sha
         id: vars
         run: |
-          echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+          echo "short_sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
 
       - name: Run the Container
         env:
-          TARGET_PATH: ./charts/somaz/api
+          TARGET_PATH: ${{ github.workspace }}/charts/somaz/api
           NEW_TAG: ${{ steps.vars.outputs.short_sha }}
           TARGET_VALUES_FILE: dev1
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -67,5 +67,5 @@ jobs:
           --env GITHUB_TOKEN="${{ env.GITHUB_TOKEN }}" \
           --env GIT_USER_NAME="${{ env.GIT_USER_NAME }}" \
           --env GIT_USER_EMAIL="${{ env.GIT_USER_EMAIL }}" \
-          --volume ${{ github.workspace }}:/usr/src \
+          --volume ${{ github.workspace }}:${{ github.workspace }} \
           --rm ${{ env.TEST_TAG }}
