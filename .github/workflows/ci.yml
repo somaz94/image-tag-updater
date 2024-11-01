@@ -53,7 +53,7 @@ jobs:
 
       - name: Run the Container
         env:
-          TARGET_PATH: ${{ github.workspace }}/charts/somaz/api
+          TARGET_PATH: ./charts/somaz/api
           NEW_TAG: ${{ steps.vars.outputs.short_sha }}
           TARGET_VALUES_FILE: dev1
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
