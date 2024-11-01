@@ -1,18 +1,10 @@
 #!/bin/bash
 set -e
 
-# Inputs
-TARGET_PATH=$1
-TAG_STRING=$2
-NEW_TAG=$3
-TARGET_VALUES_FILE=$4
-GITHUB_TOKEN=$5
-COMMIT_MESSAGE=$6
-REPO=$7
-BRANCH=$8
-GIT_USER_NAME=$9
-GIT_USER_EMAIL=${10}
-BACKUP=${11}  # "true" or "false"
+# Allow git operations in the current directory
+git config --global --add safe.directory /usr/src
+# Explicitly set safe directory for git operations
+git config --global --add safe.directory /github/workspace
 
 # Debugging: Print values to confirm they are passed correctly
 echo "Debug Info:"
