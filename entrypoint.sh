@@ -54,6 +54,8 @@ git config --global user.email "$GIT_USER_EMAIL"
 FULL_PATH="$TARGET_PATH/$VALUES_FILE"
 COMMIT_MESSAGE="$COMMIT_MESSAGE $FULL_PATH"
 git checkout "$BRANCH"
-git add $VALUES_FILE
+
+pwd
+git add .
 git commit -m "$COMMIT_MESSAGE"
 git push "https://x-access-token:$GITHUB_TOKEN@github.com/$REPO" "$BRANCH"
