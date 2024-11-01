@@ -20,6 +20,9 @@ cd "$TARGET_PATH" || {
     exit 1 
 }
 
+# Confirm Root Path
+ls
+
 # Check if the target values file exists
 VALUES_FILE="$TARGET_VALUES_FILE.values.yaml"
 if [[ ! -f "$VALUES_FILE" ]]; then
