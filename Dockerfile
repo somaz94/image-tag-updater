@@ -1,11 +1,14 @@
-# Set the base image to use for subsequent instructions
-FROM alpine:3.20
+# Use a lightweight base image
+FROM alpine:3.14
 
-# Set the working directory inside the container
-WORKDIR /usr/src
+# Install necessary packages
+RUN apk add --no-cache bash git
 
-# Copy any source file(s) required for the action
-COPY entrypoint.sh .
+# Copy the entrypoint script into the container
+COPY entrypoint.sh /entrypoint.sh
 
-# Configure the container to be run as an executable
-ENTRYPOINT ["/usr/src/entrypoint.sh"]
+# Make the entrypoint script executable
+RUN chmod +x /entrypoint.sh
+
+# Set the default entrypoint
+ENTRYPOINT ["/entrypoint.sh"]

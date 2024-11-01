@@ -1,21 +1,58 @@
-name: 'The name of your action here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+# action.yml
 
-# Define your inputs here.
+name: 'Image Tag Updater'
+description:
+  'Updates a specific image tag in a specified file within a target directory.'
+author: 'Your Name'
+branding:
+  icon: 'edit'
+  color: 'blue'
+
 inputs:
-  who-to-greet:
-    description: 'Your input description here'
+  target_path:
+    description: 'Directory path where the values file is located'
     required: true
-    default: 'World'
-
-# Define your outputs here.
-outputs:
-  greeting:
-    description: 'Your output description here'
+  tag_string:
+    description: 'The tag string to match for updating the image tag'
+    required: false
+    default: 'tag'
+  new_tag:
+    description: 'The new image tag to replace the current one'
+    required: true
+  target_values_file:
+    description:
+      'The prefix name of the values file to update (without .values.yaml
+      extension)'
+    required: true
+  github_token:
+    description: 'GitHub token for pushing the updated file'
+    required: true
+    secret: true
+  commit_message:
+    description: 'Commit message for the update'
+    required: false
+    default: 'Update image tag in'
+  branch:
+    description: 'Branch where changes should be committed'
+    required: false
+    default: 'main'
+  git_user_name:
+    description: 'Git user.name for commits'
+    required: false
+    default: 'GitHub Action'
+  git_user_email:
+    description: 'Git user.email for commits'
+    required: false
+    default: 'actions@github.com'
+  backup:
+    description: 'Whether to create a backup file (true/false)'
+    required: false
+    default: 'false'
 
 runs:
-  using: docker
-  image: Dockerfile
-  env:
-    INPUT_WHO_TO_GREET: ${{ inputs.who-to-greet }}
+  using: 'composite'
+  steps:
+    - name: 'Run Image Tag Updater Script'
+      shell: bash
+      run: |
+        ./entrypoint.sh "${{ inputs.target_path }}" "${{ inputs.tag_string }}" "${{ inputs.new_tag }}" "${{ inputs.target_values_file }}" "${{ inputs.github_token }}" "${{ inputs.commit_message }}" "${{ github.repository }}" "${{ inputs.branch }}" "${{ inputs.git_user_name }}" "${{ inputs.git_user_email }}" "${{ inputs.backup }}"
