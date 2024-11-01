@@ -1,4 +1,4 @@
-name: Example Workflow using Extract Commit Action
+name: Example Workflow using Image Tag Updater
 
 on:
   workflow_dispatch:
