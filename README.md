@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/github/license/somaz94/image-tag-updater)](https://github.com/somaz94/container-action)
 ![Latest Tag](https://img.shields.io/github/v/tag/somaz94/image-tag-updater)
-![Top Language](https://img.shields.io/github/languages/top/somaz94/image-tag-updater?color=green&logo=terraform&logoColor=b
+![Top Language](https://img.shields.io/github/languages/top/somaz94/image-tag-updater?color=green&logo=terraform&logoColor=b)
 
 ## Description
 
@@ -67,22 +67,17 @@ jobs:
         with:
           repository: your-org/infrastructure-repo # Replace with the target repository
           token: ${{ secrets.GITHUB_TOKEN }} # Use a GitHub token with write permissions
-          path: infra-repo # Check out the infra repo to a specific folder
 
       # Step 2: Run Image Tag Updater in the infrastructure repository
       - name: Update Image Tag in Infrastructure Repo
         uses: somaz94/image-tag-updater@v1
         with:
-          target_path: 'infra-repo/charts/my-app' # Directory where values.yaml is located
-          tag_string: 'tag' # Defaults to "tag", can be overridden if needed
+          target_path: 'charts/my-app' # Directory where values.yaml is located
           new_tag: ${{ github.event.inputs.tag }} # New image tag to set
           target_values_file: 'dev1' # File name without .values.yaml extension
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          commit_message: 'Update image tag to ${{ github.event.inputs.tag }}'
-          branch: 'main'
           git_user_name: 'Your Name'
           git_user_email: 'your.email@example.com'
-          backup: 'true' # Enable or disable backup here
 ```
 
 ## Notes
