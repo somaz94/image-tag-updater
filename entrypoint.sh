@@ -11,7 +11,7 @@ echo "Debug Info:"
 echo "TARGET_PATH: $TARGET_PATH"
 echo "TARGET_VALUES_FILE: $TARGET_VALUES_FILE"
 echo "Constructed VALUES_FILE: $TARGET_VALUES_FILE.values.yaml"
-echo "TARGET_TAG: $TARGET_TAG"
+echo "TAG_STRING: $TAG_STRING"
 
 # Navigate to the target directory
 echo "Navigating to TARGET_PATH: $TARGET_PATH"
@@ -54,6 +54,6 @@ git config --global user.email "$GIT_USER_EMAIL"
 FULL_PATH="$TARGET_PATH/$VALUES_FILE"
 COMMIT_MESSAGE="$COMMIT_MESSAGE $FULL_PATH"
 git checkout "$BRANCH"
-git add "$VALUES_FILE"
+git add $VALUES_FILE
 git commit -m "$COMMIT_MESSAGE"
 git push "https://x-access-token:$GITHUB_TOKEN@github.com/$REPO" "$BRANCH"
