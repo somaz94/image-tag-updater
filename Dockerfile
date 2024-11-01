@@ -1,5 +1,5 @@
 # Use a lightweight base image
-FROM alpine:3.14
+FROM alpine:3.20
 
 # Install necessary packages
 RUN apk add --no-cache \
