@@ -1,0 +1,43 @@
+name: Example Workflow using Image Tag Updater v2
+
+on:
+  workflow_dispatch:
+    inputs:
+      run:
+        description: 'workflow run'
+        required: true
+        default: 'true'
+
+permissions:
+  contents: write
+
+jobs:
+  acton-module:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout infrastructure repository
+        uses: actions/checkout@v4
+        with:
+          repository: somaz94/helm-chart-template
+          token: ${{ secrets.PAT }}  
+
+      - name: Set short sha
+        id: vars
+        run: |
+          echo "short_sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+
+      # Step 2: Run Image Tag Updater in the infrastructure repository
+      - name: Update Image Tag in Infrastructure Repo
+        uses: somaz94/image-tag-updater@v1
+        with:
+          target_path: onpremise/ke-use-nfs-server
+          new_tag: ${{ steps.vars.outputs.short_sha }}
+          target_values_file: ke-use-nfs-server 
+          github_token: ${{ secrets.PAT }}
+          git_user_name: somaz
+          git_user_email: genius5711@gmail.com
+          repo: somaz94/helm-chart-template 
+
+      - name: Confirm Git log
+        run: |
+          git log -1
