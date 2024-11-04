@@ -84,6 +84,7 @@ jobs:
           github_token: ${{ secrets.PAT }}
           git_user_name: somaz
           git_user_email: genius5711@gmail.com
+          repo: somaz94/image-tag-updater 
 
       - name: Confirm Git log
         run: |
