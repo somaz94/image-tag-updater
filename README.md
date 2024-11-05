@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/github/license/somaz94/image-tag-updater)](https://github.com/somaz94/container-action)
 ![Latest Tag](https://img.shields.io/github/v/tag/somaz94/image-tag-updater)
-![Top Language](https://img.shields.io/github/languages/top/somaz94/image-tag-updater?color=green&logo=terraform&logoColor=b)
+![Top Language](https://img.shields.io/github/languages/top/somaz94/image-tag-updater?color=green&logo=shell&logoColor=b)
 
 ## Description
 
