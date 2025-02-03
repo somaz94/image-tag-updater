@@ -9,6 +9,14 @@ updates:
         update-types:
           - minor
           - patch
+    # open-pull-requests-limit: 10  # 동시에 열 수 있는 최대 PR 수
+    # labels:
+    #   - "dependencies"    # PR에 자동으로 추가할 라벨
+    # assignees:
+    #   - "username"       # PR 담당자 지정
+    # reviewers:
+    #   - "username"       # PR 리뷰어 지정
+    # target-branch: "main" # PR을 생성할 대상 브랜치
 
   - package-ecosystem: github-actions
     directory: /
