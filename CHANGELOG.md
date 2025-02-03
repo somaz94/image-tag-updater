@@ -1,11 +1,12 @@
 # Changelog
 
-## [v1](https://github.com/somaz94/image-tag-updater/tree/v1) (2025-01-21)
+## [v1](https://github.com/somaz94/image-tag-updater/tree/v1) (2025-02-03)
 
 [Full Changelog](https://github.com/somaz94/image-tag-updater/compare/v1...v1)
 
 **Merged pull requests:**
 
+- build\(deps\): bump janheinrichmerker/action-github-changelog-generator from 2.3 to 2.4 in the actions-minor group [\#2](https://github.com/somaz94/image-tag-updater/pull/2) ([dependabot[bot]](https://github.com/apps/dependabot))
 - build\(deps\): bump alpine from 3.20 to 3.21 in the docker-minor group [\#1](https://github.com/somaz94/image-tag-updater/pull/1) ([dependabot[bot]](https://github.com/apps/dependabot))
 
 ## [v1](https://github.com/somaz94/image-tag-updater/tree/v1) (2024-11-04)
