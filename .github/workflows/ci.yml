@@ -8,6 +8,7 @@ on:
     paths-ignore:
       - '.github/workflows/**'
       - '**/*.md'
+      - 'charts/**/*'
   workflow_dispatch:
 
 permissions:
