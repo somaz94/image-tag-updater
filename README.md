@@ -12,13 +12,23 @@ specified file within a repository. It’s particularly useful in GitOps
 workflows, where configuration changes need to be automatically reflected across
 multiple repositories.
 
-## Description
+<br/>
 
 This action allows users to update specific lines in configuration files,
 typically to update image tags, and commits the changes directly to the
 repository. It supports checking out multiple repositories, making it ideal for
 updating infrastructure repositories based on changes in source code
 repositories.
+
+## Features
+
+- 🔄 Automated image tag updates in configuration files
+- 🔒 Secure authentication with GitHub tokens
+- 💾 Optional backup creation
+- 🎯 Precise targeting of specific values in YAML files
+- 📝 Customizable commit messages and Git credentials
+- 🔍 Detailed execution logs
+- ⚡ Support for multiple repositories and branches
 
 ## Inputs
 
@@ -103,3 +113,11 @@ jobs:
   infrastructure repository.
 - Backup Option: Use the backup option to control whether a backup file is
   created (true) or not (false).
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
