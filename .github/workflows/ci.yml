@@ -1,12 +1,14 @@
 name: Continuous Integration
 
 on:
+  pull_request:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '.github/workflows/**'
+      - '**/*.md'
   workflow_dispatch:
-    inputs:
-      run:
-        description: 'workflow run'
-        required: true
-        default: 'true'
 
 permissions:
   contents: write
