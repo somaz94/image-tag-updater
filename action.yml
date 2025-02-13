@@ -27,7 +27,6 @@ inputs:
   github_token:
     description: 'GitHub token for pushing the updated file'
     required: true
-    secret: true
   commit_message:
     description: 'Commit message for the update'
     required: false
