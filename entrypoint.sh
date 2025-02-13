@@ -115,20 +115,24 @@ fi
 echo -e "\n⚙️ Configuring Git..."
 git config --global user.name "$GIT_USER_NAME" || handle_error "Failed to set git user name"
 git config --global user.email "$GIT_USER_EMAIL" || handle_error "Failed to set git user email"
+git config --global pull.rebase false || handle_error "Failed to set pull strategy"
 
 # Checkout or create branch
 echo -e "\n🔄 Checking out branch: $BRANCH"
 if ! git show-ref --verify --quiet "refs/heads/$BRANCH"; then
     echo "Creating new branch: $BRANCH"
     git checkout -b "$BRANCH" || handle_error "Failed to create new branch: $BRANCH"
+    
+    # If remote branch exists, set upstream and pull
+    if git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
+        git branch --set-upstream-to=origin/$BRANCH $BRANCH || handle_error "Failed to set upstream branch"
+        echo -e "\n⬇️ Pulling latest changes..."
+        git pull || handle_error "Failed to pull latest changes"
+    fi
 else
     git checkout "$BRANCH" || handle_error "Failed to checkout branch: $BRANCH"
-fi
-
-# Pull latest changes if branch exists remotely
-if git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
     echo -e "\n⬇️ Pulling latest changes..."
-    git pull origin "$BRANCH" || handle_error "Failed to pull latest changes"
+    git pull || handle_error "Failed to pull latest changes"
 fi
 
 git status
