@@ -37,6 +37,14 @@ update_file() {
     local file="$1"
     echo -e "\n🔄 Processing file: $file"
 
+    # If dry run mode is enabled, show what would be changed
+    if [[ "$DRY_RUN" == "true" ]]; then
+        echo "🔍 Dry run mode - showing potential changes for $file:"
+        echo "Current tag line: $(grep "$TAG_STRING:" "$file")"
+        echo "Would change to:  $TAG_STRING: \"$NEW_TAG\""
+        return
+    fi
+
     # Create backup if requested
     if [[ "$BACKUP" == "true" ]]; then
         echo -e "\n💾 Creating backup..."
@@ -71,6 +79,7 @@ echo "  • Tag String: $TAG_STRING"
 echo "  • New Tag: $NEW_TAG"
 echo "  • Branch: $BRANCH"
 echo "  • Backup Enabled: ${BACKUP:-false}"
+echo "  • Dry Run Mode: ${DRY_RUN:-false}"
 [[ -n "$TARGET_VALUES_FILE" ]] && echo "  • Values File: $TARGET_VALUES_FILE"
 [[ -n "$FILE_PATTERN" ]] && echo "  • File Pattern: $FILE_PATTERN"
 
@@ -107,13 +116,20 @@ echo -e "\n⚙️ Configuring Git..."
 git config --global user.name "$GIT_USER_NAME" || handle_error "Failed to set git user name"
 git config --global user.email "$GIT_USER_EMAIL" || handle_error "Failed to set git user email"
 
-# Checkout branch
+# Checkout or create branch
 echo -e "\n🔄 Checking out branch: $BRANCH"
-git checkout "$BRANCH" || handle_error "Failed to checkout branch: $BRANCH"
+if ! git show-ref --verify --quiet "refs/heads/$BRANCH"; then
+    echo "Creating new branch: $BRANCH"
+    git checkout -b "$BRANCH" || handle_error "Failed to create new branch: $BRANCH"
+else
+    git checkout "$BRANCH" || handle_error "Failed to checkout branch: $BRANCH"
+fi
 
-# Pull latest changes
-echo -e "\n⬇️ Pulling latest changes..."
-git pull origin "$BRANCH" || handle_error "Failed to pull latest changes"
+# Pull latest changes if branch exists remotely
+if git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
+    echo -e "\n⬇️ Pulling latest changes..."
+    git pull origin "$BRANCH" || handle_error "Failed to pull latest changes"
+fi
 
 git status
 
@@ -147,5 +163,11 @@ while [[ $RETRY_COUNT -lt $MAX_RETRIES ]]; do
         sleep 5
     fi
 done
+
+# If dry run mode is enabled, exit after showing changes
+if [[ "$DRY_RUN" == "true" ]]; then
+    echo -e "\n✅ Dry run completed. No changes were made."
+    exit 0
+fi
 
 print_header "Process Completed Successfully"

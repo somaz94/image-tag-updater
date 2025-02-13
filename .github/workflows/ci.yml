@@ -109,7 +109,6 @@ jobs:
         with:
           target_path: charts/somaz/api 
           new_tag: ${{ steps.vars.outputs.short_sha }}
-          target_values_file: dev1 
           branch: test
           github_token: ${{ secrets.PAT }}
           git_user_name: GitHub Actions
