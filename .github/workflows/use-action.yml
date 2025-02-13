@@ -41,6 +41,7 @@ jobs:
           github_token: ${{ secrets.PAT }}
           DRY_RUN: true
           file_pattern: "dev*.values.yaml"
+          repo: somaz94/image-tag-updater
 
       - name: Run Image Tag Updater in the infrastructure repository
         uses: somaz94/image-tag-updater@v1
