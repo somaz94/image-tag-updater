@@ -20,6 +20,8 @@ repository. It supports checking out multiple repositories, making it ideal for
 updating infrastructure repositories based on changes in source code
 repositories.
 
+<br/>
+
 ## Features
 
 - 🔄 Automated image tag updates in configuration files
@@ -29,6 +31,8 @@ repositories.
 - 📝 Customizable commit messages and Git credentials
 - 🔍 Detailed execution logs
 - ⚡ Support for multiple repositories and branches
+
+<br/>
 
 ## Inputs
 
@@ -48,6 +52,8 @@ repositories.
 | `file_pattern`       | No       | File pattern to match multiple files (e.g., "*.values.yaml")                  | `""`                   |
 | `dry_run`            | No       | Run in dry-run mode without making actual changes                             | `"false"`              |
 
+<br/>
+
 ## Advanced Features
 
 ### Multiple File Updates
@@ -60,6 +66,8 @@ You can update multiple files at once using the `file_pattern` input:
     new_tag: v1.0.1
 ```
 
+<br/>
+
 ### Dry Run Mode
 Test your changes without actually applying them:
 ```yaml
@@ -70,7 +78,11 @@ Test your changes without actually applying them:
     new_tag: v1.0.1
 ```
 
+<br/>
+
 ## Example Workflows
+
+<br/>
 
 ### Production Deployment
 ```yaml
@@ -96,6 +108,8 @@ jobs:
           github_token: ${{ secrets.PAT }}
 ```
 
+<br/>
+
 ### Development Testing
 ```yaml
 name: Dev Image Update
@@ -115,6 +129,8 @@ jobs:
           dry_run: "true"
           github_token: ${{ secrets.PAT }}
 ```
+
+<br/>
 
 ## Example Workflow
 
@@ -186,6 +202,8 @@ jobs:
 
 ```
 
+<br/>
+
 ## Notes
 
 - GitHub Token: Make sure `secrets.GITHUB_TOKEN` (or a custom token with write
@@ -200,9 +218,13 @@ jobs:
   `target_values_file` (e.g., "dev1.values.yaml") to specify which files to update. Only one
   of these options is required.
 
+<br/>
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+<br/>
 
 ## Contributing
 
