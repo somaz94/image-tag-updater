@@ -142,7 +142,11 @@ fi
 
 # Commit and push changes
 echo -e "\n📤 Committing and pushing changes..."
-COMMIT_MESSAGE="$COMMIT_MESSAGE $TARGET_PATH"
+if [[ -n "$FILE_PATTERN" ]]; then
+    COMMIT_MESSAGE="$COMMIT_MESSAGE $TARGET_PATH ($FILE_PATTERN)"
+else
+    COMMIT_MESSAGE="$COMMIT_MESSAGE $TARGET_PATH ($TARGET_VALUES_FILE)"
+fi
 
 git add . || handle_error "Failed to stage changes"
 git commit -m "$COMMIT_MESSAGE" || handle_error "Failed to commit changes"

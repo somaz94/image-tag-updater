@@ -26,7 +26,17 @@ jobs:
         run: |
           echo "short_sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
 
-      # Step 2: Run Image Tag Updater in the infrastructure repository
+      # dry run
+      - name: Dry Run
+        uses: somaz94/image-tag-updater@v1
+        with:
+          target_path: onpremise/ke-use-nfs-server
+          new_tag: ${{ steps.vars.outputs.short_sha }}
+          target_values_file: ke-use-nfs-server.values.yaml
+          branch: main
+          github_token: ${{ secrets.PAT }}
+          DRY_RUN: true
+
       - name: Update Image Tag in Infrastructure Repo
         uses: somaz94/image-tag-updater@v1
         with:
