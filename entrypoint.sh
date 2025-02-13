@@ -87,8 +87,12 @@ cd "$TARGET_PATH" || handle_error "Directory not found: $TARGET_PATH"
 echo -e "\n📑 Current directory contents:"
 ls -la
 
-# Configure Git and checkout branch first
+# Configure Git with safe directory settings first
 echo -e "\n⚙️ Configuring Git..."
+git config --global --add safe.directory /usr/src || handle_error "Failed to set safe.directory /usr/src"
+git config --global --add safe.directory /github/workspace || handle_error "Failed to set safe.directory /github/workspace"
+
+# Configure Git user and pull strategy
 git config --global user.name "$GIT_USER_NAME" || handle_error "Failed to set git user name"
 git config --global user.email "$GIT_USER_EMAIL" || handle_error "Failed to set git user email"
 git config --global pull.rebase false || handle_error "Failed to set pull strategy"
