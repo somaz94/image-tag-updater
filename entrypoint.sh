@@ -80,6 +80,11 @@ git config --global user.email "$GIT_USER_EMAIL" || handle_error "Failed to set 
 # Checkout branch
 echo -e "\n🔄 Checking out branch: $BRANCH"
 git checkout "$BRANCH" || handle_error "Failed to checkout branch: $BRANCH"
+
+# Pull latest changes
+echo -e "\n⬇️ Pulling latest changes..."
+git pull origin "$BRANCH" || handle_error "Failed to pull latest changes"
+
 git status
 
 # Check for changes
@@ -102,14 +107,14 @@ MAX_RETRIES=3
 RETRY_COUNT=0
 while [[ $RETRY_COUNT -lt $MAX_RETRIES ]]; do
     if git push "https://x-access-token:$GITHUB_TOKEN@github.com/$REPO" "$BRANCH"; then
-        echo "✅ Successfully pushed changes to remote"
+        echo "✅ $(date '+%Y-%m-%d %H:%M:%S') Successfully pushed changes to remote"
         break
     else
         RETRY_COUNT=$((RETRY_COUNT + 1))
         if [[ $RETRY_COUNT -eq $MAX_RETRIES ]]; then
             handle_error "Failed to push changes after $MAX_RETRIES attempts"
         fi
-        echo "⚠️ Push failed, retrying in 5 seconds... (Attempt $RETRY_COUNT of $MAX_RETRIES)"
+        echo "⚠️ $(date '+%Y-%m-%d %H:%M:%S') Push failed, retrying in 5 seconds... (Attempt $RETRY_COUNT of $MAX_RETRIES)"
         sleep 5
     fi
 done
