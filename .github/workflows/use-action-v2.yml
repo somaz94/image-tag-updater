@@ -32,7 +32,7 @@ jobs:
         with:
           target_path: onpremise/ke-use-nfs-server
           new_tag: ${{ steps.vars.outputs.short_sha }}
-          target_values_file: ke-use-nfs-server 
+          target_values_file: ke-use-nfs-server.values.yaml
           github_token: ${{ secrets.PAT }}
           git_user_name: GitHub Actions
           git_user_email: actions@github.com

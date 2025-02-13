@@ -59,6 +59,7 @@ jobs:
           TARGET_PATH: charts/somaz/api
           NEW_TAG: ${{ steps.vars.outputs.short_sha }}
           TAG_STRING: tag
+          TARGET_VALUES_FILE: dev2.values.yaml
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GIT_USER_NAME: GitHub Actions
           GIT_USER_EMAIL: actions@github.com
@@ -67,11 +68,11 @@ jobs:
           COMMIT_MESSAGE: Update image tag in
           DRY_RUN: true
           REGISTRY_URL: nginx
-          FILE_PATTERN: "dev*.values.yaml"
           VERIFY_TAG: true
         run: |
           docker run \
           --env TARGET_PATH="${{ env.TARGET_PATH}}" \
+          --env TARGET_VALUES_FILE="${{ env.TARGET_VALUES_FILE }}" \
           --env NEW_TAG="${{ env.NEW_TAG }}" \
           --env TAG_STRING="${{ env.TAG_STRING }}" \
           --env GITHUB_TOKEN="${{ env.GITHUB_TOKEN }}" \
@@ -82,7 +83,6 @@ jobs:
           --env COMMIT_MESSAGE="${{ env.COMMIT_MESSAGE }}" \
           --env DRY_RUN="${{ env.DRY_RUN }}" \
           --env REGISTRY_URL="${{ env.REGISTRY_URL }}" \
-          --env FILE_PATTERN="${{ env.FILE_PATTERN }}" \
           --env VERIFY_TAG="${{ env.VERIFY_TAG }}" \
           --volume ${{ github.workspace }}:/usr/src \
           --rm ${{ env.TEST_TAG }}

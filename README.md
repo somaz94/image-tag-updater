@@ -37,7 +37,7 @@ repositories.
 | `target_path`        | Yes      | The directory path where the values file is located                           | N/A                    |
 | `tag_string`         | No       | The tag string to match for updating the image tag                            | `"tag"`                |
 | `new_tag`            | Yes      | The new image tag to replace the current one (e.g., `v1.0.1`)                 | N/A                    |
-| `target_values_file` | No       | The prefix name of the values file to update (without .values.yaml extension) | N/A                    |
+| `target_values_file` | No       | The prefix name of the values file to update                                  | N/A                    |
 | `github_token`       | Yes      | A GitHub token for authenticating the push to the repository                  | N/A                    |
 | `commit_message`     | No       | The commit message for the update                                             | `"Update image tag"`   |
 | `branch`             | No       | The branch where changes should be committed                                  | `"main"`               |
@@ -185,7 +185,7 @@ jobs:
         with:
           target_path: charts/somaz/api 
           new_tag: ${{ steps.vars.outputs.short_sha }}
-          target_values_file: dev1 
+          target_values_file: dev1.values.yaml
           github_token: ${{ secrets.PAT }}
           git_user_name: somaz
           git_user_email: genius5711@gmail.com

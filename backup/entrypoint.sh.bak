@@ -18,41 +18,13 @@ handle_error() {
 
 # Function to validate required environment variables
 validate_env_vars() {
-    local required_vars=("TARGET_PATH" "NEW_TAG" "TAG_STRING" "GIT_USER_NAME" "GIT_USER_EMAIL" "GITHUB_TOKEN" "REPO" "BRANCH")
+    local required_vars=("TARGET_PATH" "TARGET_VALUES_FILE" "TAG_STRING" "NEW_TAG" "GIT_USER_NAME" "GIT_USER_EMAIL" "GITHUB_TOKEN" "REPO" "BRANCH")
     
     for var in "${required_vars[@]}"; do
         if [[ -z "${!var}" ]]; then
             handle_error "Required environment variable $var is not set"
         fi
     done
-
-    # Check if at least one of TARGET_VALUES_FILE or FILE_PATTERN is set
-    if [[ -z "$TARGET_VALUES_FILE" ]] && [[ -z "$FILE_PATTERN" ]]; then
-        handle_error "Either TARGET_VALUES_FILE or FILE_PATTERN must be set"
-    fi
-}
-
-# Function to update a single file
-update_file() {
-    local file="$1"
-    echo -e "\n🔄 Processing file: $file"
-
-    # Create backup if requested
-    if [[ "$BACKUP" == "true" ]]; then
-        echo -e "\n💾 Creating backup..."
-        cp "$file" "${file}.bak" || handle_error "Failed to create backup"
-        echo "✅ Backup created: ${file}.bak"
-    fi
-
-    # Update the image tag
-    echo -e "\n🔄 Updating image tag..."
-    if [[ "$BACKUP" == "true" ]]; then
-        sed -i.bak "/^\s*$TAG_STRING:/s|:.*|: \"$NEW_TAG\"|" "$file" || handle_error "Failed to update tag with backup"
-    else
-        sed -i "/^\s*$TAG_STRING:/s|:.*|: \"$NEW_TAG\"|" "$file" || handle_error "Failed to update tag"
-    fi
-
-    echo "✅ Successfully updated $file"
 }
 
 print_header "Starting Git Update Process"
@@ -67,12 +39,11 @@ git config --global --add safe.directory /github/workspace || handle_error "Fail
 # Print current configuration
 echo "📋 Current Configuration:"
 echo "  • Target Path: $TARGET_PATH"
+echo "  • Values File: $TARGET_VALUES_FILE"
 echo "  • Tag String: $TAG_STRING"
 echo "  • New Tag: $NEW_TAG"
 echo "  • Branch: $BRANCH"
 echo "  • Backup Enabled: ${BACKUP:-false}"
-[[ -n "$TARGET_VALUES_FILE" ]] && echo "  • Values File: $TARGET_VALUES_FILE"
-[[ -n "$FILE_PATTERN" ]] && echo "  • File Pattern: $FILE_PATTERN"
 
 # Navigate to the target directory
 echo -e "\n📂 Navigating to target directory..."
@@ -80,26 +51,25 @@ cd "$TARGET_PATH" || handle_error "Directory not found: $TARGET_PATH"
 
 # Confirm directory contents
 echo -e "\n📑 Current directory contents:"
-ls -la
+ls -al
 
-# Process files based on input
-if [[ -n "$FILE_PATTERN" ]]; then
-    echo -e "\n🔍 Searching for files matching pattern: $FILE_PATTERN"
-    files=($FILE_PATTERN)
-    if [ ${#files[@]} -eq 0 ]; then
-        handle_error "No files found matching pattern: $FILE_PATTERN"
-    fi
-    for file in "${files[@]}"; do
-        if [[ -f "$file" ]]; then
-            update_file "$file"
-        fi
-    done
+# Check if the target values file exists
+VALUES_FILE="$TARGET_VALUES_FILE.values.yaml"
+[[ -f "$VALUES_FILE" ]] || handle_error "File not found: $VALUES_FILE"
+
+# Create backup if requested
+if [[ "$BACKUP" == "true" ]]; then
+    echo -e "\n💾 Creating backup..."
+    cp "$VALUES_FILE" "${VALUES_FILE}.bak" || handle_error "Failed to create backup"
+    echo "✅ Backup created: ${VALUES_FILE}.bak"
+fi
+
+# Update the image tag
+echo -e "\n🔄 Updating image tag..."
+if [[ "$BACKUP" == "true" ]]; then
+    sed -i.bak "/^\s*$TAG_STRING:/s|:.*|: \"$NEW_TAG\"|" "$VALUES_FILE" || handle_error "Failed to update tag with backup"
 else
-    VALUES_FILE="$TARGET_VALUES_FILE"
-    if [[ ! -f "$VALUES_FILE" ]]; then
-        handle_error "File not found: $VALUES_FILE"
-    fi
-    update_file "$VALUES_FILE"
+    sed -i "/^\s*$TAG_STRING:/s|:.*|: \"$NEW_TAG\"|" "$VALUES_FILE" || handle_error "Failed to update tag"
 fi
 
 # Configure Git
@@ -119,16 +89,17 @@ git status
 
 # Check for changes
 echo -e "\n🔍 Checking for changes..."
-if git diff --quiet; then
+if git diff --exit-code "$VALUES_FILE"; then
     echo "✅ No changes to commit."
     exit 0
 fi
 
 # Commit and push changes
 echo -e "\n📤 Committing and pushing changes..."
-COMMIT_MESSAGE="$COMMIT_MESSAGE $TARGET_PATH"
+FULL_PATH="$TARGET_PATH/$VALUES_FILE"
+COMMIT_MESSAGE="$COMMIT_MESSAGE $FULL_PATH"
 
-git add . || handle_error "Failed to stage changes"
+git add "$VALUES_FILE" || handle_error "Failed to stage changes"
 git commit -m "$COMMIT_MESSAGE" || handle_error "Failed to commit changes"
 
 # Push changes with retry logic
