@@ -76,6 +76,7 @@ echo "  • New Tag: $NEW_TAG"
 echo "  • Branch: $BRANCH"
 echo "  • Backup Enabled: ${BACKUP:-false}"
 echo "  • Dry Run Mode: ${DRY_RUN:-false}"
+echo "  • Commit Message: ${COMMIT_MESSAGE:-Update image tag in}"
 [[ -n "$TARGET_VALUES_FILE" ]] && echo "  • Values File: $TARGET_VALUES_FILE"
 [[ -n "$FILE_PATTERN" ]] && echo "  • File Pattern: $FILE_PATTERN"
 

@@ -47,9 +47,6 @@ repositories.
 | `repo`               | Yes      | Git repository for commits (Repo to update)                                   | N/A                    |
 | `file_pattern`       | No       | File pattern to match multiple files (e.g., "*.values.yaml")                  | `""`                   |
 | `dry_run`            | No       | Run in dry-run mode without making actual changes                             | `"false"`              |
-| `verify_tag`         | No       | Verify if the new tag exists in the container registry                        | `"false"`              |
-| `notification_webhook`| No       | Webhook URL for Slack/Discord notifications                                   | N/A                    |
-| `registry_url`       | No       | Container registry URL for tag verification                                   | `"docker.io"`          |
 
 ## Advanced Features
 
@@ -70,27 +67,6 @@ Test your changes without actually applying them:
   with:
     target_path: charts/somaz/api
     dry_run: "true"
-    new_tag: v1.0.1
-```
-
-### Tag Verification
-Verify if the tag exists in the container registry before updating:
-```yaml
-- uses: somaz94/image-tag-updater@v1
-  with:
-    target_path: charts/somaz/api
-    verify_tag: "true"
-    registry_url: "docker.io/somaz94"
-    new_tag: v1.0.1
-```
-
-### Notifications
-Get notifications on Slack or Discord about the updates:
-```yaml
-- uses: somaz94/image-tag-updater@v1
-  with:
-    target_path: charts/somaz/api
-    notification_webhook: ${{ secrets.DISCORD_WEBHOOK }}
     new_tag: v1.0.1
 ```
 
@@ -179,21 +155,35 @@ jobs:
         run: |
           echo "short_sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
 
-      # Step 2: Run Image Tag Updater in the infrastructure repository
-      - name: Update Image Tag in Infrastructure Repo
+      # dry run
+      - name: Dry Run
         uses: somaz94/image-tag-updater@v1
         with:
           target_path: charts/somaz/api 
           new_tag: ${{ steps.vars.outputs.short_sha }}
-          target_values_file: dev1.values.yaml
+          target_values_file: dev2
+          branch: test
           github_token: ${{ secrets.PAT }}
-          git_user_name: somaz
-          git_user_email: genius5711@gmail.com
-          repo: somaz94/image-tag-updater # Git repository for commits (Repo to update) 
+          DRY_RUN: true
+
+      - name: Run Image Tag Updater in the infrastructure repository
+        uses: somaz94/image-tag-updater@v1
+        with:
+          target_path: charts/somaz/api 
+          new_tag: ${{ steps.vars.outputs.short_sha }}
+          # target_values_file: dev2
+          branch: test
+          github_token: ${{ secrets.PAT }}
+          git_user_name: GitHub Actions
+          git_user_email: actions@github.com
+          repo: somaz94/image-tag-updater
+          file_pattern: "dev*.values.yaml"
+          registry_url: nginx
 
       - name: Confirm Git log
         run: |
           git log -1
+
 
 ```
 

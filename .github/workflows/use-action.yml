@@ -54,7 +54,6 @@ jobs:
           repo: somaz94/image-tag-updater
           file_pattern: "dev*.values.yaml"
           registry_url: nginx
-          verify_tag: true
 
       - name: Confirm Git log
         run: |
