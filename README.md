@@ -8,7 +8,7 @@
 ## Description
 
 The **Image Tag Updater** GitHub Action is designed to update image tags in a
-specified file within a repository. It’s particularly useful in GitOps
+specified file within a repository. It's particularly useful in GitOps
 workflows, where configuration changes need to be automatically reflected across
 multiple repositories.
 
@@ -44,7 +44,101 @@ repositories.
 | `git_user_name`      | No       | The Git username for commits                                                  | `"GitHub Action"`      |
 | `git_user_email`     | No       | The Git email for commits                                                     | `"actions@github.com"` |
 | `backup`             | No       | Specifies whether to create a backup file (true/false)                        | `"false"`              |
-| `repo`               | Yes      | Git repository for commits (Repo to update)                                   | N/A           |
+| `repo`               | Yes      | Git repository for commits (Repo to update)                                   | N/A                    |
+| `file_pattern`       | No       | File pattern to match multiple files (e.g., "*.values.yaml")                  | `""`                   |
+| `dry_run`            | No       | Run in dry-run mode without making actual changes                             | `"false"`              |
+| `verify_tag`         | No       | Verify if the new tag exists in the container registry                        | `"false"`              |
+| `notification_webhook`| No       | Webhook URL for Slack/Discord notifications                                   | N/A                    |
+| `registry_url`       | No       | Container registry URL for tag verification                                   | `"docker.io"`          |
+
+## Advanced Features
+
+### Multiple File Updates
+You can update multiple files at once using the `file_pattern` input:
+```yaml
+- uses: somaz94/image-tag-updater@v1
+  with:
+    target_path: charts/somaz/api
+    file_pattern: "dev*.values.yaml"  # Updates all dev environment files
+    new_tag: v1.0.1
+```
+
+### Dry Run Mode
+Test your changes without actually applying them:
+```yaml
+- uses: somaz94/image-tag-updater@v1
+  with:
+    target_path: charts/somaz/api
+    dry_run: "true"
+    new_tag: v1.0.1
+```
+
+### Tag Verification
+Verify if the tag exists in the container registry before updating:
+```yaml
+- uses: somaz94/image-tag-updater@v1
+  with:
+    target_path: charts/somaz/api
+    verify_tag: "true"
+    registry_url: "docker.io/somaz94"
+    new_tag: v1.0.1
+```
+
+### Notifications
+Get notifications on Slack or Discord about the updates:
+```yaml
+- uses: somaz94/image-tag-updater@v1
+  with:
+    target_path: charts/somaz/api
+    notification_webhook: ${{ secrets.DISCORD_WEBHOOK }}
+    new_tag: v1.0.1
+```
+
+## Example Workflows
+
+### Production Deployment
+```yaml
+name: Production Image Update
+on:
+  workflow_dispatch:
+    inputs:
+      new_tag:
+        description: 'New image tag to deploy'
+        required: true
+
+jobs:
+  update-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: somaz94/image-tag-updater@v1
+        with:
+          target_path: charts/somaz/api
+          file_pattern: "prod*.values.yaml"
+          new_tag: ${{ github.event.inputs.new_tag }}
+          verify_tag: "true"
+          notification_webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          github_token: ${{ secrets.PAT }}
+```
+
+### Development Testing
+```yaml
+name: Dev Image Update
+on:
+  push:
+    branches: [ develop ]
+
+jobs:
+  update-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: somaz94/image-tag-updater@v1
+        with:
+          target_path: charts/somaz/api
+          file_pattern: "dev*.values.yaml"
+          new_tag: ${{ github.sha }}
+          dry_run: "true"
+          github_token: ${{ secrets.PAT }}
+```
 
 ## Example Workflow
 

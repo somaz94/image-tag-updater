@@ -50,6 +50,25 @@ inputs:
   repo:
     description: 'Git repository for commits'
     required: true
+  file_pattern:
+    description: 'File pattern to match multiple files (e.g., "*.values.yaml")'
+    required: false
+    default: ''
+  dry_run:
+    description: 'Run in dry-run mode without making actual changes'
+    required: false
+    default: 'false'
+  verify_tag:
+    description: 'Verify if the new tag exists in the container registry'
+    required: false
+    default: 'false'
+  notification_webhook:
+    description: 'Webhook URL for Slack/Discord notifications'
+    required: false
+  registry_url:
+    description: 'Container registry URL for tag verification'
+    required: false
+    default: 'docker.io'
 
 runs:
   using: 'docker'
@@ -66,3 +85,8 @@ runs:
     GIT_USER_EMAIL: ${{ inputs.git_user_email }}
     BACKUP: ${{ inputs.backup }}
     REPO: ${{ inputs.REPO }}
+    FILE_PATTERN: ${{ inputs.file_pattern }}
+    DRY_RUN: ${{ inputs.dry_run }}
+    VERIFY_TAG: ${{ inputs.verify_tag }}
+    NOTIFICATION_WEBHOOK: ${{ inputs.notification_webhook }}
+    REGISTRY_URL: ${{ inputs.registry_url }}

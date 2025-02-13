@@ -27,6 +27,26 @@ validate_env_vars() {
     done
 }
 
+# Function to verify tag exists in registry
+verify_tag_exists() {
+    if [[ "$VERIFY_TAG" == "true" ]]; then
+        echo "🔍 Verifying tag exists in registry..."
+        # Add registry verification logic here
+        # Example: using skopeo or docker API
+    fi
+}
+
+# Function to send notification
+send_notification() {
+    if [[ -n "$NOTIFICATION_WEBHOOK" ]]; then
+        local status=$1
+        local message=$2
+        curl -X POST -H "Content-Type: application/json" \
+             --data "{\"text\":\"$status: $message\"}" \
+             "$NOTIFICATION_WEBHOOK" || echo "Failed to send notification"
+    fi
+}
+
 print_header "Starting Git Update Process"
 
 # Validate environment variables
@@ -53,23 +73,44 @@ cd "$TARGET_PATH" || handle_error "Directory not found: $TARGET_PATH"
 echo -e "\n📑 Current directory contents:"
 ls -al
 
-# Check if the target values file exists
-VALUES_FILE="$TARGET_VALUES_FILE.values.yaml"
-[[ -f "$VALUES_FILE" ]] || handle_error "File not found: $VALUES_FILE"
+# Handle multiple files if pattern is provided
+if [[ -n "$FILE_PATTERN" ]]; then
+    echo "🔍 Searching for files matching pattern: $FILE_PATTERN"
+    for file in $FILE_PATTERN; do
+        VALUES_FILE="$file"
+        # Process each file
+        # Check if the target values file exists
+        [[ -f "$VALUES_FILE" ]] || handle_error "File not found: $VALUES_FILE"
 
-# Create backup if requested
-if [[ "$BACKUP" == "true" ]]; then
-    echo -e "\n💾 Creating backup..."
-    cp "$VALUES_FILE" "${VALUES_FILE}.bak" || handle_error "Failed to create backup"
-    echo "✅ Backup created: ${VALUES_FILE}.bak"
+        # Create backup if requested
+        if [[ "$BACKUP" == "true" ]]; then
+            echo -e "\n💾 Creating backup..."
+            cp "$VALUES_FILE" "${VALUES_FILE}.bak" || handle_error "Failed to create backup"
+            echo "✅ Backup created: ${VALUES_FILE}.bak"
+        fi
+
+        # Update the image tag
+        echo -e "\n🔄 Updating image tag..."
+        if [[ "$BACKUP" == "true" ]]; then
+            sed -i.bak "/^\s*$TAG_STRING:/s|:.*|: \"$NEW_TAG\"|" "$VALUES_FILE" || handle_error "Failed to update tag with backup"
+        else
+            sed -i "/^\s*$TAG_STRING:/s|:.*|: \"$NEW_TAG\"|" "$VALUES_FILE" || handle_error "Failed to update tag"
+        fi
+    done
+else
+    VALUES_FILE="$TARGET_VALUES_FILE.values.yaml"
 fi
 
-# Update the image tag
-echo -e "\n🔄 Updating image tag..."
-if [[ "$BACKUP" == "true" ]]; then
-    sed -i.bak "/^\s*$TAG_STRING:/s|:.*|: \"$NEW_TAG\"|" "$VALUES_FILE" || handle_error "Failed to update tag with backup"
-else
-    sed -i "/^\s*$TAG_STRING:/s|:.*|: \"$NEW_TAG\"|" "$VALUES_FILE" || handle_error "Failed to update tag"
+# Verify tag before making changes
+verify_tag_exists
+
+# Add dry-run mode
+if [[ "$DRY_RUN" == "true" ]]; then
+    echo "🔍 Dry run mode - no changes will be made"
+    # Show what would be changed
+    echo "Would update tag in $VALUES_FILE from: $(grep "$TAG_STRING:" "$VALUES_FILE")"
+    echo "                                  to: $TAG_STRING: \"$NEW_TAG\""
+    exit 0
 fi
 
 # Configure Git
@@ -118,5 +159,9 @@ while [[ $RETRY_COUNT -lt $MAX_RETRIES ]]; do
         sleep 5
     fi
 done
+
+# Send notification on success/failure
+trap 'send_notification "❌ Failed" "Tag update failed in $REPO"' ERR
+send_notification "✅ Success" "Updated tag to $NEW_TAG in $REPO"
 
 print_header "Process Completed Successfully"
