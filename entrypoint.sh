@@ -138,7 +138,7 @@ if [[ -n "$FILE_PATTERN" ]]; then
         fi
     done
 else
-    VALUES_FILE="$TARGET_VALUES_FILE.values.yaml"
+    VALUES_FILE="$TARGET_VALUES_FILE"
     if [[ ! -f "$VALUES_FILE" ]]; then
         handle_error "File not found: $VALUES_FILE"
     fi
@@ -159,7 +159,7 @@ git add . || handle_error "Failed to stage changes"
 if [[ -n "$FILE_PATTERN" ]]; then
     COMMIT_MESSAGE="$COMMIT_MESSAGE $TARGET_PATH ($FILE_PATTERN)"
 else
-    COMMIT_MESSAGE="$COMMIT_MESSAGE $TARGET_PATH ($TARGET_VALUES_FILE.values.yaml)"
+    COMMIT_MESSAGE="$COMMIT_MESSAGE $TARGET_PATH ($TARGET_VALUES_FILE)"
 fi
 
 # Commit changes
