@@ -30,8 +30,8 @@ jobs:
         run: |
           echo "short_sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
 
-      # Step 2: Run Image Tag Updater in the infrastructure repository
-      - name: Update Image Tag in Infrastructure Repo
+      # dry run
+      - name: Dry Run
         uses: somaz94/image-tag-updater@v1
         with:
           target_path: charts/somaz/api 
@@ -39,10 +39,22 @@ jobs:
           target_values_file: dev2
           branch: test
           github_token: ${{ secrets.PAT }}
-          git_user_name: somaz
-          git_user_email: genius5711@gmail.com
-          repo: somaz94/image-tag-updater
           DRY_RUN: true
+
+      - name: Run Image Tag Updater in the infrastructure repository
+        uses: somaz94/image-tag-updater@v1
+        with:
+          target_path: charts/somaz/api 
+          new_tag: ${{ steps.vars.outputs.short_sha }}
+          # target_values_file: dev2
+          branch: test
+          github_token: ${{ secrets.PAT }}
+          git_user_name: GitHub Actions
+          git_user_email: actions@github.com
+          repo: somaz94/image-tag-updater
+          file_pattern: "dev*.values.yaml"
+          registry_url: nginx
+          verify_tag: true
 
       - name: Confirm Git log
         run: |

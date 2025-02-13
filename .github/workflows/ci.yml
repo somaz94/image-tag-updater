@@ -59,7 +59,6 @@ jobs:
           TARGET_PATH: charts/somaz/api
           NEW_TAG: ${{ steps.vars.outputs.short_sha }}
           TAG_STRING: tag
-          TARGET_VALUES_FILE: dev1
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GIT_USER_NAME: GitHub Actions
           GIT_USER_EMAIL: actions@github.com
@@ -75,7 +74,6 @@ jobs:
           --env TARGET_PATH="${{ env.TARGET_PATH}}" \
           --env NEW_TAG="${{ env.NEW_TAG }}" \
           --env TAG_STRING="${{ env.TAG_STRING }}" \
-          --env TARGET_VALUES_FILE="${{ env.TARGET_VALUES_FILE }}" \
           --env GITHUB_TOKEN="${{ env.GITHUB_TOKEN }}" \
           --env GIT_USER_NAME="${{ env.GIT_USER_NAME }}" \
           --env GIT_USER_EMAIL="${{ env.GIT_USER_EMAIL }}" \

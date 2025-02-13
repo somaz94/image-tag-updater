@@ -23,7 +23,7 @@ inputs:
     description:
       'The prefix name of the values file to update (without .values.yaml
       extension)'
-    required: true
+    required: false
   github_token:
     description: 'GitHub token for pushing the updated file'
     required: true

@@ -34,8 +34,8 @@ jobs:
           new_tag: ${{ steps.vars.outputs.short_sha }}
           target_values_file: ke-use-nfs-server 
           github_token: ${{ secrets.PAT }}
-          git_user_name: somaz
-          git_user_email: genius5711@gmail.com
+          git_user_name: GitHub Actions
+          git_user_email: actions@github.com
           repo: somaz94/helm-chart-template 
 
       - name: Confirm Git log

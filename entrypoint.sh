@@ -18,13 +18,19 @@ handle_error() {
 
 # Function to validate required environment variables
 validate_env_vars() {
-    local required_vars=("TARGET_PATH" "TARGET_VALUES_FILE" "TAG_STRING" "NEW_TAG" "GIT_USER_NAME" "GIT_USER_EMAIL" "GITHUB_TOKEN" "REPO" "BRANCH")
+    local required_vars=("TARGET_PATH" "NEW_TAG" "TAG_STRING" "GIT_USER_NAME" "GIT_USER_EMAIL" "GITHUB_TOKEN" "REPO" "BRANCH")
     
+    # Check common required variables
     for var in "${required_vars[@]}"; do
         if [[ -z "${!var}" ]]; then
             handle_error "Required environment variable $var is not set"
         fi
     done
+
+    # Check if at least one of TARGET_VALUES_FILE or FILE_PATTERN is set
+    if [[ -z "$TARGET_VALUES_FILE" ]] && [[ -z "$FILE_PATTERN" ]]; then
+        handle_error "Either TARGET_VALUES_FILE or FILE_PATTERN must be set"
+    fi
 }
 
 # Function to verify tag exists in registry
@@ -73,33 +79,45 @@ cd "$TARGET_PATH" || handle_error "Directory not found: $TARGET_PATH"
 echo -e "\n📑 Current directory contents:"
 ls -al
 
-# Handle multiple files if pattern is provided
+# Handle file selection
 if [[ -n "$FILE_PATTERN" ]]; then
     echo "🔍 Searching for files matching pattern: $FILE_PATTERN"
+    # Check if any files match the pattern
+    files_found=$(ls $FILE_PATTERN 2>/dev/null)
+    if [[ -z "$files_found" ]]; then
+        handle_error "No files found matching pattern: $FILE_PATTERN"
+    fi
+    
     for file in $FILE_PATTERN; do
         VALUES_FILE="$file"
-        # Process each file
-        # Check if the target values file exists
-        [[ -f "$VALUES_FILE" ]] || handle_error "File not found: $VALUES_FILE"
-
-        # Create backup if requested
-        if [[ "$BACKUP" == "true" ]]; then
-            echo -e "\n💾 Creating backup..."
-            cp "$VALUES_FILE" "${VALUES_FILE}.bak" || handle_error "Failed to create backup"
-            echo "✅ Backup created: ${VALUES_FILE}.bak"
-        fi
-
-        # Update the image tag
-        echo -e "\n🔄 Updating image tag..."
-        if [[ "$BACKUP" == "true" ]]; then
-            sed -i.bak "/^\s*$TAG_STRING:/s|:.*|: \"$NEW_TAG\"|" "$VALUES_FILE" || handle_error "Failed to update tag with backup"
-        else
-            sed -i "/^\s*$TAG_STRING:/s|:.*|: \"$NEW_TAG\"|" "$VALUES_FILE" || handle_error "Failed to update tag"
-        fi
+        process_file "$VALUES_FILE"
     done
 else
     VALUES_FILE="$TARGET_VALUES_FILE.values.yaml"
+    process_file "$VALUES_FILE"
 fi
+
+# New function to process each file
+process_file() {
+    local file="$1"
+    # Check if the file exists
+    [[ -f "$file" ]] || handle_error "File not found: $file"
+
+    # Create backup if requested
+    if [[ "$BACKUP" == "true" ]]; then
+        echo -e "\n💾 Creating backup of $file..."
+        cp "$file" "${file}.bak" || handle_error "Failed to create backup"
+        echo "✅ Backup created: ${file}.bak"
+    fi
+
+    # Update the image tag
+    echo -e "\n🔄 Updating image tag in $file..."
+    if [[ "$BACKUP" == "true" ]]; then
+        sed -i.bak "/^\s*$TAG_STRING:/s|:.*|: \"$NEW_TAG\"|" "$file" || handle_error "Failed to update tag with backup"
+    else
+        sed -i "/^\s*$TAG_STRING:/s|:.*|: \"$NEW_TAG\"|" "$file" || handle_error "Failed to update tag"
+    fi
+}
 
 # Verify tag before making changes
 verify_tag_exists
