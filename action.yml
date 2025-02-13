@@ -21,8 +21,7 @@ inputs:
     required: true
   target_values_file:
     description:
-      'The prefix name of the values file to update (without .values.yaml
-      extension)'
+      'The name of the values file to update'
     required: false
   github_token:
     description: 'GitHub token for pushing the updated file'

@@ -39,7 +39,7 @@ repositories.
 | `new_tag`            | Yes      | The new image tag to replace the current one (e.g., `v1.0.1`)                 | N/A                    |
 | `target_values_file` | No       | The prefix name of the values file to update                                  | N/A                    |
 | `github_token`       | Yes      | A GitHub token for authenticating the push to the repository                  | N/A                    |
-| `commit_message`     | No       | The commit message for the update                                             | `"Update image tag"`   |
+| `commit_message`     | No       | The commit message for the update                                             | `"Update image tag in"`|
 | `branch`             | No       | The branch where changes should be committed                                  | `"main"`               |
 | `git_user_name`      | No       | The Git username for commits                                                  | `"GitHub Action"`      |
 | `git_user_email`     | No       | The Git email for commits                                                     | `"actions@github.com"` |
@@ -184,7 +184,6 @@ jobs:
         run: |
           git log -1
 
-
 ```
 
 ## Notes
@@ -197,6 +196,9 @@ jobs:
   infrastructure repository.
 - Backup Option: Use the backup option to control whether a backup file is
   created (true) or not (false).
+- File Selection: You can use either `file_pattern` (e.g., "dev*.values.yaml") or
+  `target_values_file` (e.g., "dev1.values.yaml") to specify which files to update. Only one
+  of these options is required.
 
 ## License
 
