@@ -117,6 +117,21 @@ git config --global user.name "$GIT_USER_NAME" || handle_error "Failed to set gi
 git config --global user.email "$GIT_USER_EMAIL" || handle_error "Failed to set git user email"
 git config --global pull.rebase false || handle_error "Failed to set pull strategy"
 
+# Stage changes first
+echo -e "\n📦 Staging changes..."
+git add . || handle_error "Failed to stage changes"
+
+# Create commit message
+if [[ -n "$FILE_PATTERN" ]]; then
+    COMMIT_MESSAGE="$COMMIT_MESSAGE $TARGET_PATH ($FILE_PATTERN)"
+else
+    COMMIT_MESSAGE="$COMMIT_MESSAGE $TARGET_PATH ($TARGET_VALUES_FILE)"
+fi
+
+# Commit changes
+echo -e "\n💾 Creating initial commit..."
+git commit -m "$COMMIT_MESSAGE" || handle_error "Failed to commit changes"
+
 # Checkout or create branch
 echo -e "\n🔄 Checking out branch: $BRANCH"
 
@@ -146,26 +161,6 @@ else
         git checkout -b "$BRANCH" || handle_error "Failed to create new branch"
     fi
 fi
-
-git status
-
-# Check for changes
-echo -e "\n🔍 Checking for changes..."
-if git diff --quiet; then
-    echo "✅ No changes to commit."
-    exit 0
-fi
-
-# Commit and push changes
-echo -e "\n📤 Committing and pushing changes..."
-if [[ -n "$FILE_PATTERN" ]]; then
-    COMMIT_MESSAGE="$COMMIT_MESSAGE $TARGET_PATH ($FILE_PATTERN)"
-else
-    COMMIT_MESSAGE="$COMMIT_MESSAGE $TARGET_PATH ($TARGET_VALUES_FILE)"
-fi
-
-git add . || handle_error "Failed to stage changes"
-git commit -m "$COMMIT_MESSAGE" || handle_error "Failed to commit changes"
 
 # Push changes with retry logic
 MAX_RETRIES=3
