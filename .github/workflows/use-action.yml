@@ -36,10 +36,11 @@ jobs:
         with:
           target_path: charts/somaz/api 
           new_tag: ${{ steps.vars.outputs.short_sha }}
-          target_values_file: dev2
+          # target_values_file: dev2
           branch: test
           github_token: ${{ secrets.PAT }}
           DRY_RUN: true
+          file_pattern: "dev*.values.yaml"
 
       - name: Run Image Tag Updater in the infrastructure repository
         uses: somaz94/image-tag-updater@v1
@@ -53,7 +54,6 @@ jobs:
           git_user_email: actions@github.com
           repo: somaz94/image-tag-updater
           file_pattern: "dev*.values.yaml"
-          registry_url: nginx
 
       - name: Confirm Git log
         run: |
