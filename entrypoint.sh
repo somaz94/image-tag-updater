@@ -68,10 +68,6 @@ print_header "Starting Git Update Process"
 # Validate environment variables
 validate_env_vars
 
-# Allow git operations in the current directory
-git config --global --add safe.directory /usr/src || handle_error "Failed to set safe.directory /usr/src"
-git config --global --add safe.directory /github/workspace || handle_error "Failed to set safe.directory /github/workspace"
-
 # Print current configuration
 echo "📋 Current Configuration:"
 echo "  • Target Path: $TARGET_PATH"
@@ -91,51 +87,14 @@ cd "$TARGET_PATH" || handle_error "Directory not found: $TARGET_PATH"
 echo -e "\n📑 Current directory contents:"
 ls -la
 
-# Process files based on input
-if [[ -n "$FILE_PATTERN" ]]; then
-    echo -e "\n🔍 Searching for files matching pattern: $FILE_PATTERN"
-    files=($FILE_PATTERN)
-    if [ ${#files[@]} -eq 0 ]; then
-        handle_error "No files found matching pattern: $FILE_PATTERN"
-    fi
-    for file in "${files[@]}"; do
-        if [[ -f "$file" ]]; then
-            update_file "$file"
-        fi
-    done
-else
-    VALUES_FILE="$TARGET_VALUES_FILE"
-    if [[ ! -f "$VALUES_FILE" ]]; then
-        handle_error "File not found: $VALUES_FILE"
-    fi
-    update_file "$VALUES_FILE"
-fi
-
-# Configure Git
+# Configure Git and checkout branch first
 echo -e "\n⚙️ Configuring Git..."
 git config --global user.name "$GIT_USER_NAME" || handle_error "Failed to set git user name"
 git config --global user.email "$GIT_USER_EMAIL" || handle_error "Failed to set git user email"
 git config --global pull.rebase false || handle_error "Failed to set pull strategy"
 
-# Stage changes first
-echo -e "\n📦 Staging changes..."
-git add . || handle_error "Failed to stage changes"
-
-# Create commit message
-if [[ -n "$FILE_PATTERN" ]]; then
-    COMMIT_MESSAGE="$COMMIT_MESSAGE $TARGET_PATH ($FILE_PATTERN)"
-else
-    COMMIT_MESSAGE="$COMMIT_MESSAGE $TARGET_PATH ($TARGET_VALUES_FILE)"
-fi
-
-# Commit changes
-echo -e "\n💾 Creating initial commit..."
-git commit -m "$COMMIT_MESSAGE" || handle_error "Failed to commit changes"
-
-# Checkout or create branch
+# Fetch and checkout branch
 echo -e "\n🔄 Checking out branch: $BRANCH"
-
-# Fetch all branches from remote
 git fetch origin || handle_error "Failed to fetch from remote"
 
 # Check if branch exists locally or remotely
@@ -162,6 +121,47 @@ else
     fi
 fi
 
+# Process files based on input
+if [[ -n "$FILE_PATTERN" ]]; then
+    echo -e "\n🔍 Searching for files matching pattern: $FILE_PATTERN"
+    files=($FILE_PATTERN)
+    if [ ${#files[@]} -eq 0 ]; then
+        handle_error "No files found matching pattern: $FILE_PATTERN"
+    fi
+    for file in "${files[@]}"; do
+        if [[ -f "$file" ]]; then
+            update_file "$file"
+        fi
+    done
+else
+    VALUES_FILE="$TARGET_VALUES_FILE.values.yaml"
+    if [[ ! -f "$VALUES_FILE" ]]; then
+        handle_error "File not found: $VALUES_FILE"
+    fi
+    update_file "$VALUES_FILE"
+fi
+
+# If dry run mode is enabled, exit here
+if [[ "$DRY_RUN" == "true" ]]; then
+    echo -e "\n✅ Dry run completed. No changes were made."
+    exit 0
+fi
+
+# Stage and commit changes
+echo -e "\n📦 Staging changes..."
+git add . || handle_error "Failed to stage changes"
+
+# Create commit message
+if [[ -n "$FILE_PATTERN" ]]; then
+    COMMIT_MESSAGE="$COMMIT_MESSAGE $TARGET_PATH ($FILE_PATTERN)"
+else
+    COMMIT_MESSAGE="$COMMIT_MESSAGE $TARGET_PATH ($TARGET_VALUES_FILE.values.yaml)"
+fi
+
+# Commit changes
+echo -e "\n💾 Creating commit..."
+git commit -m "$COMMIT_MESSAGE" || handle_error "Failed to commit changes"
+
 # Push changes with retry logic
 MAX_RETRIES=3
 RETRY_COUNT=0
@@ -178,11 +178,5 @@ while [[ $RETRY_COUNT -lt $MAX_RETRIES ]]; do
         sleep 5
     fi
 done
-
-# If dry run mode is enabled, exit after showing changes
-if [[ "$DRY_RUN" == "true" ]]; then
-    echo -e "\n✅ Dry run completed. No changes were made."
-    exit 0
-fi
 
 print_header "Process Completed Successfully"
