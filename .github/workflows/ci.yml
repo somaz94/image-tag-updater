@@ -101,6 +101,11 @@ jobs:
       - name: Configure Git Safe Directory
         run: git config --global --add safe.directory ${{ github.workspace }}
 
+      - name: Set short sha
+        id: vars
+        run: |
+          echo "short_sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+
       - name: Update Image Tag in Infrastructure Repo
         uses: ./
         with:
