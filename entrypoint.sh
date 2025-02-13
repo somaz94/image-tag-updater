@@ -119,20 +119,32 @@ git config --global pull.rebase false || handle_error "Failed to set pull strate
 
 # Checkout or create branch
 echo -e "\n🔄 Checking out branch: $BRANCH"
-if ! git show-ref --verify --quiet "refs/heads/$BRANCH"; then
-    echo "Creating new branch: $BRANCH"
-    git checkout -b "$BRANCH" || handle_error "Failed to create new branch: $BRANCH"
+
+# Fetch all branches from remote
+git fetch origin || handle_error "Failed to fetch from remote"
+
+# Check if branch exists locally or remotely
+if git show-ref --verify --quiet "refs/heads/$BRANCH"; then
+    # Branch exists locally
+    git checkout "$BRANCH" || handle_error "Failed to checkout branch: $BRANCH"
     
-    # If remote branch exists, set upstream and pull
+    # Pull if remote branch exists
     if git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
-        git branch --set-upstream-to=origin/$BRANCH $BRANCH || handle_error "Failed to set upstream branch"
         echo -e "\n⬇️ Pulling latest changes..."
-        git pull || handle_error "Failed to pull latest changes"
+        git pull origin "$BRANCH" || handle_error "Failed to pull latest changes"
     fi
 else
-    git checkout "$BRANCH" || handle_error "Failed to checkout branch: $BRANCH"
-    echo -e "\n⬇️ Pulling latest changes..."
-    git pull || handle_error "Failed to pull latest changes"
+    # Check if branch exists in remote
+    if git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
+        # Remote branch exists, checkout and track it
+        git checkout -b "$BRANCH" origin/"$BRANCH" || handle_error "Failed to checkout remote branch"
+        echo -e "\n⬇️ Pulling latest changes..."
+        git pull origin "$BRANCH" || handle_error "Failed to pull latest changes"
+    else
+        # Create new branch locally
+        echo "Creating new local branch: $BRANCH"
+        git checkout -b "$BRANCH" || handle_error "Failed to create new branch"
+    fi
 fi
 
 git status
