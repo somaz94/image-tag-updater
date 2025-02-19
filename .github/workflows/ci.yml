@@ -9,6 +9,7 @@ on:
       - '.github/workflows/**'
       - '**/*.md'
       - 'charts/**/*'
+      - 'backup/**/*'
   workflow_dispatch:
 
 permissions:
