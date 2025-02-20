@@ -84,9 +84,55 @@ jobs:
       #     --volume ${{ github.workspace }}:/usr/src \
       #     --rm ${{ env.TEST_TAG }}
   
-  image-tag-updater-action-test:
-    name: Image Tag Updater Action Test
+  image-tag-updater-matrix-test:
+    needs: build-and-push-docker
+    name: Matrix Test
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - name: "Single File Update"
+            target_values_file: "dev2.values.yaml"
+            file_pattern: ""
+            dry_run: "false"
+            debug: "false"
+            branch: "test"
+
+          - name: "Pattern Match Update"
+            target_values_file: ""
+            file_pattern: "dev*.values.yaml"
+            dry_run: "false"
+            debug: "false"
+            branch: "test"
+
+          - name: "Dry Run Single File"
+            target_values_file: "dev2.values.yaml"
+            file_pattern: ""
+            dry_run: "true"
+            debug: "false"
+            branch: "main"
+
+          - name: "Dry Run Pattern Match"
+            target_values_file: ""
+            file_pattern: "dev*.values.yaml"
+            dry_run: "true"
+            debug: "false"
+            branch: "main"
+
+          - name: "Debug Mode Single File"
+            target_values_file: "dev2.values.yaml"
+            file_pattern: ""
+            dry_run: "false"
+            debug: "true"
+            branch: "test"
+
+          - name: "Debug Mode Pattern Match"
+            target_values_file: ""
+            file_pattern: "dev*.values.yaml"
+            dry_run: "false"
+            debug: "true"
+            branch: "test"
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -101,74 +147,17 @@ jobs:
         run: |
           echo "short_sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
 
-      - name: Update Image Tag in Infrastructure Repo
+      - name: ${{ matrix.name }}
         uses: ./
         with:
-          target_path: charts/somaz/api 
+          target_path: charts/somaz/api
+          target_values_file: ${{ matrix.target_values_file }}
+          file_pattern: ${{ matrix.file_pattern }}
           new_tag: ${{ steps.vars.outputs.short_sha }}
-          branch: test
+          branch: ${{ matrix.branch }}
           github_token: ${{ secrets.PAT }}
           git_user_name: GitHub Actions
           git_user_email: actions@github.com
           repo: somaz94/image-tag-updater
-          file_pattern: "dev*.values.yaml"
-          debug: true
-
-  image-tag-updater-action-test-debug:
-    name: Image Tag Updater Action Test (Debug)
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 10
-
-      - name: Configure Git Safe Directory
-        run: git config --global --add safe.directory ${{ github.workspace }}
-
-      - name: Set short sha
-        id: vars
-        run: |
-          echo "short_sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
-
-      - name: Update Image Tag in Infrastructure Repo
-        uses: ./
-        with:
-          target_path: charts/somaz/api 
-          target_values_file: qa1.values.yaml
-          new_tag: ${{ steps.vars.outputs.short_sha }}
-          branch: test
-          github_token: ${{ secrets.PAT }}
-          git_user_name: GitHub Actions
-          git_user_email: actions@github.com
-          repo: somaz94/image-tag-updater
-          
-  image-tag-updater-action-test-dry-run:
-    name: Image Tag Updater Action Test (Dry Run)
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 10
-
-      - name: Configure Git Safe Directory
-        run: git config --global --add safe.directory ${{ github.workspace }}
-
-      - name: Set short sha
-        id: vars
-        run: |
-          echo "short_sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
-
-      - name: Update Image Tag in Infrastructure Repo
-        uses: ./
-        with:
-          target_path: charts/somaz/api 
-          new_tag: ${{ steps.vars.outputs.short_sha }}
-          branch: test
-          github_token: ${{ secrets.PAT }}
-          git_user_name: GitHub Actions
-          git_user_email: actions@github.com
-          repo: somaz94/image-tag-updater
-          file_pattern: "dev*.values.yaml"
-          dry_run: true
+          dry_run: ${{ matrix.dry_run }}
+          debug: ${{ matrix.debug }}
