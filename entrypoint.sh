@@ -113,29 +113,29 @@ git config --global pull.rebase false || handle_error "Failed to set pull strate
 
 # Git branch operations
 debug_log "\n🔄 Setting up branch: $BRANCH"
-git fetch origin || handle_error "Failed to fetch from remote"
+git fetch origin > /dev/null 2>&1 || handle_error "Failed to fetch from remote"
 
 # Check if branch exists locally or remotely
 if git show-ref --verify --quiet "refs/heads/$BRANCH"; then
     # Branch exists locally
-    git checkout "$BRANCH" || handle_error "Failed to checkout branch: $BRANCH"
+    git checkout "$BRANCH" > /dev/null 2>&1 || handle_error "Failed to checkout branch: $BRANCH"
     
     # Pull if remote branch exists
     if git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
-        echo -e "\n⬇️ Pulling latest changes..."
-        git pull origin "$BRANCH" || handle_error "Failed to pull latest changes"
+        debug_log "\n⬇️ Pulling latest changes..."
+        git pull origin "$BRANCH" > /dev/null 2>&1 || handle_error "Failed to pull latest changes"
     fi
 else
     # Check if branch exists in remote
     if git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
         # Remote branch exists, checkout and track it
-        git checkout -b "$BRANCH" origin/"$BRANCH" || handle_error "Failed to checkout remote branch"
-        echo -e "\n⬇️ Pulling latest changes..."
-        git pull origin "$BRANCH" || handle_error "Failed to pull latest changes"
+        git checkout -b "$BRANCH" origin/"$BRANCH" > /dev/null 2>&1 || handle_error "Failed to checkout remote branch"
+        debug_log "\n⬇️ Pulling latest changes..."
+        git pull origin "$BRANCH" > /dev/null 2>&1 || handle_error "Failed to pull latest changes"
     else
         # Create new branch locally
-        echo "Creating new local branch: $BRANCH"
-        git checkout -b "$BRANCH" || handle_error "Failed to create new branch"
+        debug_log "Creating new local branch: $BRANCH"
+        git checkout -b "$BRANCH" > /dev/null 2>&1 || handle_error "Failed to create new branch"
     fi
 fi
 
@@ -171,7 +171,7 @@ fi
 # Commit and Push Changes
 ###########################################
 debug_log "\n📦 Staging changes..."
-git add . || handle_error "Failed to stage changes"
+git add . > /dev/null 2>&1 || handle_error "Failed to stage changes"
 
 # Create commit message
 if [[ -n "$FILE_PATTERN" ]]; then
@@ -181,14 +181,14 @@ else
 fi
 
 debug_log "\n💾 Creating commit..."
-git commit -m "$COMMIT_MESSAGE" || handle_error "Failed to commit changes"
+git commit -m "$COMMIT_MESSAGE" > /dev/null 2>&1 || handle_error "Failed to commit changes"
 
 # Push changes with retry logic
 MAX_RETRIES=3
 RETRY_COUNT=0
 while [[ $RETRY_COUNT -lt $MAX_RETRIES ]]; do
-    if git push "https://x-access-token:$GITHUB_TOKEN@github.com/$REPO" "$BRANCH"; then
-        echo "✅ Changes pushed to $BRANCH"
+    if git push "https://x-access-token:$GITHUB_TOKEN@github.com/$REPO" "$BRANCH" > /dev/null 2>&1; then
+        echo "✅ Successfully pushed changes to $BRANCH"
         break
     else
         RETRY_COUNT=$((RETRY_COUNT + 1))
