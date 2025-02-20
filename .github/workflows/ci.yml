@@ -142,7 +142,6 @@ jobs:
           git_user_name: GitHub Actions
           git_user_email: actions@github.com
           repo: somaz94/image-tag-updater
-          debug: true
           
   image-tag-updater-action-test-dry-run:
     name: Image Tag Updater Action Test (Dry Run)
