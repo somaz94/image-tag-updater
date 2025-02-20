@@ -17,6 +17,12 @@ handle_error() {
     exit 1
 }
 
+debug_log() {
+    if [[ "${DEBUG:-false}" == "true" ]]; then
+        echo -e "$1"
+    fi
+}
+
 ###########################################
 # Validation Functions
 ###########################################
@@ -40,32 +46,31 @@ validate_env_vars() {
 ###########################################
 update_file() {
     local file="$1"
-    echo -e "\n🔄 Processing file: $file"
+    debug_log "\n🔄 Processing file: $file"
 
     # If dry run mode is enabled, show what would be changed
     if [[ "$DRY_RUN" == "true" ]]; then
-        echo "🔍 Dry run mode - showing potential changes for $file:"
-        echo "Current tag line: $(grep "$TAG_STRING:" "$file")"
-        echo "Would change to:  $TAG_STRING: \"$NEW_TAG\""
+        echo "Current tag in $file: $(grep "$TAG_STRING:" "$file")"
+        echo "Would change to: $TAG_STRING: \"$NEW_TAG\""
         return
     fi
 
     # Create backup if requested
     if [[ "$BACKUP" == "true" ]]; then
-        echo -e "\n💾 Creating backup..."
+        debug_log "\n💾 Creating backup..."
         cp "$file" "${file}.bak" || handle_error "Failed to create backup"
-        echo "✅ Backup created: ${file}.bak"
+        debug_log "✅ Backup created: ${file}.bak"
     fi
 
     # Update the image tag
-    echo -e "\n🔄 Updating image tag..."
+    debug_log "\n🔄 Updating image tag..."
     if [[ "$BACKUP" == "true" ]]; then
         sed -i.bak "/^\s*$TAG_STRING:/s|:.*|: \"$NEW_TAG\"|" "$file" || handle_error "Failed to update tag with backup"
     else
         sed -i "/^\s*$TAG_STRING:/s|:.*|: \"$NEW_TAG\"|" "$file" || handle_error "Failed to update tag"
     fi
 
-    echo "✅ Successfully updated $file"
+    echo "✅ Updated $file"
 }
 
 ###########################################
@@ -77,40 +82,37 @@ print_header "Starting Git Update Process"
 validate_env_vars
 
 # Print current configuration
-echo "📋 Current Configuration:"
-echo "  • Target Path: $TARGET_PATH"
-echo "  • Tag String: $TAG_STRING"
-echo "  • New Tag: $NEW_TAG"
-echo "  • Branch: $BRANCH"
-echo "  • Backup Enabled: ${BACKUP:-false}"
-echo "  • Dry Run Mode: ${DRY_RUN:-false}"
-echo "  • Commit Message: ${COMMIT_MESSAGE:-Update image tag in}"
-[[ -n "$TARGET_VALUES_FILE" ]] && echo "  • Values File: $TARGET_VALUES_FILE"
-[[ -n "$FILE_PATTERN" ]] && echo "  • File Pattern: $FILE_PATTERN"
+echo "📋 Configuration:"
+echo "• Path: $TARGET_PATH"
+echo "• Tag: $NEW_TAG"
+echo "• Branch: $BRANCH"
+[[ "$DRY_RUN" == "true" ]] && echo "• Mode: Dry Run"
+[[ -n "$TARGET_VALUES_FILE" ]] && echo "• File: $TARGET_VALUES_FILE"
+[[ -n "$FILE_PATTERN" ]] && echo "• Pattern: $FILE_PATTERN"
 
 # Navigate to the target directory
-echo -e "\n📂 Navigating to target directory..."
+debug_log "\n📂 Navigating to target directory..."
 cd "$TARGET_PATH" || handle_error "Directory not found: $TARGET_PATH"
 
-# Confirm directory contents
-echo -e "\n📑 Current directory contents:"
-ls -la
+# Directory contents (debug only)
+debug_log "\n📑 Current directory contents:"
+if [[ "${DEBUG:-false}" == "true" ]]; then
+    ls -la
+fi
 
 ###########################################
 # Git Operations
 ###########################################
-# Configure Git with safe directory settings first
-echo -e "\n⚙️ Configuring Git..."
+# Configure Git
+debug_log "\n⚙️ Configuring Git..."
 git config --global --add safe.directory /usr/src || handle_error "Failed to set safe.directory /usr/src"
 git config --global --add safe.directory /github/workspace || handle_error "Failed to set safe.directory /github/workspace"
-
-# Configure Git user and pull strategy
 git config --global user.name "$GIT_USER_NAME" || handle_error "Failed to set git user name"
 git config --global user.email "$GIT_USER_EMAIL" || handle_error "Failed to set git user email"
 git config --global pull.rebase false || handle_error "Failed to set pull strategy"
 
-# Fetch and checkout branch
-echo -e "\n🔄 Checking out branch: $BRANCH"
+# Git branch operations
+debug_log "\n🔄 Setting up branch: $BRANCH"
 git fetch origin || handle_error "Failed to fetch from remote"
 
 # Check if branch exists locally or remotely
@@ -140,9 +142,8 @@ fi
 ###########################################
 # File Processing
 ###########################################
-# Process files based on input
 if [[ -n "$FILE_PATTERN" ]]; then
-    echo -e "\n🔍 Searching for files matching pattern: $FILE_PATTERN"
+    debug_log "\n🔍 Processing files: $FILE_PATTERN"
     files=($FILE_PATTERN)
     if [ ${#files[@]} -eq 0 ]; then
         handle_error "No files found matching pattern: $FILE_PATTERN"
@@ -160,7 +161,7 @@ else
     update_file "$VALUES_FILE"
 fi
 
-# If dry run mode is enabled, exit here
+# Handle dry run mode
 if [[ "$DRY_RUN" == "true" ]]; then
     echo -e "\n✅ Dry run completed. No changes were made."
     exit 0
@@ -169,8 +170,7 @@ fi
 ###########################################
 # Commit and Push Changes
 ###########################################
-# Stage and commit changes
-echo -e "\n📦 Staging changes..."
+debug_log "\n📦 Staging changes..."
 git add . || handle_error "Failed to stage changes"
 
 # Create commit message
@@ -180,8 +180,7 @@ else
     COMMIT_MESSAGE="$COMMIT_MESSAGE $TARGET_PATH ($TARGET_VALUES_FILE)"
 fi
 
-# Commit changes
-echo -e "\n💾 Creating commit..."
+debug_log "\n💾 Creating commit..."
 git commit -m "$COMMIT_MESSAGE" || handle_error "Failed to commit changes"
 
 # Push changes with retry logic
@@ -189,14 +188,14 @@ MAX_RETRIES=3
 RETRY_COUNT=0
 while [[ $RETRY_COUNT -lt $MAX_RETRIES ]]; do
     if git push "https://x-access-token:$GITHUB_TOKEN@github.com/$REPO" "$BRANCH"; then
-        echo "✅ $(date '+%Y-%m-%d %H:%M:%S') Successfully pushed changes to remote"
+        echo "✅ Changes pushed to $BRANCH"
         break
     else
         RETRY_COUNT=$((RETRY_COUNT + 1))
         if [[ $RETRY_COUNT -eq $MAX_RETRIES ]]; then
             handle_error "Failed to push changes after $MAX_RETRIES attempts"
         fi
-        echo "⚠️ $(date '+%Y-%m-%d %H:%M:%S') Push failed, retrying in 5 seconds... (Attempt $RETRY_COUNT of $MAX_RETRIES)"
+        debug_log "⚠️ Push failed, retrying... (Attempt $RETRY_COUNT of $MAX_RETRIES)"
         sleep 5
     fi
 done

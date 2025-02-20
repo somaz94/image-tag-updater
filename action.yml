@@ -57,6 +57,10 @@ inputs:
     description: 'Run in dry-run mode without making actual changes'
     required: false
     default: 'false'
+  debug:
+    description: 'Run in debug mode'
+    required: false
+    default: 'false'
 
 runs:
   using: 'docker'
@@ -75,3 +79,4 @@ runs:
     REPO: ${{ inputs.REPO }}
     FILE_PATTERN: ${{ inputs.file_pattern }}
     DRY_RUN: ${{ inputs.dry_run }}
+    DEBUG: ${{ inputs.debug }}

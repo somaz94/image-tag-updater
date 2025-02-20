@@ -55,34 +55,34 @@ jobs:
         run: |
           echo "short_sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
 
-      - name: Run the Container
-        env:
-          TARGET_PATH: charts/somaz/api
-          NEW_TAG: ${{ steps.vars.outputs.short_sha }}
-          TAG_STRING: tag
-          TARGET_VALUES_FILE: dev2.values.yaml
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GIT_USER_NAME: GitHub Actions
-          GIT_USER_EMAIL: actions@github.com
-          BRANCH: main
-          REPO: somaz94/image-tag-updater
-          COMMIT_MESSAGE: Update image tag in
-          DRY_RUN: true
-        run: |
-          docker run \
-          --env TARGET_PATH="${{ env.TARGET_PATH}}" \
-          --env TARGET_VALUES_FILE="${{ env.TARGET_VALUES_FILE }}" \
-          --env NEW_TAG="${{ env.NEW_TAG }}" \
-          --env TAG_STRING="${{ env.TAG_STRING }}" \
-          --env GITHUB_TOKEN="${{ env.GITHUB_TOKEN }}" \
-          --env GIT_USER_NAME="${{ env.GIT_USER_NAME }}" \
-          --env GIT_USER_EMAIL="${{ env.GIT_USER_EMAIL }}" \
-          --env BRANCH="${{ env.BRANCH }}" \
-          --env REPO="${{ env.REPO }}" \
-          --env COMMIT_MESSAGE="${{ env.COMMIT_MESSAGE }}" \
-          --env DRY_RUN="${{ env.DRY_RUN }}" \
-          --volume ${{ github.workspace }}:/usr/src \
-          --rm ${{ env.TEST_TAG }}
+      # - name: Run the Container
+      #   env:
+      #     TARGET_PATH: charts/somaz/api
+      #     NEW_TAG: ${{ steps.vars.outputs.short_sha }}
+      #     TAG_STRING: tag
+      #     TARGET_VALUES_FILE: dev2.values.yaml
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     GIT_USER_NAME: GitHub Actions
+      #     GIT_USER_EMAIL: actions@github.com
+      #     BRANCH: main
+      #     REPO: somaz94/image-tag-updater
+      #     COMMIT_MESSAGE: Update image tag in
+      #     DRY_RUN: true
+      #   run: |
+      #     docker run \
+      #     --env TARGET_PATH="${{ env.TARGET_PATH}}" \
+      #     --env TARGET_VALUES_FILE="${{ env.TARGET_VALUES_FILE }}" \
+      #     --env NEW_TAG="${{ env.NEW_TAG }}" \
+      #     --env TAG_STRING="${{ env.TAG_STRING }}" \
+      #     --env GITHUB_TOKEN="${{ env.GITHUB_TOKEN }}" \
+      #     --env GIT_USER_NAME="${{ env.GIT_USER_NAME }}" \
+      #     --env GIT_USER_EMAIL="${{ env.GIT_USER_EMAIL }}" \
+      #     --env BRANCH="${{ env.BRANCH }}" \
+      #     --env REPO="${{ env.REPO }}" \
+      #     --env COMMIT_MESSAGE="${{ env.COMMIT_MESSAGE }}" \
+      #     --env DRY_RUN="${{ env.DRY_RUN }}" \
+      #     --volume ${{ github.workspace }}:/usr/src \
+      #     --rm ${{ env.TEST_TAG }}
   
   image-tag-updater-action-test:
     name: Image Tag Updater Action Test
@@ -112,3 +112,34 @@ jobs:
           git_user_email: actions@github.com
           repo: somaz94/image-tag-updater
           file_pattern: "dev*.values.yaml"
+          debug: true
+          
+  image-tag-updater-action-test-dry-run:
+    name: Image Tag Updater Action Test (Dry Run)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 10
+
+      - name: Configure Git Safe Directory
+        run: git config --global --add safe.directory ${{ github.workspace }}
+
+      - name: Set short sha
+        id: vars
+        run: |
+          echo "short_sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Update Image Tag in Infrastructure Repo
+        uses: ./
+        with:
+          target_path: charts/somaz/api 
+          new_tag: ${{ steps.vars.outputs.short_sha }}
+          branch: test
+          github_token: ${{ secrets.PAT }}
+          git_user_name: GitHub Actions
+          git_user_email: actions@github.com
+          repo: somaz94/image-tag-updater
+          file_pattern: "dev*.values.yaml"
+          dry_run: true
