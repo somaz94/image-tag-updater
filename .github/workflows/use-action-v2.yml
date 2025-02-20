@@ -36,6 +36,7 @@ jobs:
           branch: main
           github_token: ${{ secrets.PAT }}
           DRY_RUN: true
+          repo: somaz94/helm-chart-template
 
       - name: Update Image Tag in Infrastructure Repo
         uses: somaz94/image-tag-updater@v1
