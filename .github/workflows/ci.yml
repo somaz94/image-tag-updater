@@ -110,7 +110,7 @@ jobs:
             target_values_file: "dev2.values.yaml"
             file_pattern: ""
             dry_run: "true"
-            debug: "false"
+            debug: "true"
             branch: "main"
 
           - name: "Dry Run Pattern Match"

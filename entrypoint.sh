@@ -84,6 +84,68 @@ setup_branch() {
     fi
 }
 
+commit_and_push() {
+    local commit_message="$1"
+    local max_attempts=5
+    local attempt=1
+    local wait_time=5
+
+    while [ $attempt -le $max_attempts ]; do
+        debug_log "\n📦 Attempt $attempt: Fetching latest changes..."
+        git fetch origin > /dev/null 2>&1 || handle_error "Failed to fetch from remote"
+        
+        # Try to rebase on top of remote changes
+        if ! git rebase origin/$BRANCH > /dev/null 2>&1; then
+            debug_log "⚠️ Rebase failed, aborting rebase and retrying..."
+            git rebase --abort > /dev/null 2>&1
+            attempt=$((attempt + 1))
+            if [ $attempt -le $max_attempts ]; then
+                debug_log "Waiting ${wait_time}s before next attempt..."
+                sleep $wait_time
+                wait_time=$((wait_time + 5))
+                continue
+            fi
+            handle_error "Failed to rebase after $max_attempts attempts"
+        fi
+
+        # Stage and commit changes
+        debug_log "\n📦 Staging changes..."
+        git add . > /dev/null 2>&1 || handle_error "Failed to stage changes"
+        
+        debug_log "\n💾 Creating commit..."
+        git commit -m "$commit_message" > /dev/null 2>&1 || handle_error "Failed to commit changes"
+
+        # Try to push with retry logic
+        local push_attempts=3
+        local push_attempt=1
+        
+        while [ $push_attempt -le $push_attempts ]; do
+            if git push "https://x-access-token:$GITHUB_TOKEN@github.com/$REPO" "$BRANCH" > /dev/null 2>&1; then
+                echo "✅ Successfully pushed changes to $BRANCH"
+                return 0
+            else
+                push_attempt=$((push_attempt + 1))
+                if [ $push_attempt -le $push_attempts ]; then
+                    debug_log "⚠️ Push failed, retrying... (Attempt $push_attempt of $push_attempts)"
+                    sleep 5
+                    continue
+                fi
+            fi
+        done
+
+        # If push failed, try the whole process again
+        attempt=$((attempt + 1))
+        if [ $attempt -le $max_attempts ]; then
+            debug_log "⚠️ Push failed, retrying entire commit process..."
+            sleep $wait_time
+            wait_time=$((wait_time + 5))
+            continue
+        fi
+        
+        handle_error "Failed to push changes after $max_attempts attempts"
+    done
+}
+
 ###########################################
 # File Operations
 ###########################################
