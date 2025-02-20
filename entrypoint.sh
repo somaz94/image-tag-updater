@@ -103,75 +103,41 @@ fi
 ###########################################
 # Git Operations
 ###########################################
-setup_git() {
-    debug_log "\n⚙️ Configuring Git..."
-    git config --global --add safe.directory /usr/src || handle_error "Failed to set safe.directory /usr/src"
-    git config --global --add safe.directory /github/workspace || handle_error "Failed to set safe.directory /github/workspace"
-    git config --global user.name "$GIT_USER_NAME" || handle_error "Failed to set git user name"
-    git config --global user.email "$GIT_USER_EMAIL" || handle_error "Failed to set git user email"
-    git config --global pull.rebase false || handle_error "Failed to set pull strategy"
-}
+# Configure Git
+debug_log "\n⚙️ Configuring Git..."
+git config --global --add safe.directory /usr/src || handle_error "Failed to set safe.directory /usr/src"
+git config --global --add safe.directory /github/workspace || handle_error "Failed to set safe.directory /github/workspace"
+git config --global user.name "$GIT_USER_NAME" || handle_error "Failed to set git user name"
+git config --global user.email "$GIT_USER_EMAIL" || handle_error "Failed to set git user email"
+git config --global pull.rebase false || handle_error "Failed to set pull strategy"
 
-commit_and_push() {
-    local max_attempts=5
-    local attempt=1
-    local wait_time=5
+# Git branch operations
+debug_log "\n🔄 Setting up branch: $BRANCH"
+git fetch origin > /dev/null 2>&1 || handle_error "Failed to fetch from remote"
 
-    while [ $attempt -le $max_attempts ]; do
-        debug_log "\n📦 Attempt $attempt: Fetching latest changes..."
-        git fetch origin > /dev/null 2>&1 || handle_error "Failed to fetch from remote"
-        
-        # Try to rebase on top of remote changes
-        if ! git rebase origin/$BRANCH > /dev/null 2>&1; then
-            debug_log "⚠️ Rebase failed, aborting rebase and retrying..."
-            git rebase --abort > /dev/null 2>&1
-            attempt=$((attempt + 1))
-            if [ $attempt -le $max_attempts ]; then
-                debug_log "Waiting ${wait_time}s before next attempt..."
-                sleep $wait_time
-                wait_time=$((wait_time + 5))
-                continue
-            fi
-            handle_error "Failed to rebase after $max_attempts attempts"
-        fi
-
-        # Stage and commit changes
-        debug_log "\n📦 Staging changes..."
-        git add . > /dev/null 2>&1 || handle_error "Failed to stage changes"
-        
-        debug_log "\n💾 Creating commit..."
-        git commit -m "$1" > /dev/null 2>&1 || handle_error "Failed to commit changes"
-
-        # Try to push with retry logic
-        local push_attempts=3
-        local push_attempt=1
-        
-        while [ $push_attempt -le $push_attempts ]; do
-            if git push "https://x-access-token:$GITHUB_TOKEN@github.com/$REPO" "$BRANCH" > /dev/null 2>&1; then
-                echo "✅ Successfully pushed changes to $BRANCH"
-                return 0
-            else
-                push_attempt=$((push_attempt + 1))
-                if [ $push_attempt -le $push_attempts ]; then
-                    debug_log "⚠️ Push failed, retrying... (Attempt $push_attempt of $push_attempts)"
-                    sleep 5
-                    continue
-                fi
-            fi
-        done
-
-        # If push failed, try the whole process again
-        attempt=$((attempt + 1))
-        if [ $attempt -le $max_attempts ]; then
-            debug_log "⚠️ Push failed, retrying entire commit process..."
-            sleep $wait_time
-            wait_time=$((wait_time + 5))
-            continue
-        fi
-        
-        handle_error "Failed to push changes after $max_attempts attempts"
-    done
-}
+# Check if branch exists locally or remotely
+if git show-ref --verify --quiet "refs/heads/$BRANCH"; then
+    # Branch exists locally
+    git checkout "$BRANCH" > /dev/null 2>&1 || handle_error "Failed to checkout branch: $BRANCH"
+    
+    # Pull if remote branch exists
+    if git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
+        debug_log "\n⬇️ Pulling latest changes..."
+        git pull origin "$BRANCH" > /dev/null 2>&1 || handle_error "Failed to pull latest changes"
+    fi
+else
+    # Check if branch exists in remote
+    if git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
+        # Remote branch exists, checkout and track it
+        git checkout -b "$BRANCH" origin/"$BRANCH" > /dev/null 2>&1 || handle_error "Failed to checkout remote branch"
+        debug_log "\n⬇️ Pulling latest changes..."
+        git pull origin "$BRANCH" > /dev/null 2>&1 || handle_error "Failed to pull latest changes"
+    else
+        # Create new branch locally
+        debug_log "Creating new local branch: $BRANCH"
+        git checkout -b "$BRANCH" > /dev/null 2>&1 || handle_error "Failed to create new branch"
+    fi
+fi
 
 ###########################################
 # File Processing
@@ -202,17 +168,36 @@ if [[ "$DRY_RUN" == "true" ]]; then
 fi
 
 ###########################################
-# Main Process
+# Commit and Push Changes
 ###########################################
-if [[ "$DRY_RUN" != "true" ]]; then
-    # Create commit message
-    if [[ -n "$FILE_PATTERN" ]]; then
-        COMMIT_MESSAGE="$COMMIT_MESSAGE $TARGET_PATH ($FILE_PATTERN)"
-    else
-        COMMIT_MESSAGE="$COMMIT_MESSAGE $TARGET_PATH ($TARGET_VALUES_FILE)"
-    fi
-    
-    commit_and_push "$COMMIT_MESSAGE"
+debug_log "\n📦 Staging changes..."
+git add . > /dev/null 2>&1 || handle_error "Failed to stage changes"
+
+# Create commit message
+if [[ -n "$FILE_PATTERN" ]]; then
+    COMMIT_MESSAGE="$COMMIT_MESSAGE $TARGET_PATH ($FILE_PATTERN)"
+else
+    COMMIT_MESSAGE="$COMMIT_MESSAGE $TARGET_PATH ($TARGET_VALUES_FILE)"
 fi
+
+debug_log "\n💾 Creating commit..."
+git commit -m "$COMMIT_MESSAGE" > /dev/null 2>&1 || handle_error "Failed to commit changes"
+
+# Push changes with retry logic
+MAX_RETRIES=3
+RETRY_COUNT=0
+while [[ $RETRY_COUNT -lt $MAX_RETRIES ]]; do
+    if git push "https://x-access-token:$GITHUB_TOKEN@github.com/$REPO" "$BRANCH" > /dev/null 2>&1; then
+        echo "✅ Successfully pushed changes to $BRANCH"
+        break
+    else
+        RETRY_COUNT=$((RETRY_COUNT + 1))
+        if [[ $RETRY_COUNT -eq $MAX_RETRIES ]]; then
+            handle_error "Failed to push changes after $MAX_RETRIES attempts"
+        fi
+        debug_log "⚠️ Push failed, retrying... (Attempt $RETRY_COUNT of $MAX_RETRIES)"
+        sleep 5
+    fi
+done
 
 print_header "Process Completed Successfully"
