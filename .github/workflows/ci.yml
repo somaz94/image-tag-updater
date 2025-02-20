@@ -89,6 +89,7 @@ jobs:
     name: Matrix Test
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         include:
           - name: "Single File Update"
