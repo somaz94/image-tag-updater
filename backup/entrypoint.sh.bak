@@ -3,20 +3,23 @@
 # Exit on any error
 set -e
 
-# Function for printing headers
+###########################################
+# Utility Functions
+###########################################
 print_header() {
     echo -e "\n=========================================="
     echo "🚀 $1"
     echo -e "==========================================\n"
 }
 
-# Function for error handling
 handle_error() {
     echo "❌ Error: $1"
     exit 1
 }
 
-# Function to validate required environment variables
+###########################################
+# Validation Functions
+###########################################
 validate_env_vars() {
     local required_vars=("TARGET_PATH" "NEW_TAG" "TAG_STRING" "GIT_USER_NAME" "GIT_USER_EMAIL" "GITHUB_TOKEN" "REPO" "BRANCH")
     
@@ -32,7 +35,9 @@ validate_env_vars() {
     fi
 }
 
-# Function to update a single file
+###########################################
+# File Operations
+###########################################
 update_file() {
     local file="$1"
     echo -e "\n🔄 Processing file: $file"
@@ -63,6 +68,9 @@ update_file() {
     echo "✅ Successfully updated $file"
 }
 
+###########################################
+# Main Script
+###########################################
 print_header "Starting Git Update Process"
 
 # Validate environment variables
@@ -88,6 +96,9 @@ cd "$TARGET_PATH" || handle_error "Directory not found: $TARGET_PATH"
 echo -e "\n📑 Current directory contents:"
 ls -la
 
+###########################################
+# Git Operations
+###########################################
 # Configure Git with safe directory settings first
 echo -e "\n⚙️ Configuring Git..."
 git config --global --add safe.directory /usr/src || handle_error "Failed to set safe.directory /usr/src"
@@ -126,6 +137,9 @@ else
     fi
 fi
 
+###########################################
+# File Processing
+###########################################
 # Process files based on input
 if [[ -n "$FILE_PATTERN" ]]; then
     echo -e "\n🔍 Searching for files matching pattern: $FILE_PATTERN"
@@ -152,6 +166,9 @@ if [[ "$DRY_RUN" == "true" ]]; then
     exit 0
 fi
 
+###########################################
+# Commit and Push Changes
+###########################################
 # Stage and commit changes
 echo -e "\n📦 Staging changes..."
 git add . || handle_error "Failed to stage changes"
