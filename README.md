@@ -51,6 +51,7 @@ repositories.
 | `repo`               | Yes      | Git repository for commits (Repo to update)                                   | N/A                    |
 | `file_pattern`       | No       | File pattern to match multiple files (e.g., "*.values.yaml")                  | `""`                   |
 | `dry_run`            | No       | Run in dry-run mode without making actual changes                             | `"false"`              |
+| `debug`              | No       | Enable detailed debug logging                                                 | `"false"`              |
 
 <br/>
 
@@ -75,8 +76,28 @@ Test your changes without actually applying them:
   with:
     target_path: charts/somaz/api
     dry_run: "true"
+    file_pattern: "dev*.values.yaml"
     new_tag: v1.0.1
 ```
+
+<br/>
+
+### Debug Mode
+Enable detailed logging for troubleshooting:
+```yaml
+- uses: somaz94/image-tag-updater@v1
+  with:
+    target_path: charts/somaz/api
+    file_pattern: "dev*.values.yaml"
+    new_tag: v1.0.1
+    debug: "true"
+```
+
+Debug mode provides additional information such as:
+- Directory contents
+- Git operation details
+- File processing steps
+- Detailed error messages
 
 <br/>
 
