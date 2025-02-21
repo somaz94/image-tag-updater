@@ -27,7 +27,7 @@ jobs:
         env:
           GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
         run: |
-          git remote add gitlab https://oauth2:${GITLAB_TOKEN}@gitlab.com/backup6695808/helm-chart-template.git
+          git remote add gitlab https://oauth2:${GITLAB_TOKEN}@gitlab.com/backup6695808/image-tag-updater.git
           git push -f --all gitlab  # 모든 브랜치 푸시 (하지만 강제 덮어쓰지는 않음)
           git push -f --tags gitlab  # 모든 태그 푸시
         continue-on-error: true
