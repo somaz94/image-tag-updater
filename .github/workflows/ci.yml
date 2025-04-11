@@ -135,7 +135,7 @@ jobs:
             branch: "test"
 
           - name: "Tag Format Validation Test"
-            target_values_file: "qa1.values.yaml"
+            target_values_file: "dev1.values.yaml"
             file_pattern: ""
             tag_string: "tag"
             new_tag: "v1.0.0-valid"
@@ -144,7 +144,7 @@ jobs:
             branch: "main"
             
           - name: "Tag String Validation Test"
-            target_values_file: "qa1.values.yaml"
+            target_values_file: "dev1.values.yaml"
             file_pattern: ""
             tag_string: "tag"
             new_tag: "v1.0.0"
@@ -153,7 +153,7 @@ jobs:
             branch: "main"
 
           - name: "Invalid Tag Format Test (Expected to Fail)"
-            target_values_file: "qa1.values.yaml"
+            target_values_file: "dev1.values.yaml"
             file_pattern: ""
             tag_string: "tag"
             new_tag: "@invalid@tag"
