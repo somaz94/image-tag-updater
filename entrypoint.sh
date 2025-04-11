@@ -26,6 +26,23 @@ debug_log() {
 ###########################################
 # Validation Functions
 ###########################################
+validate_tag_format() {
+    local tag="$1"
+    # Basic version format validation (can be customized based on needs)
+    if ! [[ "$tag" =~ ^[a-zA-Z0-9][a-zA-Z0-9._-]*$ ]]; then
+        handle_error "Invalid tag format: $tag. Tags should only contain alphanumeric characters, dots, underscores, and hyphens."
+    fi
+}
+
+validate_file_content() {
+    local file="$1"
+    local tag_string="$2"
+    
+    if ! grep -q "^[[:space:]]*$tag_string:" "$file"; then
+        handle_error "Tag string '$tag_string' not found in file: $file"
+    fi
+}
+
 validate_env_vars() {
     local required_vars=("TARGET_PATH" "NEW_TAG" "TAG_STRING" "GIT_USER_NAME" "GIT_USER_EMAIL" "GITHUB_TOKEN" "REPO" "BRANCH")
     
@@ -34,6 +51,9 @@ validate_env_vars() {
             handle_error "Required environment variable $var is not set"
         fi
     done
+
+    # Validate tag format
+    validate_tag_format "$NEW_TAG"
 
     # Check if at least one of TARGET_VALUES_FILE or FILE_PATTERN is set
     if [[ -z "$TARGET_VALUES_FILE" ]] && [[ -z "$FILE_PATTERN" ]]; then
@@ -150,6 +170,7 @@ if [[ -n "$FILE_PATTERN" ]]; then
     fi
     for file in "${files[@]}"; do
         if [[ -f "$file" ]]; then
+            validate_file_content "$file" "$TAG_STRING"
             update_file "$file"
         fi
     done
@@ -158,6 +179,7 @@ else
     if [[ ! -f "$VALUES_FILE" ]]; then
         handle_error "File not found: $VALUES_FILE"
     fi
+    validate_file_content "$VALUES_FILE" "$TAG_STRING"
     update_file "$VALUES_FILE"
 fi
 

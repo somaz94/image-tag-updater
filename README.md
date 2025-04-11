@@ -241,6 +241,69 @@ jobs:
 
 <br/>
 
+## Troubleshooting
+
+### Common Issues and Solutions
+
+1. **Push Failures**
+   - The action includes a retry mechanism (3 attempts) for Git push operations
+   - Check if the GitHub token has sufficient permissions
+   - Verify the target branch exists and is accessible
+
+2. **File Not Found**
+   - Ensure the `target_path` is correct relative to the repository root
+   - Verify the file pattern matches existing files
+   - Check if the file exists in the specified branch
+
+3. **Tag String Not Found**
+   - The action validates the presence of the tag string in target files
+   - Verify the `tag_string` matches the exact format in your YAML files
+   - Check for any indentation issues in the YAML files
+
+4. **Invalid Tag Format**
+   - Tags must contain only alphanumeric characters, dots, underscores, and hyphens
+   - The first character must be alphanumeric
+   - Use the dry run mode to test tag format before applying changes
+
+<br/>
+
+## Backup Files
+
+When the backup option is enabled (`backup: true`), the action creates backup files with the `.bak` extension in the same directory as the original file. For example:
+
+```
+original: values.yaml
+backup: values.yaml.bak
+```
+
+The backup files are created before any modifications are made, ensuring you can always revert changes if needed.
+
+<br/>
+
+## Security Best Practices
+
+1. **Token Management**
+   - Use the principle of least privilege when creating GitHub tokens
+   - Consider using repository-specific tokens instead of organization-wide tokens
+   - Regularly rotate tokens and update them in your secrets
+
+2. **Input Validation**
+   - The action validates all inputs and environment variables
+   - Tag format is strictly validated to prevent injection attacks
+   - File paths are validated to prevent directory traversal attacks
+
+3. **Error Handling**
+   - All operations are wrapped in error handling
+   - Sensitive information is not logged in error messages
+   - Failed operations are properly cleaned up
+
+4. **Audit Trail**
+   - Use meaningful commit messages to track changes
+   - Enable GitHub's audit log to monitor action usage
+   - Consider adding notifications for important updates
+
+<br/>
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
