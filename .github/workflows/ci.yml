@@ -134,6 +134,34 @@ jobs:
             debug: "true"
             branch: "test"
 
+          - name: "Tag Format Validation Test"
+            target_values_file: "qa1.values.yaml"
+            file_pattern: ""
+            tag_string: "tag"
+            new_tag: "v1.0.0-valid"
+            dry_run: "true"
+            debug: "true"
+            branch: "main"
+            
+          - name: "Tag String Validation Test"
+            target_values_file: "qa1.values.yaml"
+            file_pattern: ""
+            tag_string: "tag"
+            new_tag: "v1.0.0"
+            dry_run: "true"
+            debug: "true"
+            branch: "main"
+
+          - name: "Invalid Tag Format Test (Expected to Fail)"
+            target_values_file: "qa1.values.yaml"
+            file_pattern: ""
+            tag_string: "tag"
+            new_tag: "@invalid@tag"
+            continue_on_error: true
+            dry_run: "true"
+            debug: "true"
+            branch: "main"
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -150,15 +178,17 @@ jobs:
 
       - name: ${{ matrix.name }}
         uses: ./
+        continue-on-error: ${{ matrix.continue_on_error || false }}
         with:
           target_path: charts/somaz/api
           target_values_file: ${{ matrix.target_values_file }}
           file_pattern: ${{ matrix.file_pattern }}
-          new_tag: ${{ steps.vars.outputs.short_sha }}
+          new_tag: ${{ matrix.new_tag || steps.vars.outputs.short_sha }}
           branch: ${{ matrix.branch }}
           github_token: ${{ secrets.PAT }}
           git_user_name: GitHub Actions
           git_user_email: actions@github.com
           repo: somaz94/image-tag-updater
+          tag_string: ${{ matrix.tag_string || 'tag' }}
           dry_run: ${{ matrix.dry_run }}
           debug: ${{ matrix.debug }}
