@@ -68,11 +68,20 @@ update_file() {
     local file="$1"
     debug_log "\n🔄 Processing file: $file"
 
+    # Store current tag value to check if it changed
+    local current_tag=$(grep -E "^\s*$TAG_STRING:" "$file" | sed -E "s/.*:\s*\"?([^\"]+)\"?.*/\1/")
+    
+    # If the tag is already the target value, skip updating
+    if [[ "$current_tag" == "$NEW_TAG" ]]; then
+        echo "ℹ️ Tag in $file already set to $NEW_TAG, skipping update"
+        return 1  # Return 1 to indicate no change
+    fi
+
     # If dry run mode is enabled, show what would be changed
     if [[ "$DRY_RUN" == "true" ]]; then
         echo "Current tag in $file: $(grep "$TAG_STRING:" "$file")"
         echo "Would change to: $TAG_STRING: \"$NEW_TAG\""
-        return
+        return 0  # Return 0 to indicate change would happen
     fi
 
     # Create backup if requested
@@ -91,6 +100,7 @@ update_file() {
     fi
 
     echo "✅ Updated $file"
+    return 0  # Return 0 to indicate change was made
 }
 
 ###########################################
@@ -162,6 +172,9 @@ fi
 ###########################################
 # File Processing
 ###########################################
+# Flag to track if any changes were made
+CHANGES_MADE=false
+
 if [[ -n "$FILE_PATTERN" ]]; then
     debug_log "\n🔍 Processing files: $FILE_PATTERN"
     files=($FILE_PATTERN)
@@ -171,7 +184,9 @@ if [[ -n "$FILE_PATTERN" ]]; then
     for file in "${files[@]}"; do
         if [[ -f "$file" ]]; then
             validate_file_content "$file" "$TAG_STRING"
-            update_file "$file"
+            if update_file "$file"; then
+                CHANGES_MADE=true
+            fi
         fi
     done
 else
@@ -180,12 +195,21 @@ else
         handle_error "File not found: $VALUES_FILE"
     fi
     validate_file_content "$VALUES_FILE" "$TAG_STRING"
-    update_file "$VALUES_FILE"
+    if update_file "$VALUES_FILE"; then
+        CHANGES_MADE=true
+    fi
 fi
 
 # Handle dry run mode
 if [[ "$DRY_RUN" == "true" ]]; then
     echo -e "\n✅ Dry run completed. No changes were made."
+    exit 0
+fi
+
+# If no changes were made, exit successfully
+if [[ "$CHANGES_MADE" == "false" ]]; then
+    echo -e "\n✅ No changes needed. Values are already up to date."
+    print_header "Process Completed Successfully"
     exit 0
 fi
 
@@ -195,31 +219,36 @@ fi
 debug_log "\n📦 Staging changes..."
 git add . > /dev/null 2>&1 || handle_error "Failed to stage changes"
 
-# Create commit message
-if [[ -n "$FILE_PATTERN" ]]; then
-    COMMIT_MESSAGE="$COMMIT_MESSAGE $TARGET_PATH ($FILE_PATTERN)"
-else
-    COMMIT_MESSAGE="$COMMIT_MESSAGE $TARGET_PATH ($TARGET_VALUES_FILE)"
-fi
-
-debug_log "\n💾 Creating commit..."
-git commit -m "$COMMIT_MESSAGE" > /dev/null 2>&1 || handle_error "Failed to commit changes"
-
-# Push changes with retry logic
-MAX_RETRIES=3
-RETRY_COUNT=0
-while [[ $RETRY_COUNT -lt $MAX_RETRIES ]]; do
-    if git push "https://x-access-token:$GITHUB_TOKEN@github.com/$REPO" "$BRANCH" > /dev/null 2>&1; then
-        echo "✅ Successfully pushed changes to $BRANCH"
-        break
+# Check if there are staged changes
+if ! git diff --cached --quiet; then
+    # Create commit message
+    if [[ -n "$FILE_PATTERN" ]]; then
+        COMMIT_MESSAGE="$COMMIT_MESSAGE $TARGET_PATH ($FILE_PATTERN)"
     else
-        RETRY_COUNT=$((RETRY_COUNT + 1))
-        if [[ $RETRY_COUNT -eq $MAX_RETRIES ]]; then
-            handle_error "Failed to push changes after $MAX_RETRIES attempts"
-        fi
-        debug_log "⚠️ Push failed, retrying... (Attempt $RETRY_COUNT of $MAX_RETRIES)"
-        sleep 5
+        COMMIT_MESSAGE="$COMMIT_MESSAGE $TARGET_PATH ($TARGET_VALUES_FILE)"
     fi
-done
+
+    debug_log "\n💾 Creating commit..."
+    git commit -m "$COMMIT_MESSAGE" > /dev/null 2>&1 || handle_error "Failed to commit changes"
+
+    # Push changes with retry logic
+    MAX_RETRIES=3
+    RETRY_COUNT=0
+    while [[ $RETRY_COUNT -lt $MAX_RETRIES ]]; do
+        if git push "https://x-access-token:$GITHUB_TOKEN@github.com/$REPO" "$BRANCH" > /dev/null 2>&1; then
+            echo "✅ Successfully pushed changes to $BRANCH"
+            break
+        else
+            RETRY_COUNT=$((RETRY_COUNT + 1))
+            if [[ $RETRY_COUNT -eq $MAX_RETRIES ]]; then
+                handle_error "Failed to push changes after $MAX_RETRIES attempts"
+            fi
+            debug_log "⚠️ Push failed, retrying... (Attempt $RETRY_COUNT of $MAX_RETRIES)"
+            sleep 5
+        fi
+    done
+else
+    echo -e "\n✅ No changes to commit. Nothing to push."
+fi
 
 print_header "Process Completed Successfully"
