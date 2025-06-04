@@ -1,5 +1,13 @@
 # Changelog
 
+## [v1.2.2](https://github.com/somaz94/image-tag-updater/tree/v1.2.2) (2025-06-04)
+
+[Full Changelog](https://github.com/somaz94/image-tag-updater/compare/v1.2.2...v1.2.2)
+
+**Merged pull requests:**
+
+- build\(deps\): bump alpine from 3.21 to 3.22 in the docker-minor group [\#3](https://github.com/somaz94/image-tag-updater/pull/3) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [v1.2.2](https://github.com/somaz94/image-tag-updater/tree/v1.2.2) (2025-04-15)
 
 [Full Changelog](https://github.com/somaz94/image-tag-updater/compare/v1.2.1...v1.2.2)
