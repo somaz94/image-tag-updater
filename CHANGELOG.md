@@ -1,11 +1,12 @@
 # Changelog
 
-## [v1.2.2](https://github.com/somaz94/image-tag-updater/tree/v1.2.2) (2025-07-22)
+## [v1.2.2](https://github.com/somaz94/image-tag-updater/tree/v1.2.2) (2025-08-19)
 
 [Full Changelog](https://github.com/somaz94/image-tag-updater/compare/v1.2.2...v1.2.2)
 
 **Merged pull requests:**
 
+- build\(deps\): bump actions/checkout from 4 to 5 [\#5](https://github.com/somaz94/image-tag-updater/pull/5) ([dependabot[bot]](https://github.com/apps/dependabot))
 - build\(deps\): bump super-linter/super-linter from 7 to 8 [\#4](https://github.com/somaz94/image-tag-updater/pull/4) ([dependabot[bot]](https://github.com/apps/dependabot))
 - build\(deps\): bump alpine from 3.21 to 3.22 in the docker-minor group [\#3](https://github.com/somaz94/image-tag-updater/pull/3) ([dependabot[bot]](https://github.com/apps/dependabot))
 
