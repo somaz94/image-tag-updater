@@ -105,8 +105,9 @@ def main() -> None:
         file_info = config.file_pattern or config.target_values_file
         commit_sha = git_ops.commit_and_push(file_info)
         
-        # Write commit SHA output
+        # Write commit SHA outputs
         write_output("commit_sha", commit_sha or "")
+        write_output("commit_sha_short", commit_sha[:7] if commit_sha else "")
         
         # Save summary with commit SHA
         if config.summary_file:

@@ -95,6 +95,8 @@ outputs:
     description: 'Whether any changes were made (true/false)'
   commit_sha:
     description: 'SHA of the created commit (empty if dry run or no changes)'
+  commit_sha_short:
+    description: 'Short SHA (7 chars) of the created commit (empty if dry run or no changes)'
 
 runs:
   using: 'docker'

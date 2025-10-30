@@ -118,7 +118,7 @@ jobs:
       matrix:
         include:
           - name: "Single File Update"
-            target_values_file: "qa1.values.yaml"
+            target_values_file: "dev*.values.yaml"
             file_pattern: ""
             dry_run: "false"
             debug: "false"
@@ -279,4 +279,5 @@ jobs:
           echo "Old Tags: ${{ steps.update-tag.outputs.old_tags }}"
           echo "New Tag Applied: ${{ steps.update-tag.outputs.new_tag_applied }}"
           echo "Changes Made: ${{ steps.update-tag.outputs.changes_made }}"
-          echo "Commit SHA: ${{ steps.update-tag.outputs.commit_sha }}"
+          echo "Commit SHA: ${{ steps.update-tag.outputs.commit_sha_short }}"
+          echo "Full Commit SHA: ${{ steps.update-tag.outputs.commit_sha }}"
