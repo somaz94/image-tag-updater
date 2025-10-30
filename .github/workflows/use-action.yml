@@ -54,7 +54,7 @@ jobs:
           #   file_pattern: "dev*.values.yaml"
           #   dry_run: "false"
           #   debug: "false"
-          #   branch: "test"
+          #   branch: "test-pattern-match"
 
           - name: "Dry Run Single File"
             target_values_file: "dev2.values.yaml"
@@ -75,14 +75,14 @@ jobs:
           #   file_pattern: ""
           #   dry_run: "false"
           #   debug: "true"
-          #   branch: "test"
+          #   branch: "test-debug-single"
 
           - name: "Debug Mode Pattern Match"
             target_values_file: ""
             file_pattern: "dev*.values.yaml"
             dry_run: "false"
             debug: "true"
-            branch: "test-pattern"
+            branch: "test-debug-pattern"
 
           - name: "Tag Format Validation Test"
             target_values_file: "dev1.values.yaml"
