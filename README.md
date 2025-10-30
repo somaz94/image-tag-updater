@@ -419,8 +419,8 @@ Valid examples: `v1.0.0`, `2024.01.15`, `main-abc123`
 - **Security**: The action validates all inputs and handles errors safely
 
 For detailed information, see:
-- 📖 [Advanced Usage Guide](docs/ADVANCED_USAGE.md) - Matrix strategies, integrations, rollback procedures
-- 🔧 [Troubleshooting Guide](docs/TROUBLESHOOTING.md) - Common issues, debugging, performance tips
+- [Advanced Usage Guide](docs/ADVANCED_USAGE.md) - Matrix strategies, integrations, rollback procedures
+- [Troubleshooting Guide](docs/TROUBLESHOOTING.md) - Common issues, debugging, performance tips
 
 <br/>
 
