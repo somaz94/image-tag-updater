@@ -49,14 +49,14 @@ class FileProcessor:
     
     def update_file(self, file_path: str) -> bool:
         """Update tag in file. Returns True if changes were made."""
-        self.logger.debug(f"\n🔄 Processing file: {file_path}")
+        self.logger.debug(f"\nProcessing file: {file_path}")
         
         # Get current tag value
         current_tag = self.get_current_tag(file_path)
         
         # If tag is already the target value, skip
         if current_tag == self.config.new_tag:
-            self.logger.info(f"ℹ️ Tag in {file_path} already set to {self.config.new_tag}, skipping update")
+            self.logger.info(f"Tag in {file_path} already set to {self.config.new_tag}, skipping update")
             return False
         
         # Dry run mode - show what would change
@@ -67,17 +67,17 @@ class FileProcessor:
         
         # Create backup if requested
         if self.config.backup:
-            self.logger.debug("\n💾 Creating backup...")
+            self.logger.debug("\nCreating backup...")
             backup_path = f"{file_path}.bak"
             try:
                 shutil.copy2(file_path, backup_path)
-                self.logger.debug(f"✅ Backup created: {backup_path}")
+                self.logger.debug(f"Backup created: {backup_path}")
             except Exception as e:
                 self.logger.error(f"Failed to create backup: {e}")
         
         # Update the file
         try:
-            self.logger.debug("\n🔄 Updating image tag...")
+            self.logger.debug("\nUpdating image tag...")
             with open(file_path, 'r') as f:
                 content = f.read()
             
@@ -99,7 +99,7 @@ class FileProcessor:
         files = []
         
         if self.config.file_pattern:
-            self.logger.debug(f"\n🔍 Processing files: {self.config.file_pattern}")
+            self.logger.debug(f"\nProcessing files: {self.config.file_pattern}")
             # Use glob pattern
             from glob import glob
             matched_files = glob(self.config.file_pattern)

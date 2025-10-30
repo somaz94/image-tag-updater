@@ -24,12 +24,12 @@ def main() -> None:
         config.print_config()
         
         # Navigate to target directory
-        logger.debug(f"\n📂 Navigating to target directory: {config.target_path}")
+        logger.debug(f"\nNavigating to target directory: {config.target_path}")
         os.chdir(config.target_path)
         
         # Show directory contents in debug mode
         if config.debug:
-            logger.debug("\n📑 Current directory contents:")
+            logger.debug("\nCurrent directory contents:")
             for item in os.listdir("."):
                 logger.debug(f"  {item}")
         

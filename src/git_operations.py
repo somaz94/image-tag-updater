@@ -41,7 +41,7 @@ class GitOperations:
     
     def configure_git(self) -> None:
         """Configure Git settings."""
-        self.logger.debug("\n⚙️ Configuring Git...")
+        self.logger.debug("\nConfiguring Git...")
         
         commands = [
             ["git", "config", "--global", "--add", "safe.directory", "/usr/src"],
@@ -76,7 +76,7 @@ class GitOperations:
     
     def setup_branch(self) -> None:
         """Setup Git branch."""
-        self.logger.debug(f"\n🔄 Setting up branch: {self.config.branch}")
+        self.logger.debug(f"\nSetting up branch: {self.config.branch}")
         
         # Fetch from remote
         self.run_command(["git", "fetch", "origin"])
@@ -92,7 +92,7 @@ class GitOperations:
             
             # Pull if remote branch exists
             if self.branch_exists_remotely(self.config.branch):
-                self.logger.debug("\n⬇️ Pulling latest changes...")
+                self.logger.debug("\nPulling latest changes...")
                 self.run_command(["git", "pull", "origin", self.config.branch])
         else:
             # Branch doesn't exist locally
@@ -100,7 +100,7 @@ class GitOperations:
                 # Remote branch exists, checkout and track it
                 self.logger.debug(f"Checking out remote branch: {self.config.branch}")
                 self.run_command(["git", "checkout", "-b", self.config.branch, f"origin/{self.config.branch}"])
-                self.logger.debug("\n⬇️ Pulling latest changes...")
+                self.logger.debug("\nPulling latest changes...")
                 self.run_command(["git", "pull", "origin", self.config.branch])
             else:
                 # Create new branch locally
@@ -118,7 +118,7 @@ class GitOperations:
     
     def commit_and_push(self, file_info: str) -> None:
         """Commit and push changes."""
-        self.logger.debug("\n📦 Staging changes...")
+        self.logger.debug("\nStaging changes...")
         self.run_command(["git", "add", "."])
         
         # Check if there are staged changes
@@ -129,7 +129,7 @@ class GitOperations:
         # Create commit message
         commit_msg = f"{self.config.commit_message} {self.config.target_path} ({file_info})"
         
-        self.logger.debug("\n💾 Creating commit...")
+        self.logger.debug("\nCreating commit...")
         self.run_command(["git", "commit", "-m", commit_msg])
         
         # Push changes with retry logic

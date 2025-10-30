@@ -75,7 +75,7 @@ class Config:
     
     def print_config(self) -> None:
         """Print current configuration."""
-        print("📋 Configuration:")
+        print("Configuration:")
         print(f"• Path: {self.target_path}")
         print(f"• Tag: {self.new_tag}")
         print(f"• Branch: {self.branch}")
