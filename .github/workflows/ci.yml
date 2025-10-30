@@ -118,7 +118,7 @@ jobs:
       matrix:
         include:
           - name: "Single File Update"
-            target_values_file: "dev*.values.yaml"
+            target_values_file: "dev1.values.yaml"
             file_pattern: ""
             dry_run: "false"
             debug: "false"
