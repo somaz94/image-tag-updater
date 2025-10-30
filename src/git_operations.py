@@ -116,15 +116,15 @@ class GitOperations:
         # git diff --quiet returns 0 if no changes, 1 if changes exist
         return result is None
     
-    def commit_and_push(self, file_info: str) -> None:
-        """Commit and push changes."""
+    def commit_and_push(self, file_info: str) -> Optional[str]:
+        """Commit and push changes. Returns commit SHA or None."""
         self.logger.debug("\nStaging changes...")
         self.run_command(["git", "add", "."])
         
         # Check if there are staged changes
         if not self.has_staged_changes():
             self.logger.info("\n✅ No changes to commit. Nothing to push.")
-            return
+            return None
         
         # Create commit message
         commit_msg = f"{self.config.commit_message} {self.config.target_path} ({file_info})"
@@ -132,8 +132,13 @@ class GitOperations:
         self.logger.debug("\nCreating commit...")
         self.run_command(["git", "commit", "-m", commit_msg])
         
+        # Get commit SHA
+        commit_sha = self.run_command(["git", "rev-parse", "HEAD"], capture=True)
+        
         # Push changes with retry logic
         self._push_with_retry()
+        
+        return commit_sha
     
     def _push_with_retry(self) -> None:
         """Push changes with retry logic."""

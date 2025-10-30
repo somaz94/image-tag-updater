@@ -9,6 +9,17 @@ from src.git_operations import GitOperations
 from src.logger import Logger
 
 
+def write_output(name: str, value: str) -> None:
+    """Write output to GITHUB_OUTPUT file."""
+    github_output = os.getenv("GITHUB_OUTPUT")
+    if github_output:
+        with open(github_output, "a") as f:
+            # Use multiline format for safety
+            f.write(f"{name}<<EOF\n")
+            f.write(f"{value}\n")
+            f.write("EOF\n")
+
+
 def main() -> None:
     """Main function."""
     # Initialize logger
@@ -46,21 +57,39 @@ def main() -> None:
         file_processor = FileProcessor(config, logger)
         changes_made = file_processor.process_files()
         
+        # Prepare outputs
+        final_tag = config.get_final_tag()
+        updated_files_list = ",".join(file_processor.updated_files)
+        old_tags_list = ",".join(file_processor.old_tags.values())
+        files_count = str(len(file_processor.updated_files))
+        
+        # Write outputs
+        write_output("files_updated", files_count)
+        write_output("updated_files", updated_files_list)
+        write_output("old_tags", old_tags_list)
+        write_output("new_tag_applied", final_tag)
+        write_output("changes_made", str(changes_made).lower())
+        
         # Handle dry run mode
         if config.dry_run:
+            write_output("commit_sha", "")
             logger.info("\n✅ Dry run completed. No changes were made.")
             logger.print_header("Process Completed Successfully")
             return
         
         # If no changes were made, exit successfully
         if not changes_made:
+            write_output("commit_sha", "")
             logger.info("\n✅ No changes needed. Values are already up to date.")
             logger.print_header("Process Completed Successfully")
             return
         
         # Commit and push changes
         file_info = config.file_pattern or config.target_values_file
-        git_ops.commit_and_push(file_info)
+        commit_sha = git_ops.commit_and_push(file_info)
+        
+        # Write commit SHA output
+        write_output("commit_sha", commit_sha or "")
         
         logger.print_header("Process Completed Successfully")
         

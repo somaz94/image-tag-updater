@@ -24,6 +24,8 @@ class Config:
     dry_run: bool = False
     debug: bool = False
     max_retries: int = 3
+    tag_prefix: str = ""
+    tag_suffix: str = ""
     
     @classmethod
     def from_env(cls) -> "Config":
@@ -44,7 +46,13 @@ class Config:
             dry_run=os.getenv("DRY_RUN", "false").lower() == "true",
             debug=os.getenv("DEBUG", "false").lower() == "true",
             max_retries=int(os.getenv("MAX_RETRIES", "3")),
+            tag_prefix=os.getenv("TAG_PREFIX", ""),
+            tag_suffix=os.getenv("TAG_SUFFIX", ""),
         )
+    
+    def get_final_tag(self) -> str:
+        """Get the final tag with prefix and suffix applied."""
+        return f"{self.tag_prefix}{self.new_tag}{self.tag_suffix}"
     
     def validate(self) -> None:
         """Validate configuration values."""
@@ -58,10 +66,18 @@ class Config:
             if not getattr(self, field):
                 raise ValueError(f"Required field '{field}' is not set")
         
-        # Validate tag format
+        # Validate tag format (without prefix/suffix)
         if not re.match(r'^[a-zA-Z0-9][a-zA-Z0-9._-]*$', self.new_tag):
             raise ValueError(
                 f"Invalid tag format: {self.new_tag}. "
+                "Tags should only contain alphanumeric characters, dots, underscores, and hyphens."
+            )
+        
+        # Validate final tag with prefix/suffix
+        final_tag = self.get_final_tag()
+        if not re.match(r'^[a-zA-Z0-9][a-zA-Z0-9._-]*$', final_tag):
+            raise ValueError(
+                f"Invalid final tag format (with prefix/suffix): {final_tag}. "
                 "Tags should only contain alphanumeric characters, dots, underscores, and hyphens."
             )
         
@@ -78,6 +94,9 @@ class Config:
         print("Configuration:")
         print(f"• Path: {self.target_path}")
         print(f"• Tag: {self.new_tag}")
+        final_tag = self.get_final_tag()
+        if final_tag != self.new_tag:
+            print(f"• Final Tag (with prefix/suffix): {final_tag}")
         print(f"• Branch: {self.branch}")
         if self.dry_run:
             print("• Mode: Dry Run")

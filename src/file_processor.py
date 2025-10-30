@@ -3,7 +3,7 @@ import os
 import re
 import shutil
 from pathlib import Path
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 
 from .config import Config
 from .logger import Logger
@@ -15,6 +15,8 @@ class FileProcessor:
     def __init__(self, config: Config, logger: Logger):
         self.config = config
         self.logger = logger
+        self.updated_files: List[str] = []
+        self.old_tags: Dict[str, str] = {}  # file_path -> old_tag
     
     def validate_file_content(self, file_path: str) -> None:
         """Validate that tag string exists in file."""
@@ -54,15 +56,22 @@ class FileProcessor:
         # Get current tag value
         current_tag = self.get_current_tag(file_path)
         
+        # Get final tag with prefix/suffix
+        final_tag = self.config.get_final_tag()
+        
         # If tag is already the target value, skip
-        if current_tag == self.config.new_tag:
-            self.logger.info(f"Tag in {file_path} already set to {self.config.new_tag}, skipping update")
+        if current_tag == final_tag:
+            self.logger.info(f"Tag in {file_path} already set to {final_tag}, skipping update")
             return False
+        
+        # Store old tag for output
+        self.old_tags[file_path] = current_tag
         
         # Dry run mode - show what would change
         if self.config.dry_run:
             self.logger.info(f"Current tag in {file_path}: {self.config.tag_string}: {current_tag}")
-            self.logger.info(f"Would change to: {self.config.tag_string}: \"{self.config.new_tag}\"")
+            self.logger.info(f"Would change to: {self.config.tag_string}: \"{final_tag}\"")
+            self.updated_files.append(file_path)
             return True
         
         # Create backup if requested
@@ -81,15 +90,16 @@ class FileProcessor:
             with open(file_path, 'r') as f:
                 content = f.read()
             
-            # Replace the tag value
+            # Replace the tag value with final tag (including prefix/suffix)
             pattern = rf'(^\s*{re.escape(self.config.tag_string)}:)\s*.*$'
-            replacement = rf'\1 "{self.config.new_tag}"'
+            replacement = rf'\1 "{final_tag}"'
             updated_content = re.sub(pattern, replacement, content, flags=re.MULTILINE)
             
             with open(file_path, 'w') as f:
                 f.write(updated_content)
             
             self.logger.success(f"Updated {file_path}")
+            self.updated_files.append(file_path)
             return True
         except Exception as e:
             self.logger.error(f"Failed to update file {file_path}: {e}")

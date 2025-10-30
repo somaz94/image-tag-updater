@@ -34,6 +34,9 @@ jobs:
       - name: Run tests
         run: python3 tests/test_local.py
 
+      - name: Run new features tests
+        run: python3 tests/test_new_features.py
+
   build-and-push-docker:
     name: Build and Push Docker
     needs: test-local
@@ -181,6 +184,37 @@ jobs:
             debug: "true"
             branch: "main"
 
+          - name: "Tag Prefix Test"
+            target_values_file: "dev1.values.yaml"
+            file_pattern: ""
+            tag_string: "tag"
+            new_tag: "1.2.3"
+            tag_prefix: "v"
+            dry_run: "true"
+            debug: "true"
+            branch: "main"
+
+          - name: "Tag Suffix Test"
+            target_values_file: "dev1.values.yaml"
+            file_pattern: ""
+            tag_string: "tag"
+            new_tag: "latest"
+            tag_suffix: "-prod"
+            dry_run: "true"
+            debug: "true"
+            branch: "main"
+
+          - name: "Tag Prefix and Suffix Test"
+            target_values_file: "dev1.values.yaml"
+            file_pattern: ""
+            tag_string: "tag"
+            new_tag: "1.2.3"
+            tag_prefix: "release-"
+            tag_suffix: "-staging"
+            dry_run: "true"
+            debug: "true"
+            branch: "main"
+
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -196,6 +230,7 @@ jobs:
           echo "short_sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
 
       - name: ${{ matrix.name }}
+        id: update-tag
         uses: ./
         continue-on-error: ${{ matrix.continue_on_error || false }}
         with:
@@ -209,5 +244,17 @@ jobs:
           git_user_email: actions@github.com
           repo: somaz94/image-tag-updater
           tag_string: ${{ matrix.tag_string || 'tag' }}
+          tag_prefix: ${{ matrix.tag_prefix || '' }}
+          tag_suffix: ${{ matrix.tag_suffix || '' }}
           dry_run: ${{ matrix.dry_run }}
           debug: ${{ matrix.debug }}
+
+      - name: Display Outputs
+        if: always()
+        run: |
+          echo "Files Updated: ${{ steps.update-tag.outputs.files_updated }}"
+          echo "Updated Files: ${{ steps.update-tag.outputs.updated_files }}"
+          echo "Old Tags: ${{ steps.update-tag.outputs.old_tags }}"
+          echo "New Tag Applied: ${{ steps.update-tag.outputs.new_tag_applied }}"
+          echo "Changes Made: ${{ steps.update-tag.outputs.changes_made }}"
+          echo "Commit SHA: ${{ steps.update-tag.outputs.commit_sha }}"

@@ -61,6 +61,28 @@ inputs:
     description: 'Run in debug mode'
     required: false
     default: 'false'
+  tag_prefix:
+    description: 'Prefix to add to the new tag (e.g., "v", "release-")'
+    required: false
+    default: ''
+  tag_suffix:
+    description: 'Suffix to add to the new tag (e.g., "-prod", "-staging")'
+    required: false
+    default: ''
+
+outputs:
+  files_updated:
+    description: 'Number of files updated'
+  updated_files:
+    description: 'Comma-separated list of updated file paths'
+  old_tags:
+    description: 'Comma-separated list of previous tag values'
+  new_tag_applied:
+    description: 'The final tag value that was applied (with prefix/suffix)'
+  changes_made:
+    description: 'Whether any changes were made (true/false)'
+  commit_sha:
+    description: 'SHA of the created commit (empty if dry run or no changes)'
 
 runs:
   using: 'docker'
@@ -80,3 +102,5 @@ runs:
     FILE_PATTERN: ${{ inputs.file_pattern }}
     DRY_RUN: ${{ inputs.dry_run }}
     DEBUG: ${{ inputs.debug }}
+    TAG_PREFIX: ${{ inputs.tag_prefix }}
+    TAG_SUFFIX: ${{ inputs.tag_suffix }}
