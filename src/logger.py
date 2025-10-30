@@ -12,7 +12,7 @@ class Logger:
     def print_header(self, message: str) -> None:
         """Print section header."""
         print(f"\n{'=' * 42}")
-        print(f"🚀 {message}")
+        print(f"▶️ {message}")
         print(f"{'=' * 42}\n")
     
     def debug(self, message: str) -> None:
