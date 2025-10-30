@@ -168,10 +168,10 @@ Automatically track all image tag updates in a JSON file:
 ```
 
 **Use cases:**
-- 📊 Audit trail for compliance
-- 🔄 Rollback reference
-- 📈 Deployment history tracking
-- 🔍 Troubleshooting deployments
+- Audit trail for compliance
+- Rollback reference
+- Deployment history tracking
+- Troubleshooting deployments
 
 <br/>
 
