@@ -56,6 +56,19 @@ class FileProcessor:
         # Get current tag value
         current_tag = self.get_current_tag(file_path)
         
+        # Check conditional update rules
+        if self.config.update_if_contains and self.config.update_if_contains not in current_tag:
+            self.logger.info(
+                f"Skipping {file_path}: current tag '{current_tag}' does not contain '{self.config.update_if_contains}'"
+            )
+            return False
+        
+        if self.config.skip_if_contains and self.config.skip_if_contains in current_tag:
+            self.logger.info(
+                f"Skipping {file_path}: current tag '{current_tag}' contains '{self.config.skip_if_contains}'"
+            )
+            return False
+        
         # Get final tag with prefix/suffix
         final_tag = self.config.get_final_tag()
         

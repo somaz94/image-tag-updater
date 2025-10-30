@@ -69,6 +69,18 @@ inputs:
     description: 'Suffix to add to the new tag (e.g., "-prod", "-staging")'
     required: false
     default: ''
+  update_if_contains:
+    description: 'Only update if current tag contains this string (e.g., "v1.", "dev")'
+    required: false
+    default: ''
+  skip_if_contains:
+    description: 'Skip update if current tag contains this string (e.g., "latest", "prod")'
+    required: false
+    default: ''
+  summary_file:
+    description: 'Path to save change summary JSON file (e.g., ".github/image-updates.json")'
+    required: false
+    default: ''
 
 outputs:
   files_updated:
@@ -104,3 +116,6 @@ runs:
     DEBUG: ${{ inputs.debug }}
     TAG_PREFIX: ${{ inputs.tag_prefix }}
     TAG_SUFFIX: ${{ inputs.tag_suffix }}
+    UPDATE_IF_CONTAINS: ${{ inputs.update_if_contains }}
+    SKIP_IF_CONTAINS: ${{ inputs.skip_if_contains }}
+    SUMMARY_FILE: ${{ inputs.summary_file }}

@@ -26,6 +26,9 @@ class Config:
     max_retries: int = 3
     tag_prefix: str = ""
     tag_suffix: str = ""
+    update_if_contains: str = ""
+    skip_if_contains: str = ""
+    summary_file: str = ""
     
     @classmethod
     def from_env(cls) -> "Config":
@@ -48,6 +51,9 @@ class Config:
             max_retries=int(os.getenv("MAX_RETRIES", "3")),
             tag_prefix=os.getenv("TAG_PREFIX", ""),
             tag_suffix=os.getenv("TAG_SUFFIX", ""),
+            update_if_contains=os.getenv("UPDATE_IF_CONTAINS", ""),
+            skip_if_contains=os.getenv("SKIP_IF_CONTAINS", ""),
+            summary_file=os.getenv("SUMMARY_FILE", ""),
         )
     
     def get_final_tag(self) -> str:

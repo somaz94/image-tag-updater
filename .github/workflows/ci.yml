@@ -37,6 +37,9 @@ jobs:
       - name: Run new features tests
         run: python3 tests/test_new_features.py
 
+      - name: Run conditional and summary tests
+        run: python3 tests/test_conditional_summary.py
+
   build-and-push-docker:
     name: Build and Push Docker
     needs: test-local
@@ -215,6 +218,36 @@ jobs:
             debug: "true"
             branch: "main"
 
+          - name: "Conditional Update - update_if_contains"
+            target_values_file: "dev1.values.yaml"
+            file_pattern: ""
+            tag_string: "tag"
+            new_tag: "v2.0.0"
+            update_if_contains: "327"    # Current tag contains this
+            dry_run: "true"
+            debug: "true"
+            branch: "main"
+
+          - name: "Conditional Update - skip_if_contains"
+            target_values_file: "dev1.values.yaml"
+            file_pattern: ""
+            tag_string: "tag"
+            new_tag: "v2.0.0"
+            skip_if_contains: "999"      # Current tag doesn't contain this, so will update
+            dry_run: "true"
+            debug: "true"
+            branch: "main"
+
+          - name: "Summary File Test"
+            target_values_file: "dev1.values.yaml"
+            file_pattern: ""
+            tag_string: "tag"
+            new_tag: "v1.2.3"
+            summary_file: ".github/test-updates.json"
+            dry_run: "true"
+            debug: "true"
+            branch: "main"
+
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -246,6 +279,9 @@ jobs:
           tag_string: ${{ matrix.tag_string || 'tag' }}
           tag_prefix: ${{ matrix.tag_prefix || '' }}
           tag_suffix: ${{ matrix.tag_suffix || '' }}
+          update_if_contains: ${{ matrix.update_if_contains || '' }}
+          skip_if_contains: ${{ matrix.skip_if_contains || '' }}
+          summary_file: ${{ matrix.summary_file || '' }}
           dry_run: ${{ matrix.dry_run }}
           debug: ${{ matrix.debug }}
 

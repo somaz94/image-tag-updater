@@ -7,6 +7,7 @@ from src.config import Config
 from src.file_processor import FileProcessor
 from src.git_operations import GitOperations
 from src.logger import Logger
+from src.summary import ChangeSummary
 
 
 def write_output(name: str, value: str) -> None:
@@ -57,6 +58,9 @@ def main() -> None:
         file_processor = FileProcessor(config, logger)
         changes_made = file_processor.process_files()
         
+        # Initialize change summary
+        summary = ChangeSummary(config, logger)
+        
         # Prepare outputs
         final_tag = config.get_final_tag()
         updated_files_list = ",".join(file_processor.updated_files)
@@ -70,9 +74,22 @@ def main() -> None:
         write_output("new_tag_applied", final_tag)
         write_output("changes_made", str(changes_made).lower())
         
+        # Print summary
+        if changes_made:
+            summary.print_summary(
+                file_processor.updated_files,
+                file_processor.old_tags
+            )
+        
         # Handle dry run mode
         if config.dry_run:
             write_output("commit_sha", "")
+            # Save summary even in dry run mode
+            if config.summary_file:
+                summary.save_summary(
+                    file_processor.updated_files,
+                    file_processor.old_tags
+                )
             logger.info("\n✅ Dry run completed. No changes were made.")
             logger.print_header("Process Completed Successfully")
             return
@@ -90,6 +107,14 @@ def main() -> None:
         
         # Write commit SHA output
         write_output("commit_sha", commit_sha or "")
+        
+        # Save summary with commit SHA
+        if config.summary_file:
+            summary.save_summary(
+                file_processor.updated_files,
+                file_processor.old_tags,
+                commit_sha
+            )
         
         logger.print_header("Process Completed Successfully")
         
