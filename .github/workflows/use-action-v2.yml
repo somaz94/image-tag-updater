@@ -12,7 +12,30 @@ permissions:
   contents: write
 
 jobs:
+  test-local:
+    name: Run Local Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Action Repository
+        uses: actions/checkout@v5
+        with:
+          repository: somaz94/image-tag-updater
+          token: ${{ secrets.PAT }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run tests
+        run: python3 tests/test_local.py
+
   acton-module:
+    name: Update Image Tag
+    needs: test-local
     runs-on: ubuntu-latest
     steps:
       - name: Checkout infrastructure repository

@@ -1,36 +1,47 @@
 # Image Tag Updater GitHub Action
 
-[![License](https://img.shields.io/github/license/somaz94/image-tag-updater)](https://github.com/somaz94/container-action)
+[![License](https://img.shields.io/github/license/somaz94/image-tag-updater)](https://github.com/somaz94/image-tag-updater)
 ![Latest Tag](https://img.shields.io/github/v/tag/somaz94/image-tag-updater)
-![Top Language](https://img.shields.io/github/languages/top/somaz94/image-tag-updater?color=green&logo=shell&logoColor=b)
+![Top Language](https://img.shields.io/github/languages/top/somaz94/image-tag-updater?color=green&logo=python&logoColor=blue)
 [![GitHub Marketplace](https://img.shields.io/badge/Marketplace-Image%20Tag%20Updater-blue?logo=github)](https://github.com/marketplace/actions/image-tag-updater)
+![CI](https://github.com/somaz94/image-tag-updater/actions/workflows/ci.yml/badge.svg)
+
+<br/>
 
 ## Description
 
-The **Image Tag Updater** GitHub Action is designed to update image tags in a
-specified file within a repository. It's particularly useful in GitOps
-workflows, where configuration changes need to be automatically reflected across
-multiple repositories.
+The **Image Tag Updater** GitHub Action automates image tag updates in configuration files, making GitOps workflows seamless and efficient. Perfect for Kubernetes Helm values files and infrastructure-as-code repositories.
+
+**Key Features:**
+- 🔄 Automated image tag updates in YAML configuration files
+- 🎯 Support for single file or multiple files via patterns
+- 🔍 Dry run mode for safe testing
+- 💾 Optional backup creation before updates
+- 🐛 Debug mode for troubleshooting
+- � Secure GitHub token authentication
+- ⚡ Fast Python-based execution
 
 <br/>
 
-This action allows users to update specific lines in configuration files,
-typically to update image tags, and commits the changes directly to the
-repository. It supports checking out multiple repositories, making it ideal for
-updating infrastructure repositories based on changes in source code
-repositories.
+## Documentation
+
+### Comprehensive Guides:
+- [Advanced Usage Guide](docs/ADVANCED_USAGE.md) - Matrix strategies, multi-environment deployments, integration patterns
+- [Troubleshooting Guide](docs/TROUBLESHOOTING.md) - Common issues, debugging tips, performance optimization
 
 <br/>
 
-## Features
+## Quick Start
 
-- 🔄 Automated image tag updates in configuration files
-- 🔒 Secure authentication with GitHub tokens
-- 💾 Optional backup creation
-- 🎯 Precise targeting of specific values in YAML files
-- 📝 Customizable commit messages and Git credentials
-- 🔍 Detailed execution logs
-- ⚡ Support for multiple repositories and branches
+```yaml
+- name: Update Image Tag
+  uses: somaz94/image-tag-updater@v1
+  with:
+    target_path: charts/somaz/api
+    target_values_file: production.values.yaml
+    new_tag: v1.0.1
+    github_token: ${{ secrets.PAT }}
+```
 
 <br/>
 
@@ -69,247 +80,212 @@ You can update multiple files at once using the `file_pattern` input:
 
 <br/>
 
-### Dry Run Mode
-Test your changes without actually applying them:
-```yaml
-- uses: somaz94/image-tag-updater@v1
-  with:
-    target_path: charts/somaz/api
-    dry_run: "true"
-    file_pattern: "dev*.values.yaml"
-    new_tag: v1.0.1
-```
-
-<br/>
-
-### Debug Mode
-Enable detailed logging for troubleshooting:
-```yaml
-- uses: somaz94/image-tag-updater@v1
-  with:
-    target_path: charts/somaz/api
-    file_pattern: "dev*.values.yaml"
-    new_tag: v1.0.1
-    debug: "true"
-```
-
-Debug mode provides additional information such as:
-- Directory contents
-- Git operation details
-- File processing steps
-- Detailed error messages
-
-<br/>
-
 ## Example Workflows
 
-<br/>
+### Basic Usage
 
-### Production Deployment
+**Update single file:**
 ```yaml
-name: Production Image Update
-on:
-  workflow_dispatch:
-    inputs:
-      new_tag:
-        description: 'New image tag to deploy'
-        required: true
+- name: Update Production Tag
+  uses: somaz94/image-tag-updater@v1
+  with:
+    target_path: charts/somaz/api
+    target_values_file: production.values.yaml
+    new_tag: v1.0.1
+    github_token: ${{ secrets.PAT }}
+```
 
-jobs:
-  update-image:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: somaz94/image-tag-updater@v1
-        with:
-          target_path: charts/somaz/api
-          file_pattern: "prod*.values.yaml"
-          new_tag: ${{ github.event.inputs.new_tag }}
-          verify_tag: "true"
-          notification_webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          github_token: ${{ secrets.PAT }}
+**Update multiple files with pattern:**
+```yaml
+- name: Update All Dev Environments
+  uses: somaz94/image-tag-updater@v1
+  with:
+    target_path: charts/somaz/api
+    file_pattern: "dev*.values.yaml"
+    new_tag: dev-${{ github.sha }}
+    github_token: ${{ secrets.PAT }}
 ```
 
 <br/>
 
-### Development Testing
+### Advanced Features
+
+**Dry Run Mode** - Test changes without applying:
 ```yaml
-name: Dev Image Update
+- uses: somaz94/image-tag-updater@v1
+  with:
+    target_path: charts/somaz/api
+    file_pattern: "prod*.values.yaml"
+    new_tag: v2.0.0
+    dry_run: "true"
+    github_token: ${{ secrets.PAT }}
+```
+
+**Debug Mode** - Enable detailed logging:
+```yaml
+- uses: somaz94/image-tag-updater@v1
+  with:
+    target_path: charts/somaz/api
+    file_pattern: "*.values.yaml"
+    new_tag: v1.0.1
+    debug: "true"
+    github_token: ${{ secrets.PAT }}
+```
+
+**With Backup** - Create backup before changes:
+```yaml
+- uses: somaz94/image-tag-updater@v1
+  with:
+    target_path: charts/somaz/api
+    target_values_file: production.values.yaml
+    new_tag: v2.0.0
+    backup: "true"
+    github_token: ${{ secrets.PAT }}
+```
+
+📖 **[View Advanced Usage Guide →](docs/ADVANCED_USAGE.md)**
+
+<br/>
+
+## Complete Workflow Example
+
+This example demonstrates using the action with common patterns:
+
+```yaml
+name: Update Infrastructure
+
 on:
   push:
-    branches: [ develop ]
-
-jobs:
-  update-image:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: somaz94/image-tag-updater@v1
-        with:
-          target_path: charts/somaz/api
-          file_pattern: "dev*.values.yaml"
-          new_tag: ${{ github.sha }}
-          dry_run: "true"
-          github_token: ${{ secrets.PAT }}
-```
-
-<br/>
-
-## Example Workflow
-
-This example demonstrates how to use the **Image Tag Updater** Action to update
-an image tag in an infrastructure repository. It:
-
-- Checks out the infrastructure repository where the image tag update will be
-   applied.
-- Runs the Action to update the specified image tag in the infrastructure
-   repository.
-
-```yaml
-name: Example Workflow using Image Tag Updater
-
-on:
-  workflow_dispatch:
-    inputs:
-      run:
-        description: 'workflow run'
-        required: true
-        default: 'true'
+    branches: [main]
 
 permissions:
   contents: write
 
 jobs:
-  acton-module:
+  update-images:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout infrastructure repository
+      - name: Checkout Infrastructure Repo
         uses: actions/checkout@v4
         with:
-          repository: somaz94/image-tag-updater 
-          token: ${{ secrets.PAT }}  
+          repository: company/infrastructure
+          token: ${{ secrets.PAT }}
 
-      - name: Set short sha
+      - name: Set Image Tag
         id: vars
-        run: |
-          echo "short_sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+        run: echo "tag=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
-      # dry run
-      - name: Dry Run
+      - name: Test Update (Dry Run)
         uses: somaz94/image-tag-updater@v1
         with:
-          target_path: charts/somaz/api 
-          new_tag: ${{ steps.vars.outputs.short_sha }}
-          target_values_file: dev2
-          branch: test
+          target_path: charts/myapp
+          file_pattern: "dev*.values.yaml"
+          new_tag: ${{ steps.vars.outputs.tag }}
+          dry_run: "true"
+          debug: "true"
           github_token: ${{ secrets.PAT }}
-          DRY_RUN: true
 
-      - name: Run Image Tag Updater in the infrastructure repository
+      - name: Apply Update
         uses: somaz94/image-tag-updater@v1
         with:
-          target_path: charts/somaz/api 
-          new_tag: ${{ steps.vars.outputs.short_sha }}
-          # target_values_file: dev2
-          branch: test
+          target_path: charts/myapp
+          file_pattern: "dev*.values.yaml"
+          new_tag: ${{ steps.vars.outputs.tag }}
+          branch: main
           github_token: ${{ secrets.PAT }}
           git_user_name: GitHub Actions
           git_user_email: actions@github.com
-          repo: somaz94/image-tag-updater
-          file_pattern: "dev*.values.yaml"
-          registry_url: nginx
-
-      - name: Confirm Git log
-        run: |
-          git log -1
-
+          repo: company/infrastructure
+          commit_message: "chore: Update dev image to"
 ```
-
-<br/>
-
-## Notes
-
-- GitHub Token: Make sure `secrets.GITHUB_TOKEN` (or a custom token with write
-  permissions) is configured correctly to allow the Action to push changes to
-  the infrastructure repository.
-- Custom GitHub Token: For better security, you could create a dedicated token
-  for this Action, granting it only the necessary permissions for the
-  infrastructure repository.
-- Backup Option: Use the backup option to control whether a backup file is
-  created (true) or not (false).
-- File Selection: You can use either `file_pattern` (e.g., "dev*.values.yaml") or
-  `target_values_file` (e.g., "dev1.values.yaml") to specify which files to update. Only one
-  of these options is required.
 
 <br/>
 
 ## Troubleshooting
 
-### Common Issues and Solutions
+### Common Issues:
 
-1. **Push Failures**
-   - The action includes a retry mechanism (3 attempts) for Git push operations
-   - Check if the GitHub token has sufficient permissions
-   - Verify the target branch exists and is accessible
+<details>
+<summary>Push fails with permission error?</summary>
 
-2. **File Not Found**
-   - Ensure the `target_path` is correct relative to the repository root
-   - Verify the file pattern matches existing files
-   - Check if the file exists in the specified branch
+1. Verify token has `repo` permissions
+2. Check branch protection rules
+3. Ensure target branch exists
+4. See [Troubleshooting Guide](docs/TROUBLESHOOTING.md#push-failures)
 
-3. **Tag String Not Found**
-   - The action validates the presence of the tag string in target files
-   - Verify the `tag_string` matches the exact format in your YAML files
-   - Check for any indentation issues in the YAML files
+</details>
 
-4. **Invalid Tag Format**
-   - Tags must contain only alphanumeric characters, dots, underscores, and hyphens
-   - The first character must be alphanumeric
-   - Use the dry run mode to test tag format before applying changes
+<details>
+<summary>File not found error?</summary>
+
+1. Verify path: `ls -la charts/somaz/api/`
+2. Check repository checkout
+3. Use absolute paths if needed
+4. See [Troubleshooting Guide](docs/TROUBLESHOOTING.md#file-not-found)
+
+</details>
+
+<details>
+<summary>Tag string not found in file?</summary>
+
+1. Check YAML format and indentation
+2. Verify `tag_string` matches your YAML key
+3. Enable debug mode to see details
+4. See [Troubleshooting Guide](docs/TROUBLESHOOTING.md#tag-string-not-found)
+
+</details>
+
+<details>
+<summary>Invalid tag format error?</summary>
+
+Tags must:
+- Start with alphanumeric character
+- Contain only: `a-z`, `A-Z`, `0-9`, `.`, `_`, `-`
+
+Valid examples: `v1.0.0`, `2024.01.15`, `main-abc123`
+
+</details>
+
+[→ See full troubleshooting guide](docs/TROUBLESHOOTING.md)
 
 <br/>
 
-## Backup Files
+## Notes
 
-When the backup option is enabled (`backup: true`), the action creates backup files with the `.bak` extension in the same directory as the original file. For example:
+- **GitHub Token**: Ensure your token has `repo` write permissions
+- **File Selection**: Use either `file_pattern` or `target_values_file` (not both)
+- **Backup Files**: When enabled, creates `.bak` files before modifications
+- **Security**: The action validates all inputs and handles errors safely
 
-```
-original: values.yaml
-backup: values.yaml.bak
-```
-
-The backup files are created before any modifications are made, ensuring you can always revert changes if needed.
+For detailed information, see:
+- 📖 [Advanced Usage Guide](docs/ADVANCED_USAGE.md) - Matrix strategies, integrations, rollback procedures
+- 🔧 [Troubleshooting Guide](docs/TROUBLESHOOTING.md) - Common issues, debugging, performance tips
 
 <br/>
 
 ## Security Best Practices
 
-1. **Token Management**
-   - Use the principle of least privilege when creating GitHub tokens
-   - Consider using repository-specific tokens instead of organization-wide tokens
-   - Regularly rotate tokens and update them in your secrets
-
-2. **Input Validation**
-   - The action validates all inputs and environment variables
-   - Tag format is strictly validated to prevent injection attacks
-   - File paths are validated to prevent directory traversal attacks
-
-3. **Error Handling**
-   - All operations are wrapped in error handling
-   - Sensitive information is not logged in error messages
-   - Failed operations are properly cleaned up
-
-4. **Audit Trail**
-   - Use meaningful commit messages to track changes
-   - Enable GitHub's audit log to monitor action usage
-   - Consider adding notifications for important updates
-
-<br/>
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+- Use repository-scoped tokens with minimum required permissions (`repo` scope)
+- Enable branch protection rules on target branches
+- Regularly rotate GitHub tokens and update secrets
+- Use dry run mode to validate changes before applying
+- Monitor GitHub audit logs for action usage
+- Keep commit messages descriptive for audit trails
 
 <br/>
 
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'feat: Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+<br/>
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
