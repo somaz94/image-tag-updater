@@ -68,6 +68,10 @@ class Config:
         # Check if at least one of target_values_file or file_pattern is set
         if not self.target_values_file and not self.file_pattern:
             raise ValueError("Either target_values_file or file_pattern must be set")
+        
+        # Check if both are set (not allowed)
+        if self.target_values_file and self.file_pattern:
+            raise ValueError("Cannot set both target_values_file and file_pattern. Choose one.")
     
     def print_config(self) -> None:
         """Print current configuration."""

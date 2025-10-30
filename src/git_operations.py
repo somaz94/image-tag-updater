@@ -56,11 +56,15 @@ class GitOperations:
     
     def branch_exists_locally(self, branch: str) -> bool:
         """Check if branch exists locally."""
-        result = self.run_command(
-            ["git", "show-ref", "--verify", "--quiet", f"refs/heads/{branch}"],
-            check=False
-        )
-        return result is not None
+        try:
+            result = subprocess.run(
+                ["git", "show-ref", "--verify", "--quiet", f"refs/heads/{branch}"],
+                capture_output=True,
+                check=False
+            )
+            return result.returncode == 0
+        except Exception:
+            return False
     
     def branch_exists_remotely(self, branch: str) -> bool:
         """Check if branch exists on remote."""
@@ -77,18 +81,24 @@ class GitOperations:
         # Fetch from remote
         self.run_command(["git", "fetch", "origin"])
         
+        # Check current branch
+        current_branch = self.run_command(["git", "branch", "--show-current"], capture=True)
+        
         if self.branch_exists_locally(self.config.branch):
             # Branch exists locally
-            self.run_command(["git", "checkout", self.config.branch])
+            if current_branch != self.config.branch:
+                self.logger.debug(f"Switching to existing branch: {self.config.branch}")
+                self.run_command(["git", "checkout", self.config.branch])
             
             # Pull if remote branch exists
             if self.branch_exists_remotely(self.config.branch):
                 self.logger.debug("\n⬇️ Pulling latest changes...")
                 self.run_command(["git", "pull", "origin", self.config.branch])
         else:
-            # Check if branch exists in remote
+            # Branch doesn't exist locally
             if self.branch_exists_remotely(self.config.branch):
                 # Remote branch exists, checkout and track it
+                self.logger.debug(f"Checking out remote branch: {self.config.branch}")
                 self.run_command(["git", "checkout", "-b", self.config.branch, f"origin/{self.config.branch}"])
                 self.logger.debug("\n⬇️ Pulling latest changes...")
                 self.run_command(["git", "pull", "origin", self.config.branch])
