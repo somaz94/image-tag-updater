@@ -16,8 +16,27 @@ permissions:
   contents: write
 
 jobs:
+  test-local:
+    name: Run Local Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run tests
+        run: python3 tests/test_local.py
+
   build-and-push-docker:
     name: Build and Push Docker
+    needs: test-local
     runs-on: ubuntu-latest
     services:
       registry:

@@ -1,0 +1,2 @@
+# No external dependencies required
+# All modules use Python standard library
