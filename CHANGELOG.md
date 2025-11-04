@@ -1,5 +1,13 @@
 # Changelog
 
+## [v1.4.0](https://github.com/somaz94/image-tag-updater/tree/v1.4.0) (2025-11-04)
+
+[Full Changelog](https://github.com/somaz94/image-tag-updater/compare/v1.4.0...v1.4.0)
+
+**Merged pull requests:**
+
+- build\(deps\): bump python from 3.12-slim to 3.14-slim in the docker-minor group [\#6](https://github.com/somaz94/image-tag-updater/pull/6) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [v1.4.0](https://github.com/somaz94/image-tag-updater/tree/v1.4.0) (2025-10-30)
 
 [Full Changelog](https://github.com/somaz94/image-tag-updater/compare/v1.3.0...v1.4.0)
