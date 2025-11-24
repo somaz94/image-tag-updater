@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Action Repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: somaz94/image-tag-updater
           token: ${{ secrets.PAT }}
@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout infrastructure repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: somaz94/helm-chart-template
           token: ${{ secrets.PAT }}  
