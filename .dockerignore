@@ -1,0 +1,53 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+src/__pycache__/
+
+# Git files
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+README.md
+CHANGELOG.md
+LICENSE
+*.md
+docs/
+
+# GitHub workflows
+.github/
+
+# Development files
+.vscode/
+.idea/
+.devcontainer/
+
+# Backup files
+backup/
+
+# Test files
+tests/
+test_*
+*_test.py
+pytest_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# Charts (not needed in action image)
+charts/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Example files
+*.example
