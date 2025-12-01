@@ -1,8 +1,8 @@
 # Changelog
 
-## [v1.4.0](https://github.com/somaz94/image-tag-updater/tree/v1.4.0) (2025-11-25)
+## [v1.4.1](https://github.com/somaz94/image-tag-updater/tree/v1.4.1) (2025-12-01)
 
-[Full Changelog](https://github.com/somaz94/image-tag-updater/compare/v1.4.0...v1.4.0)
+[Full Changelog](https://github.com/somaz94/image-tag-updater/compare/v1.4.0...v1.4.1)
 
 **Merged pull requests:**
 
