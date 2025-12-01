@@ -121,11 +121,13 @@ def main() -> None:
         
     except ValueError as e:
         logger.error(str(e))
+        sys.exit(1)
     except Exception as e:
         logger.error(f"Unexpected error: {e}")
-        if config.debug:
+        if debug_mode:
             import traceback
             traceback.print_exc()
+        sys.exit(1)
 
 
 if __name__ == "__main__":

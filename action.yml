@@ -112,7 +112,7 @@ runs:
     GIT_USER_NAME: ${{ inputs.git_user_name }}
     GIT_USER_EMAIL: ${{ inputs.git_user_email }}
     BACKUP: ${{ inputs.backup }}
-    REPO: ${{ inputs.REPO }}
+    REPO: ${{ inputs.repo }}
     FILE_PATTERN: ${{ inputs.file_pattern }}
     DRY_RUN: ${{ inputs.dry_run }}
     DEBUG: ${{ inputs.debug }}

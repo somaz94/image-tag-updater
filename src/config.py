@@ -2,7 +2,15 @@
 import os
 import re
 from dataclasses import dataclass
-from typing import Optional
+from typing import List, Optional
+
+# Constants
+TAG_PATTERN = re.compile(r'^[a-zA-Z0-9][a-zA-Z0-9._-]*$')
+REQUIRED_FIELDS = [
+    "target_path", "new_tag", "tag_string",
+    "git_user_name", "git_user_email", "github_token",
+    "repo", "branch"
+]
 
 
 @dataclass
@@ -60,17 +68,28 @@ class Config:
         """Get the final tag with prefix and suffix applied."""
         return f"{self.tag_prefix}{self.new_tag}{self.tag_suffix}"
     
+    def _validate_tag_format(self, tag: str, tag_type: str) -> None:
+        """Validate tag format.
+        
+        Args:
+            tag: Tag string to validate
+            tag_type: Description of tag type for error message
+            
+        Raises:
+            ValueError: If tag format is invalid
+        """
+        if not TAG_PATTERN.match(tag):
+            raise ValueError(
+                f"Invalid {tag_type} format: {tag}. "
+                "Tags should only contain alphanumeric characters, dots, underscores, and hyphens."
+            )
+    
     def validate(self) -> None:
         """Validate configuration values."""
-        required_fields = [
-            "target_path", "new_tag", "tag_string",
-            "git_user_name", "git_user_email", "github_token",
-            "repo", "branch"
-        ]
-        
-        for field in required_fields:
-            if not getattr(self, field):
-                raise ValueError(f"Required field '{field}' is not set")
+        # Check required fields
+        missing = [field for field in REQUIRED_FIELDS if not getattr(self, field)]
+        if missing:
+            raise ValueError(f"Required fields are not set: {', '.join(missing)}")
         
         # Validate tag format (without prefix/suffix)
         if not re.match(r'^[a-zA-Z0-9][a-zA-Z0-9._-]*$', self.new_tag):

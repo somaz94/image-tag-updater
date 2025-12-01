@@ -3,7 +3,7 @@ import os
 import re
 import shutil
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 
 from .config import Config
 from .logger import Logger
@@ -49,6 +49,57 @@ class FileProcessor:
         except Exception as e:
             self.logger.error(f"Failed to get current tag from {file_path}: {e}")
     
+    def should_skip_update(self, file_path: str, current_tag: str, final_tag: str) -> Tuple[bool, Optional[str]]:
+        """Check if update should be skipped.
+        
+        Args:
+            file_path: Path to the file being checked
+            current_tag: Current tag value in the file
+            final_tag: Target tag value
+            
+        Returns:
+            Tuple[bool, Optional[str]]: (should_skip, reason)
+        """
+        if self.config.update_if_contains and self.config.update_if_contains not in current_tag:
+            return True, f"current tag '{current_tag}' does not contain '{self.config.update_if_contains}'"
+        
+        if self.config.skip_if_contains and self.config.skip_if_contains in current_tag:
+            return True, f"current tag '{current_tag}' contains '{self.config.skip_if_contains}'"
+        
+        if current_tag == final_tag:
+            return True, f"already set to {final_tag}"
+        
+        return False, None
+    
+    def _perform_update(self, file_path: str, final_tag: str) -> bool:
+        """Perform actual file update.
+        
+        Args:
+            file_path: Path to the file to update
+            final_tag: New tag value to set
+            
+        Returns:
+            bool: True if update succeeded, False otherwise
+        """
+        try:
+            self.logger.debug("\nUpdating image tag...")
+            with open(file_path, 'r') as f:
+                content = f.read()
+            
+            # Replace the tag value with final tag (including prefix/suffix)
+            pattern = rf'(^\s*{re.escape(self.config.tag_string)}:)\s*.*$'
+            replacement = rf'\1 "{final_tag}"'
+            updated_content = re.sub(pattern, replacement, content, flags=re.MULTILINE)
+            
+            with open(file_path, 'w') as f:
+                f.write(updated_content)
+            
+            self.logger.success(f"Updated {file_path}")
+            return True
+        except Exception as e:
+            self.logger.error(f"Failed to update file {file_path}: {e}")
+            return False
+    
     def update_file(self, file_path: str) -> bool:
         """Update tag in file. Returns True if changes were made."""
         self.logger.debug(f"\nProcessing file: {file_path}")
@@ -56,25 +107,13 @@ class FileProcessor:
         # Get current tag value
         current_tag = self.get_current_tag(file_path)
         
-        # Check conditional update rules
-        if self.config.update_if_contains and self.config.update_if_contains not in current_tag:
-            self.logger.info(
-                f"Skipping {file_path}: current tag '{current_tag}' does not contain '{self.config.update_if_contains}'"
-            )
-            return False
-        
-        if self.config.skip_if_contains and self.config.skip_if_contains in current_tag:
-            self.logger.info(
-                f"Skipping {file_path}: current tag '{current_tag}' contains '{self.config.skip_if_contains}'"
-            )
-            return False
-        
         # Get final tag with prefix/suffix
         final_tag = self.config.get_final_tag()
         
-        # If tag is already the target value, skip
-        if current_tag == final_tag:
-            self.logger.info(f"Tag in {file_path} already set to {final_tag}, skipping update")
+        # Check if update should be skipped
+        should_skip, skip_reason = self.should_skip_update(file_path, current_tag, final_tag)
+        if should_skip:
+            self.logger.info(f"Skipping {file_path}: {skip_reason}")
             return False
         
         # Store old tag for output
@@ -97,25 +136,11 @@ class FileProcessor:
             except Exception as e:
                 self.logger.error(f"Failed to create backup: {e}")
         
-        # Update the file
-        try:
-            self.logger.debug("\nUpdating image tag...")
-            with open(file_path, 'r') as f:
-                content = f.read()
-            
-            # Replace the tag value with final tag (including prefix/suffix)
-            pattern = rf'(^\s*{re.escape(self.config.tag_string)}:)\s*.*$'
-            replacement = rf'\1 "{final_tag}"'
-            updated_content = re.sub(pattern, replacement, content, flags=re.MULTILINE)
-            
-            with open(file_path, 'w') as f:
-                f.write(updated_content)
-            
-            self.logger.success(f"Updated {file_path}")
+        # Perform the update
+        if self._perform_update(file_path, final_tag):
             self.updated_files.append(file_path)
             return True
-        except Exception as e:
-            self.logger.error(f"Failed to update file {file_path}: {e}")
+        return False
     
     def get_files_to_process(self) -> List[str]:
         """Get list of files to process based on configuration."""

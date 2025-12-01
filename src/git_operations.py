@@ -1,5 +1,6 @@
 """Git operations for image tag updater."""
 import subprocess
+import sys
 import time
 from typing import List, Optional
 
@@ -14,29 +15,54 @@ class GitOperations:
         self.config = config
         self.logger = logger
     
-    def run_command(self, cmd: List[str], check: bool = True, capture: bool = False) -> Optional[str]:
-        """Run a shell command."""
+    def run_command(
+        self, 
+        cmd: List[str], 
+        check: bool = True, 
+        capture: bool = False,
+        show_output: bool = False
+    ) -> Optional[str]:
+        """Run a shell command with improved error handling.
+        
+        Args:
+            cmd: Command and arguments to run
+            check: Whether to raise exception on non-zero exit
+            capture: Whether to capture and return stdout
+            show_output: Whether to show stdout/stderr (overrides debug mode)
+            
+        Returns:
+            Optional[str]: Captured stdout if capture=True, None otherwise
+        """
+        self.logger.debug(f"Running: {' '.join(cmd)}")
+        
         try:
-            self.logger.debug(f"Running: {' '.join(cmd)}")
+            result = subprocess.run(
+                cmd,
+                check=check,
+                capture_output=True,
+                text=True
+            )
+            
+            # Show output if requested or in debug mode
+            if show_output or self.config.debug:
+                if result.stdout:
+                    print(result.stdout)
+                if result.stderr:
+                    print(result.stderr, file=sys.stderr)
+            
+            # Return captured output if requested
             if capture:
-                result = subprocess.run(
-                    cmd,
-                    check=check,
-                    capture_output=True,
-                    text=True
-                )
                 return result.stdout.strip()
-            else:
-                subprocess.run(
-                    cmd,
-                    check=check,
-                    stdout=subprocess.DEVNULL if not self.config.debug else None,
-                    stderr=subprocess.DEVNULL if not self.config.debug else None
-                )
-                return None
+            
+            return None
+            
         except subprocess.CalledProcessError as e:
             if check:
-                self.logger.error(f"Command failed: {' '.join(cmd)}\n{e}")
+                error_msg = f"Command failed: {' '.join(cmd)}\n"
+                error_msg += f"Exit code: {e.returncode}\n"
+                if e.stderr:
+                    error_msg += f"Error: {e.stderr}"
+                self.logger.error(error_msg)
             return None
     
     def configure_git(self) -> None:
@@ -73,6 +99,19 @@ class GitOperations:
             capture=True
         )
         return branch in (output or "")
+    
+    def check_branch_existence(self, branch: str) -> tuple[bool, bool]:
+        """Check if branch exists locally and remotely.
+        
+        Args:
+            branch: Branch name to check
+            
+        Returns:
+            tuple[bool, bool]: (exists_locally, exists_remotely)
+        """
+        local = self.branch_exists_locally(branch)
+        remote = self.branch_exists_remotely(branch)
+        return local, remote
     
     def setup_branch(self) -> None:
         """Setup Git branch."""
