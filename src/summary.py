@@ -1,7 +1,7 @@
 """Change summary utilities for image tag updater."""
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, List, Optional
 
@@ -11,6 +11,8 @@ from .logger import Logger
 
 class ChangeSummary:
     """Handle change summary generation and storage."""
+    
+    MAX_ENTRIES = 100  # Maximum number of summary entries to keep
     
     def __init__(self, config: Config, logger: Logger):
         self.config = config
@@ -37,7 +39,7 @@ class ChangeSummary:
             })
         
         summary = {
-            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
             "repository": self.config.repo,
             "branch": self.config.branch,
             "commit_sha": commit_sha or "",
@@ -73,15 +75,18 @@ class ChangeSummary:
                     summaries = json.load(f)
                 if not isinstance(summaries, list):
                     summaries = [summaries]
-            except (json.JSONDecodeError, IOError) as e:
-                self.logger.warning(f"Could not read existing summary file: {e}")
+            except json.JSONDecodeError as e:
+                self.logger.warning(f"Invalid JSON in summary file: {e}")
+                summaries = []
+            except IOError as e:
+                self.logger.warning(f"Could not read summary file: {e}")
                 summaries = []
         
         # Append new summary
         summaries.append(summary)
         
-        # Keep only last 100 entries to prevent file from growing too large
-        summaries = summaries[-100:]
+        # Keep only last N entries to prevent file from growing too large
+        summaries = summaries[-self.MAX_ENTRIES:]
         
         # Write updated summaries
         try:

@@ -107,7 +107,8 @@ def main() -> None:
         
         # Write commit SHA outputs
         write_output("commit_sha", commit_sha or "")
-        write_output("commit_sha_short", commit_sha[:7] if commit_sha else "")
+        commit_sha_short = commit_sha[:7] if commit_sha and len(commit_sha) >= 7 else (commit_sha or "")
+        write_output("commit_sha_short", commit_sha_short)
         
         # Save summary with commit SHA
         if config.summary_file:
