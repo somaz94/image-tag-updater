@@ -25,7 +25,7 @@ def create_test_values_file(content: str, directory: str, filename: str = "value
 
 def test_basic_tag_update():
     """Test basic tag update."""
-    print("\nTest Test 1: Basic tag update")
+    print("\nTest 1: Basic tag update")
     
     with tempfile.TemporaryDirectory() as tmpdir:
         content = """
@@ -65,7 +65,7 @@ image:
 
 def test_already_updated():
     """Test when tag is already updated."""
-    print("\nTest Test 2: Already updated tag")
+    print("\nTest 2: Already updated tag")
     
     with tempfile.TemporaryDirectory() as tmpdir:
         content = """
@@ -103,7 +103,7 @@ image:
 
 def test_actual_file_update():
     """Test actual file update (not dry run)."""
-    print("\nTest Test 3: Actual file update with backup")
+    print("\nTest 3: Actual file update with backup")
     
     with tempfile.TemporaryDirectory() as tmpdir:
         content = """
@@ -149,7 +149,7 @@ image:
 
 def test_multiple_files_pattern():
     """Test multiple files with pattern matching."""
-    print("\nTest Test 4: Multiple files with pattern (dev*.values.yaml)")
+    print("\nTest 4: Multiple files with pattern (dev*.values.yaml)")
     
     with tempfile.TemporaryDirectory() as tmpdir:
         # Create multiple files
@@ -199,7 +199,7 @@ def test_multiple_files_pattern():
 
 def test_custom_tag_string():
     """Test custom tag string."""
-    print("\nTest Test 5: Custom tag string (imageTag)")
+    print("\nTest 5: Custom tag string (imageTag)")
     
     with tempfile.TemporaryDirectory() as tmpdir:
         content = """
@@ -238,7 +238,7 @@ app:
 
 def test_invalid_tag_format():
     """Test invalid tag format validation."""
-    print("\nTest Test 6: Invalid tag format validation")
+    print("\nTest 6: Invalid tag format validation")
     
     try:
         config = Config(
@@ -268,7 +268,7 @@ def test_invalid_tag_format():
 
 def test_valid_tag_formats():
     """Test various valid tag formats."""
-    print("\nTest Test 7: Valid tag formats")
+    print("\nTest 7: Valid tag formats")
     
     valid_tags = [
         "v1.0.0",
@@ -308,7 +308,7 @@ def test_valid_tag_formats():
 
 def test_no_backup():
     """Test file update without backup."""
-    print("\nTest Test 8: File update without backup")
+    print("\nTest 8: File update without backup")
     
     with tempfile.TemporaryDirectory() as tmpdir:
         content = """
@@ -348,7 +348,7 @@ image:
 
 def test_nested_yaml_structure():
     """Test nested YAML structure."""
-    print("\nTest Test 9: Nested YAML structure")
+    print("\nTest 9: Nested YAML structure")
     
     with tempfile.TemporaryDirectory() as tmpdir:
         content = """
@@ -398,7 +398,7 @@ global:
 
 def test_config_validation():
     """Test configuration validation."""
-    print("\nTest Test 10: Configuration validation")
+    print("\nTest 10: Configuration validation")
     
     test_cases = [
         {
@@ -457,7 +457,7 @@ def test_config_validation():
 
 def test_debug_mode():
     """Test debug mode logging."""
-    print("\nTest Test 11: Debug mode logging")
+    print("\nTest 11: Debug mode logging")
     
     with tempfile.TemporaryDirectory() as tmpdir:
         content = """
@@ -497,7 +497,7 @@ image:
 
 def test_empty_file():
     """Test handling empty file."""
-    print("\nTest Test 12: Empty file handling")
+    print("\nTest 12: Empty file handling")
     
     with tempfile.TemporaryDirectory() as tmpdir:
         content = ""
@@ -541,7 +541,7 @@ def test_empty_file():
 
 def test_file_without_tag():
     """Test file without target tag string."""
-    print("\nTest Test 13: File without target tag")
+    print("\nTest 13: File without target tag")
     
     with tempfile.TemporaryDirectory() as tmpdir:
         content = """
