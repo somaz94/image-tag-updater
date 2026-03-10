@@ -6,6 +6,7 @@
 
 **Merged pull requests:**
 
+- build\(deps\): bump docker/setup-buildx-action from 3 to 4 [\#10](https://github.com/somaz94/image-tag-updater/pull/10) ([dependabot[bot]](https://github.com/apps/dependabot))
 - build\(deps\): bump docker/build-push-action from 6 to 7 [\#9](https://github.com/somaz94/image-tag-updater/pull/9) ([dependabot[bot]](https://github.com/apps/dependabot))
 
 ## [v1.4.2](https://github.com/somaz94/image-tag-updater/tree/v1.4.2) (2025-12-01)
