@@ -12,7 +12,7 @@ class Logger:
     def print_header(self, message: str) -> None:
         """Print section header."""
         print(f"\n{'=' * 42}")
-        print(f"▶️ {message}")
+        print(f">> {message}")
         print(f"{'=' * 42}\n")
     
     def debug(self, message: str) -> None:
@@ -26,13 +26,13 @@ class Logger:
     
     def success(self, message: str) -> None:
         """Print success message."""
-        print(f"✅ {message}")
+        print(f"[O] {message}")
     
     def warning(self, message: str) -> None:
         """Print warning message."""
-        print(f"⚠️ {message}")
+        print(f"[!] {message}")
     
     def error(self, message: str) -> NoReturn:
         """Print error message and exit."""
-        print(f"❌ Error: {message}", file=sys.stderr)
+        print(f"[X] Error: {message}", file=sys.stderr)
         sys.exit(1)

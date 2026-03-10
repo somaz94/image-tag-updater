@@ -162,7 +162,7 @@ class GitOperations:
         
         # Check if there are staged changes
         if not self.has_staged_changes():
-            self.logger.info("\n✅ No changes to commit. Nothing to push.")
+            self.logger.info("\n[O] No changes to commit. Nothing to push.")
             return None
         
         # Create commit message

@@ -25,7 +25,7 @@ def create_test_values_file(content: str, directory: str, filename: str = "value
 
 def test_basic_tag_update():
     """Test basic tag update."""
-    print("\n🧪 Test 1: Basic tag update")
+    print("\nTest Test 1: Basic tag update")
     
     with tempfile.TemporaryDirectory() as tmpdir:
         content = """
@@ -56,16 +56,16 @@ image:
         changed = processor.update_file(file_path)
         
         if changed:
-            print("   ✅ PASS: Tag update detected")
+            print("   [O] PASS: Tag update detected")
             return True
         else:
-            print("   ❌ FAIL: No change detected")
+            print("   [X] FAIL: No change detected")
             return False
 
 
 def test_already_updated():
     """Test when tag is already updated."""
-    print("\n🧪 Test 2: Already updated tag")
+    print("\nTest Test 2: Already updated tag")
     
     with tempfile.TemporaryDirectory() as tmpdir:
         content = """
@@ -94,16 +94,16 @@ image:
         changed = processor.update_file(file_path)
         
         if not changed:
-            print("   ✅ PASS: No update needed")
+            print("   [O] PASS: No update needed")
             return True
         else:
-            print("   ❌ FAIL: Unexpected change")
+            print("   [X] FAIL: Unexpected change")
             return False
 
 
 def test_actual_file_update():
     """Test actual file update (not dry run)."""
-    print("\n🧪 Test 3: Actual file update with backup")
+    print("\nTest Test 3: Actual file update with backup")
     
     with tempfile.TemporaryDirectory() as tmpdir:
         content = """
@@ -140,16 +140,16 @@ image:
         backup_exists = os.path.exists(f"{file_path}.bak")
         
         if changed and 'v3.0.0' in updated_content and backup_exists:
-            print("   ✅ PASS: File updated correctly with backup")
+            print("   [O] PASS: File updated correctly with backup")
             return True
         else:
-            print("   ❌ FAIL: File update failed")
+            print("   [X] FAIL: File update failed")
             return False
 
 
 def test_multiple_files_pattern():
     """Test multiple files with pattern matching."""
-    print("\n🧪 Test 4: Multiple files with pattern (dev*.values.yaml)")
+    print("\nTest Test 4: Multiple files with pattern (dev*.values.yaml)")
     
     with tempfile.TemporaryDirectory() as tmpdir:
         # Create multiple files
@@ -188,10 +188,10 @@ def test_multiple_files_pattern():
             
             # Should match dev1 and dev2, but not prod
             if len(matched_files) == 2 and all('dev' in f for f in matched_files):
-                print(f"   ✅ PASS: Pattern matched {len(matched_files)} files correctly")
+                print(f"   [O] PASS: Pattern matched {len(matched_files)} files correctly")
                 return True
             else:
-                print(f"   ❌ FAIL: Expected 2 dev files, got {len(matched_files)}: {matched_files}")
+                print(f"   [X] FAIL: Expected 2 dev files, got {len(matched_files)}: {matched_files}")
                 return False
         finally:
             os.chdir(original_cwd)
@@ -199,7 +199,7 @@ def test_multiple_files_pattern():
 
 def test_custom_tag_string():
     """Test custom tag string."""
-    print("\n🧪 Test 5: Custom tag string (imageTag)")
+    print("\nTest Test 5: Custom tag string (imageTag)")
     
     with tempfile.TemporaryDirectory() as tmpdir:
         content = """
@@ -229,16 +229,16 @@ app:
         changed = processor.update_file(file_path)
         
         if changed:
-            print("   ✅ PASS: Custom tag string worked")
+            print("   [O] PASS: Custom tag string worked")
             return True
         else:
-            print("   ❌ FAIL: Custom tag string not detected")
+            print("   [X] FAIL: Custom tag string not detected")
             return False
 
 
 def test_invalid_tag_format():
     """Test invalid tag format validation."""
-    print("\n🧪 Test 6: Invalid tag format validation")
+    print("\nTest Test 6: Invalid tag format validation")
     
     try:
         config = Config(
@@ -255,20 +255,20 @@ def test_invalid_tag_format():
             debug=False
         )
         config.validate()  # Trigger validation
-        print("   ❌ FAIL: Invalid tag was accepted")
+        print("   [X] FAIL: Invalid tag was accepted")
         return False
     except ValueError as e:
         if "Invalid tag format" in str(e):
-            print("   ✅ PASS: Invalid tag rejected correctly")
+            print("   [O] PASS: Invalid tag rejected correctly")
             return True
         else:
-            print(f"   ❌ FAIL: Wrong error: {e}")
+            print(f"   [X] FAIL: Wrong error: {e}")
             return False
 
 
 def test_valid_tag_formats():
     """Test various valid tag formats."""
-    print("\n🧪 Test 7: Valid tag formats")
+    print("\nTest Test 7: Valid tag formats")
     
     valid_tags = [
         "v1.0.0",
@@ -295,20 +295,20 @@ def test_valid_tag_formats():
                 debug=False
             )
         except ValueError:
-            print(f"   ❌ Valid tag '{tag}' was rejected")
+            print(f"   [X] Valid tag '{tag}' was rejected")
             all_valid = False
     
     if all_valid:
-        print(f"   ✅ PASS: All {len(valid_tags)} valid tags accepted")
+        print(f"   [O] PASS: All {len(valid_tags)} valid tags accepted")
         return True
     else:
-        print("   ❌ FAIL: Some valid tags were rejected")
+        print("   [X] FAIL: Some valid tags were rejected")
         return False
 
 
 def test_no_backup():
     """Test file update without backup."""
-    print("\n🧪 Test 8: File update without backup")
+    print("\nTest Test 8: File update without backup")
     
     with tempfile.TemporaryDirectory() as tmpdir:
         content = """
@@ -339,16 +339,16 @@ image:
         backup_exists = os.path.exists(f"{file_path}.bak")
         
         if changed and not backup_exists:
-            print("   ✅ PASS: File updated without backup")
+            print("   [O] PASS: File updated without backup")
             return True
         else:
-            print("   ❌ FAIL: Backup incorrectly created or file not updated")
+            print("   [X] FAIL: Backup incorrectly created or file not updated")
             return False
 
 
 def test_nested_yaml_structure():
     """Test nested YAML structure."""
-    print("\n🧪 Test 9: Nested YAML structure")
+    print("\nTest Test 9: Nested YAML structure")
     
     with tempfile.TemporaryDirectory() as tmpdir:
         content = """
@@ -389,16 +389,16 @@ global:
         new_tag_count = updated_content.count('v2.0.0')
         
         if changed and new_tag_count == 2:  # Both frontend and backend
-            print("   ✅ PASS: All nested tags updated")
+            print("   [O] PASS: All nested tags updated")
             return True
         else:
-            print(f"   ❌ FAIL: Expected 2 tag updates, found {new_tag_count}")
+            print(f"   [X] FAIL: Expected 2 tag updates, found {new_tag_count}")
             return False
 
 
 def test_config_validation():
     """Test configuration validation."""
-    print("\n🧪 Test 10: Configuration validation")
+    print("\nTest Test 10: Configuration validation")
     
     test_cases = [
         {
@@ -439,17 +439,17 @@ def test_config_validation():
             config = Config(**test_case["params"])
             config.validate()  # Trigger validation
             if test_case["should_fail"]:
-                print(f"   ❌ {test_case['name']}: Should have failed")
+                print(f"   [X] {test_case['name']}: Should have failed")
                 all_passed = False
         except ValueError:
             if test_case["should_fail"]:
                 pass  # Expected
             else:
-                print(f"   ❌ {test_case['name']}: Unexpected failure")
+                print(f"   [X] {test_case['name']}: Unexpected failure")
                 all_passed = False
     
     if all_passed:
-        print("   ✅ PASS: Configuration validation working")
+        print("   [O] PASS: Configuration validation working")
         return True
     else:
         return False
@@ -457,7 +457,7 @@ def test_config_validation():
 
 def test_debug_mode():
     """Test debug mode logging."""
-    print("\n🧪 Test 11: Debug mode logging")
+    print("\nTest Test 11: Debug mode logging")
     
     with tempfile.TemporaryDirectory() as tmpdir:
         content = """
@@ -488,16 +488,16 @@ image:
         changed = processor.update_file(file_path)
         
         if changed:
-            print("   ✅ PASS: Debug mode working")
+            print("   [O] PASS: Debug mode working")
             return True
         else:
-            print("   ❌ FAIL: Debug mode issue")
+            print("   [X] FAIL: Debug mode issue")
             return False
 
 
 def test_empty_file():
     """Test handling empty file."""
-    print("\n🧪 Test 12: Empty file handling")
+    print("\nTest Test 12: Empty file handling")
     
     with tempfile.TemporaryDirectory() as tmpdir:
         content = ""
@@ -532,16 +532,16 @@ def test_empty_file():
         # For empty file with no tag field, it should detect "change" in dry-run
         # but file should remain empty
         if changed and final_content == "":
-            print("   ✅ PASS: Empty file handled correctly (dry-run detected potential change)")
+            print("   [O] PASS: Empty file handled correctly (dry-run detected potential change)")
             return True
         else:
-            print("   ❌ FAIL: Empty file handling issue")
+            print("   [X] FAIL: Empty file handling issue")
             return False
 
 
 def test_file_without_tag():
     """Test file without target tag string."""
-    print("\n🧪 Test 13: File without target tag")
+    print("\nTest Test 13: File without target tag")
     
     with tempfile.TemporaryDirectory() as tmpdir:
         content = """
@@ -579,17 +579,17 @@ image:
         
         # Should detect potential change but not modify file in dry-run
         if changed and "v2.0.0" not in final_content:
-            print("   ✅ PASS: File without tag handled correctly (would add tag)")
+            print("   [O] PASS: File without tag handled correctly (would add tag)")
             return True
         else:
-            print("   ❌ FAIL: Unexpected behavior")
+            print("   [X] FAIL: Unexpected behavior")
             return False
 
 
 def main():
     """Run all tests."""
     print("=" * 50)
-    print("🧪 Image Tag Updater - Comprehensive Test Suite")
+    print("Test Image Tag Updater - Comprehensive Test Suite")
     print("=" * 50)
     
     tests = [
@@ -613,20 +613,20 @@ def main():
         try:
             results.append(test_func())
         except Exception as e:
-            print(f"   ❌ EXCEPTION: {e}")
+            print(f"   [X] EXCEPTION: {e}")
             results.append(False)
     
     print("\n" + "=" * 50)
     passed = sum(results)
     total = len(results)
-    print(f"📊 Test Results: {passed}/{total} passed")
+    print(f"Test Results: {passed}/{total} passed")
     
     if passed == total:
-        print("✅ All tests passed!")
+        print("[O] All tests passed!")
         print("=" * 50)
         sys.exit(0)
     else:
-        print(f"❌ {total - passed} test(s) failed")
+        print(f"[X] {total - passed} test(s) failed")
         print("=" * 50)
         sys.exit(1)
 

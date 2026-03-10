@@ -32,7 +32,7 @@ def test_tag_prefix():
     final_tag = config.get_final_tag()
     
     assert final_tag == "v1.2.3", f"Expected 'v1.2.3', got '{final_tag}'"
-    print(f"✅ Tag prefix test passed: {config.new_tag} -> {final_tag}")
+    print(f"[O] Tag prefix test passed: {config.new_tag} -> {final_tag}")
 
 
 def test_tag_suffix():
@@ -49,7 +49,7 @@ def test_tag_suffix():
     final_tag = config.get_final_tag()
     
     assert final_tag == "latest-prod", f"Expected 'latest-prod', got '{final_tag}'"
-    print(f"✅ Tag suffix test passed: {config.new_tag} -> {final_tag}")
+    print(f"[O] Tag suffix test passed: {config.new_tag} -> {final_tag}")
 
 
 def test_tag_prefix_and_suffix():
@@ -66,7 +66,7 @@ def test_tag_prefix_and_suffix():
     final_tag = config.get_final_tag()
     
     assert final_tag == "release-1.2.3-staging", f"Expected 'release-1.2.3-staging', got '{final_tag}'"
-    print(f"✅ Prefix and suffix test passed: {config.new_tag} -> {final_tag}")
+    print(f"[O] Prefix and suffix test passed: {config.new_tag} -> {final_tag}")
 
 
 def test_no_prefix_suffix():
@@ -83,7 +83,7 @@ def test_no_prefix_suffix():
     final_tag = config.get_final_tag()
     
     assert final_tag == "v1.0.0", f"Expected 'v1.0.0', got '{final_tag}'"
-    print(f"✅ No prefix/suffix test passed: {final_tag}")
+    print(f"[O] No prefix/suffix test passed: {final_tag}")
 
 
 def test_tag_validation_with_prefix_suffix():
@@ -102,9 +102,9 @@ def test_tag_validation_with_prefix_suffix():
     config = Config.from_env()
     try:
         config.validate()
-        print(f"✅ Validation passed for: {config.get_final_tag()}")
+        print(f"[O] Validation passed for: {config.get_final_tag()}")
     except ValueError as e:
-        print(f"❌ Validation failed: {e}")
+        print(f"[X] Validation failed: {e}")
         sys.exit(1)
     
     # Invalid case - final tag starts with special character
@@ -120,10 +120,10 @@ def test_tag_validation_with_prefix_suffix():
     config = Config.from_env()
     try:
         config.validate()
-        print(f"❌ Should have failed validation for: {config.get_final_tag()}")
+        print(f"[X] Should have failed validation for: {config.get_final_tag()}")
         sys.exit(1)
     except ValueError as e:
-        print(f"✅ Correctly rejected invalid tag: {e}")
+        print(f"[O] Correctly rejected invalid tag: {e}")
 
 
 def test_print_config():
@@ -141,7 +141,7 @@ def test_print_config():
     config = Config.from_env()
     print("\nConfig output:")
     config.print_config()
-    print("✅ Config print test passed")
+    print("[O] Config print test passed")
 
 
 def main():
@@ -159,11 +159,11 @@ def main():
         test_print_config()
         
         print("\n" + "=" * 60)
-        print("✅ All tests passed!")
+        print("[O] All tests passed!")
         print("=" * 60)
         
     except Exception as e:
-        print(f"\n❌ Test failed: {e}")
+        print(f"\n[X] Test failed: {e}")
         import traceback
         traceback.print_exc()
         sys.exit(1)

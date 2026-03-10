@@ -48,12 +48,12 @@ def test_update_if_contains():
     # Should update v1.x tags
     should_update = config.update_if_contains in current_tag_v1
     assert should_update, f"Should update {current_tag_v1}"
-    print(f"✅ Would update: {current_tag_v1} (contains '{config.update_if_contains}')")
+    print(f"[O] Would update: {current_tag_v1} (contains '{config.update_if_contains}')")
     
     # Should skip v2.x tags
     should_skip = config.update_if_contains not in current_tag_v2
     assert should_skip, f"Should skip {current_tag_v2}"
-    print(f"✅ Would skip: {current_tag_v2} (does not contain '{config.update_if_contains}')")
+    print(f"[O] Would skip: {current_tag_v2} (does not contain '{config.update_if_contains}')")
 
 
 def test_skip_if_contains():
@@ -72,12 +72,12 @@ def test_skip_if_contains():
     # Should skip 'latest' tags
     should_skip = config.skip_if_contains in current_tag_latest
     assert should_skip, f"Should skip {current_tag_latest}"
-    print(f"✅ Would skip: {current_tag_latest} (contains '{config.skip_if_contains}')")
+    print(f"[O] Would skip: {current_tag_latest} (contains '{config.skip_if_contains}')")
     
     # Should update version tags
     should_update = config.skip_if_contains not in current_tag_version
     assert should_update, f"Should update {current_tag_version}"
-    print(f"✅ Would update: {current_tag_version} (does not contain '{config.skip_if_contains}')")
+    print(f"[O] Would update: {current_tag_version} (does not contain '{config.skip_if_contains}')")
 
 
 def test_combined_conditions():
@@ -104,7 +104,7 @@ def test_combined_conditions():
         
         assert result == should_update, f"Failed for {tag}: expected {should_update}, got {result}"
         status = "update" if should_update else "skip"
-        print(f"✅ {tag}: {status} ({reason})")
+        print(f"[O] {tag}: {status} ({reason})")
 
 
 def test_summary_creation():
@@ -139,7 +139,7 @@ def test_summary_creation():
     assert result["changes"][0]["old_tag"] == "v1.0.0"
     assert result["changes"][0]["new_tag"] == "v1.2.3"
     
-    print("✅ Summary structure is correct")
+    print("[O] Summary structure is correct")
     print(f"   Repository: {result['repository']}")
     print(f"   Branch: {result['branch']}")
     print(f"   Changes: {result['changes_count']}")
@@ -167,7 +167,7 @@ def test_summary_file_saving():
         
         # Verify file was created
         assert os.path.exists(summary_file), "Summary file was not created"
-        print(f"✅ Summary file created: {summary_file}")
+        print(f"[O] Summary file created: {summary_file}")
         
         # Read and verify content
         with open(summary_file, 'r') as f:
@@ -176,7 +176,7 @@ def test_summary_file_saving():
         assert isinstance(data, list), "Summary should be a list"
         assert len(data) == 1, "Should have one entry"
         assert data[0]["commit_sha"] == "commit1"
-        print(f"✅ Summary content is correct (1 entry)")
+        print(f"[O] Summary content is correct (1 entry)")
         
         # Save second summary
         updated_files = ["file2.yaml"]
@@ -189,7 +189,7 @@ def test_summary_file_saving():
         
         assert len(data) == 2, "Should have two entries"
         assert data[1]["commit_sha"] == "commit2"
-        print(f"✅ Summary append worked (2 entries)")
+        print(f"[O] Summary append worked (2 entries)")
 
 
 def test_no_conditions():
@@ -207,7 +207,7 @@ def test_no_conditions():
     
     for tag in test_tags:
         should_update = True  # No conditions = always update
-        print(f"✅ Would update: {tag} (no conditions set)")
+        print(f"[O] Would update: {tag} (no conditions set)")
 
 
 def main():
@@ -225,11 +225,11 @@ def main():
         test_no_conditions()
         
         print("\n" + "=" * 60)
-        print("✅ All tests passed!")
+        print("[O] All tests passed!")
         print("=" * 60)
         
     except Exception as e:
-        print(f"\n❌ Test failed: {e}")
+        print(f"\n[X] Test failed: {e}")
         import traceback
         traceback.print_exc()
         sys.exit(1)

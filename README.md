@@ -327,7 +327,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Infrastructure Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: company/infrastructure
           token: ${{ secrets.PAT }}

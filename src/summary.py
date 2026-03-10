@@ -109,7 +109,7 @@ class ChangeSummary:
         
         final_tag = self.config.get_final_tag()
         
-        self.logger.info("\n📊 Change Summary:")
+        self.logger.info("\nChange Summary:")
         self.logger.info(f"   Updated {len(updated_files)} file(s)")
         
         for file_path in updated_files:

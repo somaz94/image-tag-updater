@@ -88,8 +88,8 @@ tag push v* -> Create release
 
 ### CI Structure
 ```
-unit-test ──────────┐
-build-and-push-docker ──> test-action ──> ci-result
+test-local ─────────────┐
+build-and-push-docker ──> matrix-test ──> ci-result
 ```
 
 ## Conventions

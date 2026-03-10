@@ -31,14 +31,14 @@ class TestLogger:
         logger = Logger()
         logger.success("done")
         out = capsys.readouterr().out
-        assert "✅" in out
+        assert "[O]" in out
         assert "done" in out
 
     def test_warning(self, capsys):
         logger = Logger()
         logger.warning("caution")
         out = capsys.readouterr().out
-        assert "⚠️" in out
+        assert "[!]" in out
         assert "caution" in out
 
     def test_error(self, capsys):
@@ -47,5 +47,5 @@ class TestLogger:
             logger.error("fatal")
         assert exc_info.value.code == 1
         err = capsys.readouterr().err
-        assert "❌" in err
+        assert "[X]" in err
         assert "fatal" in err

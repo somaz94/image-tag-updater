@@ -83,7 +83,7 @@ The action includes automatic retry (3 attempts):
 
 # 2. Check repository checkout
 - name: Checkout Repository
-  uses: actions/checkout@v4
+  uses: actions/checkout@v6
   with:
     repository: your-org/your-repo
     token: ${{ secrets.PAT }}
@@ -365,7 +365,7 @@ Test without making changes:
 ```yaml
 # 1. Shallow clone
 - name: Checkout
-  uses: actions/checkout@v4
+  uses: actions/checkout@v6
   with:
     fetch-depth: 1  # Shallow clone
 

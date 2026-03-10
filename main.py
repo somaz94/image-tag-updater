@@ -90,14 +90,14 @@ def main() -> None:
                     file_processor.updated_files,
                     file_processor.old_tags
                 )
-            logger.info("\n✅ Dry run completed. No changes were made.")
+            logger.info("\n[O] Dry run completed. No changes were made.")
             logger.print_header("Process Completed Successfully")
             return
         
         # If no changes were made, exit successfully
         if not changes_made:
             write_output("commit_sha", "")
-            logger.info("\n✅ No changes needed. Values are already up to date.")
+            logger.info("\n[O] No changes needed. Values are already up to date.")
             logger.print_header("Process Completed Successfully")
             return
         
