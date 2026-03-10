@@ -8,12 +8,12 @@ on:
     paths-ignore:
       - '.github/workflows/**'
       - '**/*.md'
-      - 'charts/**/*'
-      - 'backup/**/*'
+      - 'charts/**'
+      - 'backup/**'
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   test-local:
@@ -80,35 +80,7 @@ jobs:
         run: |
           echo "short_sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
 
-      # - name: Run the Container
-      #   env:
-      #     TARGET_PATH: charts/somaz/api
-      #     NEW_TAG: ${{ steps.vars.outputs.short_sha }}
-      #     TAG_STRING: tag
-      #     TARGET_VALUES_FILE: dev2.values.yaml
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #     GIT_USER_NAME: GitHub Actions
-      #     GIT_USER_EMAIL: actions@github.com
-      #     BRANCH: main
-      #     REPO: somaz94/image-tag-updater
-      #     COMMIT_MESSAGE: Update image tag in
-      #     DRY_RUN: true
-      #   run: |
-      #     docker run \
-      #     --env TARGET_PATH="${{ env.TARGET_PATH}}" \
-      #     --env TARGET_VALUES_FILE="${{ env.TARGET_VALUES_FILE }}" \
-      #     --env NEW_TAG="${{ env.NEW_TAG }}" \
-      #     --env TAG_STRING="${{ env.TAG_STRING }}" \
-      #     --env GITHUB_TOKEN="${{ env.GITHUB_TOKEN }}" \
-      #     --env GIT_USER_NAME="${{ env.GIT_USER_NAME }}" \
-      #     --env GIT_USER_EMAIL="${{ env.GIT_USER_EMAIL }}" \
-      #     --env BRANCH="${{ env.BRANCH }}" \
-      #     --env REPO="${{ env.REPO }}" \
-      #     --env COMMIT_MESSAGE="${{ env.COMMIT_MESSAGE }}" \
-      #     --env DRY_RUN="${{ env.DRY_RUN }}" \
-      #     --volume ${{ github.workspace }}:/usr/src \
-      #     --rm ${{ env.TEST_TAG }}
-  
+
   image-tag-updater-matrix-test:
     needs: build-and-push-docker
     name: Matrix Test
@@ -281,3 +253,22 @@ jobs:
           echo "Changes Made: ${{ steps.update-tag.outputs.changes_made }}"
           echo "Commit SHA: ${{ steps.update-tag.outputs.commit_sha_short }}"
           echo "Full Commit SHA: ${{ steps.update-tag.outputs.commit_sha }}"
+
+  ci-result:
+    name: CI Result
+    if: always()
+    needs:
+      - test-local
+      - build-and-push-docker
+      - image-tag-updater-matrix-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check CI result
+        run: |
+          if [ "${{ needs.test-local.result }}" != "success" ] || \
+             [ "${{ needs.build-and-push-docker.result }}" != "success" ] || \
+             [ "${{ needs.image-tag-updater-matrix-test.result }}" != "success" ]; then
+            echo "CI failed"
+            exit 1
+          fi
+          echo "CI passed"

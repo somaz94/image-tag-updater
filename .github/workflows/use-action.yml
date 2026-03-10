@@ -1,4 +1,4 @@
-name: Example Workflow using Image Tag Updater
+name: Smoke Test (Released Action)
 
 on:
   workflow_dispatch:
@@ -8,7 +8,7 @@ on:
         required: true
         default: 'true'
   workflow_run:
-    workflows: ["Generate changelog"]  
+    workflows: ["Create release"]
     types:
       - completed
 
@@ -16,28 +16,12 @@ permissions:
   contents: write
 
 jobs:
-  test-local:
-    name: Run Local Tests
+  smoke-test:
+    name: Smoke Test (${{ matrix.name }})
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Setup Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: '3.14'
-
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-
-      - name: Run tests
-        run: python3 tests/test_local.py
-
-  action-module-matrix-test:
-    name: Matrix Test
-    needs: test-local
-    runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
     strategy:
       fail-fast: false
       matrix:
@@ -45,94 +29,18 @@ jobs:
           - name: "Single File Update"
             target_values_file: "dev1.values.yaml"
             file_pattern: ""
-            dry_run: "false"
-            debug: "false"
-            branch: "test-single-file"
-
-          # - name: "Pattern Match Update"
-          #   target_values_file: ""
-          #   file_pattern: "dev*.values.yaml"
-          #   dry_run: "false"
-          #   debug: "false"
-          #   branch: "test-pattern-match"
-
-          - name: "Dry Run Single File"
-            target_values_file: "dev2.values.yaml"
-            file_pattern: ""
             dry_run: "true"
             debug: "true"
             branch: "main"
 
-          - name: "Dry Run Pattern Match"
+          - name: "Pattern Match"
             target_values_file: ""
             file_pattern: "dev*.values.yaml"
             dry_run: "true"
-            debug: "false"
-            branch: "main"
-
-          # - name: "Debug Mode Single File"
-          #   target_values_file: "dev2.values.yaml"
-          #   file_pattern: ""
-          #   dry_run: "false"
-          #   debug: "true"
-          #   branch: "test-debug-single"
-
-          - name: "Debug Mode Pattern Match"
-            target_values_file: ""
-            file_pattern: "dev*.values.yaml"
-            dry_run: "false"
-            debug: "true"
-            branch: "test-debug-pattern"
-
-          - name: "Tag Format Validation Test"
-            target_values_file: "dev1.values.yaml"
-            file_pattern: ""
-            tag_string: "tag"
-            new_tag: "v1.0.0-valid"
-            dry_run: "true"
-            debug: "true"
-            branch: "main"
-            
-          - name: "Tag String Validation Test"
-            target_values_file: "dev1.values.yaml"
-            file_pattern: ""
-            tag_string: "tag"
-            new_tag: "v1.0.0"
-            dry_run: "true"
             debug: "true"
             branch: "main"
 
-          - name: "Invalid Tag Format Test (Expected to Fail)"
-            target_values_file: "dev1.values.yaml"
-            file_pattern: ""
-            tag_string: "tag"
-            new_tag: "@invalid@tag"
-            continue_on_error: true
-            dry_run: "true"
-            debug: "true"
-            branch: "main"
-
-          - name: "Tag Prefix Test"
-            target_values_file: "dev1.values.yaml"
-            file_pattern: ""
-            tag_string: "tag"
-            new_tag: "1.2.3"
-            tag_prefix: "v"
-            dry_run: "true"
-            debug: "true"
-            branch: "main"
-
-          - name: "Tag Suffix Test"
-            target_values_file: "dev1.values.yaml"
-            file_pattern: ""
-            tag_string: "tag"
-            new_tag: "latest"
-            tag_suffix: "-prod"
-            dry_run: "true"
-            debug: "true"
-            branch: "main"
-
-          - name: "Tag Prefix and Suffix Test"
+          - name: "Tag Prefix and Suffix"
             target_values_file: "dev1.values.yaml"
             file_pattern: ""
             tag_string: "tag"
@@ -143,32 +51,13 @@ jobs:
             debug: "true"
             branch: "main"
 
-          - name: "Conditional Update - update_if_contains"
+          - name: "Conditional Update"
             target_values_file: "dev1.values.yaml"
             file_pattern: ""
             tag_string: "tag"
             new_tag: "v2.0.0"
             update_if_contains: "327"
-            dry_run: "true"
-            debug: "true"
-            branch: "main"
-
-          - name: "Conditional Update - skip_if_contains"
-            target_values_file: "dev1.values.yaml"
-            file_pattern: ""
-            tag_string: "tag"
-            new_tag: "v2.0.0"
-            skip_if_contains: "999"
-            dry_run: "true"
-            debug: "true"
-            branch: "main"
-
-          - name: "Summary File Test"
-            target_values_file: "dev1.values.yaml"
-            file_pattern: ""
-            tag_string: "tag"
-            new_tag: "v1.2.3"
-            summary_file: ".github/test-updates.json"
+            skip_if_contains: ""
             dry_run: "true"
             debug: "true"
             branch: "main"
@@ -189,8 +78,8 @@ jobs:
 
       - name: ${{ matrix.name }}
         id: update-tag
-        uses: ./
-        continue-on-error: ${{ matrix.continue_on_error || false }}
+        uses: somaz94/image-tag-updater@v1
+        continue-on-error: false
         with:
           target_path: charts/somaz/api
           target_values_file: ${{ matrix.target_values_file }}
@@ -206,7 +95,6 @@ jobs:
           tag_suffix: ${{ matrix.tag_suffix || '' }}
           update_if_contains: ${{ matrix.update_if_contains || '' }}
           skip_if_contains: ${{ matrix.skip_if_contains || '' }}
-          summary_file: ${{ matrix.summary_file || '' }}
           dry_run: ${{ matrix.dry_run }}
           debug: ${{ matrix.debug }}
 

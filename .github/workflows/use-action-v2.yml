@@ -1,4 +1,4 @@
-name: Example Workflow using Image Tag Updater v2
+name: Smoke Test (Cross-Repo)
 
 on:
   workflow_dispatch:
@@ -12,44 +12,21 @@ permissions:
   contents: write
 
 jobs:
-  test-local:
-    name: Run Local Tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Action Repository
-        uses: actions/checkout@v6
-        with:
-          repository: somaz94/image-tag-updater
-          token: ${{ secrets.PAT }}
-
-      - name: Setup Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: '3.14'
-
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-
-      - name: Run tests
-        run: python3 tests/test_local.py
-
-  acton-module:
-    name: Update Image Tag
-    needs: test-local
+  cross-repo-test:
+    name: Cross-Repo Update Test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout infrastructure repository
         uses: actions/checkout@v6
         with:
           repository: somaz94/helm-chart-template
-          token: ${{ secrets.PAT }}  
+          token: ${{ secrets.PAT }}
 
       - name: Set short sha
         id: vars
         run: |
           echo "short_sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
 
-      # dry run
       - name: Dry Run
         uses: somaz94/image-tag-updater@v1
         with:
@@ -58,7 +35,7 @@ jobs:
           target_values_file: ke-use-nfs-server.values.yaml
           branch: main
           github_token: ${{ secrets.PAT }}
-          DRY_RUN: true
+          dry_run: true
           repo: somaz94/helm-chart-template
 
       - name: Update Image Tag in Infrastructure Repo
@@ -70,7 +47,7 @@ jobs:
           github_token: ${{ secrets.PAT }}
           git_user_name: GitHub Actions
           git_user_email: actions@github.com
-          repo: somaz94/helm-chart-template 
+          repo: somaz94/helm-chart-template
 
       - name: Confirm Git log
         run: |
