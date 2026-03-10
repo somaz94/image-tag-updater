@@ -289,12 +289,12 @@ Test without making changes:
 # Check all required inputs
 - uses: somaz94/image-tag-updater@v1
   with:
-    target_path: charts/somaz/api    # ✅ Required
-    new_tag: v1.0.0                  # ✅ Required
-    tag_string: tag                  # ✅ Required
-    github_token: ${{ secrets.PAT }} # ✅ Required
-    repo: somaz94/image-tag-updater  # ✅ Required
-    branch: main                     # ✅ Required
+    target_path: charts/somaz/api    # Required
+    new_tag: v1.0.0                  # Required
+    tag_string: tag                  # Required
+    github_token: ${{ secrets.PAT }} # Required
+    repo: somaz94/image-tag-updater  # Required
+    branch: main                     # Required
     
     # One of these is required:
     target_values_file: dev.values.yaml  # Option 1
