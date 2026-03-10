@@ -1,0 +1,51 @@
+"""Tests for src/logger.py"""
+import pytest
+
+from src.logger import Logger
+
+
+class TestLogger:
+    def test_print_header(self, capsys):
+        logger = Logger()
+        logger.print_header("Test Header")
+        out = capsys.readouterr().out
+        assert "Test Header" in out
+        assert "=" in out
+
+    def test_debug_enabled(self, capsys):
+        logger = Logger(debug=True)
+        logger.debug("debug message")
+        assert "debug message" in capsys.readouterr().out
+
+    def test_debug_disabled(self, capsys):
+        logger = Logger(debug=False)
+        logger.debug("debug message")
+        assert capsys.readouterr().out == ""
+
+    def test_info(self, capsys):
+        logger = Logger()
+        logger.info("info message")
+        assert "info message" in capsys.readouterr().out
+
+    def test_success(self, capsys):
+        logger = Logger()
+        logger.success("done")
+        out = capsys.readouterr().out
+        assert "✅" in out
+        assert "done" in out
+
+    def test_warning(self, capsys):
+        logger = Logger()
+        logger.warning("caution")
+        out = capsys.readouterr().out
+        assert "⚠️" in out
+        assert "caution" in out
+
+    def test_error(self, capsys):
+        logger = Logger()
+        with pytest.raises(SystemExit) as exc_info:
+            logger.error("fatal")
+        assert exc_info.value.code == 1
+        err = capsys.readouterr().err
+        assert "❌" in err
+        assert "fatal" in err
