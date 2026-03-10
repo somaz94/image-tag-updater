@@ -105,11 +105,11 @@ The action includes automatic retry (3 attempts):
 **Check Your YAML Format:**
 
 ```yaml
-# ✅ Correct - will match default tag_string: "tag"
+# Correct - will match default tag_string: "tag"
 image:
   tag: "v1.0.0"
 
-# ❌ Won't match - uses different key
+# Won't match - uses different key
 image:
   version: "v1.0.0"
 
@@ -122,11 +122,11 @@ image:
 **Indentation Issues:**
 
 ```yaml
-# ✅ Correct spacing
+# Correct spacing
 image:
   tag: "v1.0.0"
 
-# ❌ Wrong indentation
+# Wrong indentation
 image:
     tag: "v1.0.0"  # Extra spaces
 ```
@@ -144,16 +144,19 @@ image:
 
 **Valid Examples:**
 ```
-✅ v1.0.0
-✅ 2024.01.15
-✅ main-abc123
-✅ release_1.2.3
-✅ v1.0.0-rc.1
+v1.0.0
+2024.01.15
+main-abc123
+release_1.2.3
+v1.0.0-rc.1
+```
 
-❌ @invalid
-❌ v1.0.0#beta
-❌ tag with spaces
-❌ $version
+**Invalid Examples:**
+```
+@invalid
+v1.0.0#beta
+tag with spaces
+$version
 ```
 
 <br/>
@@ -178,8 +181,8 @@ image:
     ls -la dev*.values.yaml
 
 # 3. Use quotes for patterns
-file_pattern: "dev*.values.yaml"  # ✅ Correct
-file_pattern: dev*.values.yaml    # ❌ May fail in YAML
+file_pattern: "dev*.values.yaml"  # Correct
+file_pattern: dev*.values.yaml    # May fail in YAML
 ```
 
 **Common Patterns:**
@@ -431,11 +434,11 @@ If you're still experiencing issues:
 
 ## Best Practices to Avoid Issues
 
-1. ✅ Always test with `dry_run: "true"` first
-2. ✅ Use `debug: "true"` when troubleshooting
-3. ✅ Verify file paths before running
-4. ✅ Use specific file patterns when possible
-5. ✅ Keep tokens in secrets, never hardcode
-6. ✅ Use semantic versioning for tags
-7. ✅ Monitor action execution logs
-8. ✅ Keep action version up to date
+1. Always test with `dry_run: "true"` first
+2. Use `debug: "true"` when troubleshooting
+3. Verify file paths before running
+4. Use specific file patterns when possible
+5. Keep tokens in secrets, never hardcode
+6. Use semantic versioning for tags
+7. Monitor action execution logs
+8. Keep action version up to date

@@ -304,7 +304,7 @@ You can update multiple files at once using the `file_pattern` input:
     github_token: ${{ secrets.PAT }}
 ```
 
-📖 **[View Advanced Usage Guide →](docs/ADVANCED_USAGE.md)**
+**[View Advanced Usage Guide →](docs/ADVANCED_USAGE.md)**
 
 <br/>
 
