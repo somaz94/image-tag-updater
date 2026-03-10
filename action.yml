@@ -104,7 +104,7 @@ runs:
   env:
     TARGET_PATH: ${{ inputs.target_path }}
     TAG_STRING: ${{ inputs.tag_string }}
-    NEW_TAG: ${{ inputs.new_tag}}
+    NEW_TAG: ${{ inputs.new_tag }}
     TARGET_VALUES_FILE: ${{ inputs.target_values_file }}
     GITHUB_TOKEN: ${{ inputs.github_token }}
     COMMIT_MESSAGE: ${{ inputs.commit_message }}

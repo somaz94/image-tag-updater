@@ -74,7 +74,7 @@ make help          # Show all available commands
 | `release.yml` | `Create release` | tag push `v*` |
 | `changelog-generator.yml` | `Generate changelog` | after release, PR merge, dispatch |
 | `use-action.yml` | `Smoke Test (Released Action)` | after release, dispatch |
-| `use-action-v2.yml` | `Smoke Test v2` | after release, dispatch |
+| `use-action-v2.yml` | `Smoke Test (Cross-Repo)` | after release, dispatch |
 | `contributors.yml` | `Generator Contributors` | after changelog, dispatch |
 | `gitlab-mirror.yml` | `GitLab Mirroring` | push(main), dispatch |
 
@@ -82,7 +82,7 @@ make help          # Show all available commands
 ```
 tag push v* -> Create release
                 ├-> Smoke Test (Released Action)
-                ├-> Smoke Test v2
+                ├-> Smoke Test (Cross-Repo)
                 └-> Generate changelog -> Generator Contributors
 ```
 
