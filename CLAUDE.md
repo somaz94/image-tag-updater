@@ -2,6 +2,10 @@
 
 GitHub Action that automates image tag updates in YAML configuration files for GitOps workflows.
 
+## Commit Guidelines
+
+- Do not include `Co-Authored-By` lines in commit messages.
+
 ## Project Structure
 
 ```
@@ -103,3 +107,7 @@ build-and-push-docker ──> matrix-test ──> ci-result
 - **Release**: `git switch` (not `git checkout`), git-cliff for RELEASE.md
 - **paths-ignore**: `.github/workflows/**`, `**/*.md`, `backup/**`
 - Do NOT commit directly - recommend commit messages only
+
+## Language
+
+- Communicate with the user in Korean.
