@@ -5,6 +5,7 @@ GitHub Action that automates image tag updates in YAML configuration files for G
 ## Commit Guidelines
 
 - Do not include `Co-Authored-By` lines in commit messages.
+- Do not push to remote. Only commit. The user will push manually.
 
 ## Project Structure
 
@@ -111,3 +112,4 @@ build-and-push-docker ──> matrix-test ──> ci-result
 ## Language
 
 - Communicate with the user in Korean.
+- All documentation and code comments must be written in English.
