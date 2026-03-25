@@ -5,7 +5,7 @@ import time
 from typing import List, Optional
 
 from .config import Config
-from .logger import Logger
+from .logger import ActionError, Logger
 
 
 class GitOperations:
@@ -147,13 +147,21 @@ class GitOperations:
                 self.run_command(["git", "checkout", "-b", self.config.branch])
     
     def has_staged_changes(self) -> bool:
-        """Check if there are staged changes."""
-        result = self.run_command(
-            ["git", "diff", "--cached", "--quiet"],
-            check=False
-        )
-        # git diff --quiet returns 0 if no changes, 1 if changes exist
-        return result is None
+        """Check if there are staged changes.
+
+        git diff --cached --quiet exits with 1 when changes exist and 0 when clean.
+        We use subprocess directly to inspect the return code reliably.
+        """
+        try:
+            result = subprocess.run(
+                ["git", "diff", "--cached", "--quiet"],
+                capture_output=True,
+                check=False,
+            )
+            # returncode 0 = no changes, 1 = changes exist
+            return result.returncode != 0
+        except Exception:
+            return False
     
     def commit_and_push(self, file_info: str) -> Optional[str]:
         """Commit and push changes. Returns commit SHA or None."""
@@ -182,14 +190,26 @@ class GitOperations:
     def _push_with_retry(self) -> None:
         """Push changes with retry logic."""
         remote_url = f"https://x-access-token:{self.config.github_token}@github.com/{self.config.repo}"
-        
+
         for attempt in range(1, self.config.max_retries + 1):
             try:
-                self.run_command(["git", "push", remote_url, self.config.branch])
+                self._push_once(remote_url)
                 self.logger.success(f"Successfully pushed changes to {self.config.branch}")
                 return
-            except Exception:
+            except (ActionError, Exception) as e:
                 if attempt == self.config.max_retries:
-                    self.logger.error(f"Failed to push changes after {self.config.max_retries} attempts")
+                    raise ActionError(f"Failed to push changes after {self.config.max_retries} attempts") from e
                 self.logger.warning(f"Push failed, retrying... (Attempt {attempt} of {self.config.max_retries})")
                 time.sleep(5)
+
+    def _push_once(self, remote_url: str) -> None:
+        """Execute a single push attempt without triggering logger.error()."""
+        result = subprocess.run(
+            ["git", "push", remote_url, self.config.branch],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if result.returncode != 0:
+            error_msg = result.stderr.strip() or f"git push exited with code {result.returncode}"
+            raise ActionError(error_msg)

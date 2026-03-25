@@ -6,7 +6,7 @@ from unittest.mock import patch, MagicMock
 
 from src.config import Config
 from src.file_processor import FileProcessor
-from src.logger import Logger
+from src.logger import ActionError, Logger
 
 
 # ---------------------------------------------------------------------------
@@ -56,19 +56,19 @@ class TestValidateFileContent:
     def test_tag_not_found(self, base_kwargs, logger, tmp_path):
         fp = _write(str(tmp_path), "v.yaml", "nothing: here\n")
         proc = FileProcessor(Config(**base_kwargs), logger)
-        with pytest.raises(SystemExit):
+        with pytest.raises(ActionError):
             proc.validate_file_content(fp)
 
     def test_file_missing(self, base_kwargs, logger):
         proc = FileProcessor(Config(**base_kwargs), logger)
-        with pytest.raises(SystemExit):
+        with pytest.raises(ActionError):
             proc.validate_file_content("/nonexistent/file.yaml")
 
     def test_read_error(self, base_kwargs, logger, tmp_path):
         fp = _write(str(tmp_path), "v.yaml", YAML_CONTENT)
         proc = FileProcessor(Config(**base_kwargs), logger)
         with patch("builtins.open", side_effect=PermissionError("denied")):
-            with pytest.raises(SystemExit):
+            with pytest.raises(ActionError):
                 proc.validate_file_content(fp)
 
 
@@ -95,7 +95,7 @@ class TestGetCurrentTag:
     def test_read_error(self, base_kwargs, logger, tmp_path):
         proc = FileProcessor(Config(**base_kwargs), logger)
         with patch("builtins.open", side_effect=IOError("fail")):
-            with pytest.raises(SystemExit):
+            with pytest.raises(ActionError):
                 proc.get_current_tag("/tmp/fake.yaml")
 
 
@@ -171,7 +171,7 @@ class TestPerformUpdate:
 
         # logger.error calls sys.exit(1), so return False is unreachable
         with patch("builtins.open", side_effect=side_effect_open):
-            with pytest.raises(SystemExit):
+            with pytest.raises(ActionError):
                 proc._perform_update(fp, "v2.0.0")
 
 
@@ -215,7 +215,7 @@ class TestUpdateFile:
         fp = _write(str(tmp_path), "v.yaml", YAML_CONTENT)
         proc = FileProcessor(Config(**kw), logger)
         with patch("shutil.copy2", side_effect=OSError("disk full")):
-            with pytest.raises(SystemExit):
+            with pytest.raises(ActionError):
                 proc.update_file(fp)
 
 
@@ -243,13 +243,13 @@ class TestGetFilesToProcess:
     def test_no_match(self, base_kwargs, logger, tmp_path):
         kw = {**base_kwargs, "target_values_file": None, "file_pattern": str(tmp_path / "nonexistent*.yaml")}
         proc = FileProcessor(Config(**kw), logger)
-        with pytest.raises(SystemExit):
+        with pytest.raises(ActionError):
             proc.get_files_to_process()
 
     def test_file_not_found(self, base_kwargs, logger):
         kw = {**base_kwargs, "target_values_file": "/nonexistent/file.yaml"}
         proc = FileProcessor(Config(**kw), logger)
-        with pytest.raises(SystemExit):
+        with pytest.raises(ActionError):
             proc.get_files_to_process()
 
 

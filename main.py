@@ -6,7 +6,7 @@ import sys
 from src.config import Config
 from src.file_processor import FileProcessor
 from src.git_operations import GitOperations
-from src.logger import Logger
+from src.logger import ActionError, Logger
 from src.summary import ChangeSummary
 
 
@@ -120,11 +120,11 @@ def main() -> None:
         
         logger.print_header("Process Completed Successfully")
         
-    except ValueError as e:
-        logger.error(str(e))
+    except (ValueError, ActionError) as e:
+        print(f"[X] Error: {e}", file=sys.stderr)
         sys.exit(1)
     except Exception as e:
-        logger.error(f"Unexpected error: {e}")
+        print(f"[X] Error: Unexpected error: {e}", file=sys.stderr)
         if debug_mode:
             import traceback
             traceback.print_exc()

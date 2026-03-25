@@ -106,6 +106,12 @@ class Config:
                 "Tags should only contain alphanumeric characters, dots, underscores, and hyphens."
             )
         
+        # Validate repo format (owner/name)
+        if not re.match(r'^[a-zA-Z0-9._-]+/[a-zA-Z0-9._-]+$', self.repo):
+            raise ValueError(
+                f"Invalid repo format: {self.repo}. Expected 'owner/name' format."
+            )
+
         # Check if at least one of target_values_file or file_pattern is set
         if not self.target_values_file and not self.file_pattern:
             raise ValueError("Either target_values_file or file_pattern must be set")

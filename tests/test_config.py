@@ -164,6 +164,17 @@ class TestValidate:
         with pytest.raises(ValueError, match="Cannot set both"):
             cfg.validate()
 
+    def test_invalid_repo_format(self, base_config_kwargs):
+        base_config_kwargs["repo"] = "invalid-no-slash"
+        cfg = Config(**base_config_kwargs)
+        with pytest.raises(ValueError, match="Invalid repo format"):
+            cfg.validate()
+
+    def test_valid_repo_format(self, base_config_kwargs):
+        base_config_kwargs["repo"] = "my-org/my-repo.name"
+        cfg = Config(**base_config_kwargs)
+        cfg.validate()  # should not raise
+
 
 # ---------------------------------------------------------------------------
 # _validate_tag_format

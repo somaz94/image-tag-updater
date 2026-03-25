@@ -5,7 +5,7 @@ from unittest.mock import patch, MagicMock, call
 
 from src.config import Config
 from src.git_operations import GitOperations
-from src.logger import Logger
+from src.logger import ActionError, Logger
 
 
 # ---------------------------------------------------------------------------
@@ -97,7 +97,7 @@ class TestRunCommand:
     def test_failure_with_check(self, git_ops):
         with patch("subprocess.run") as mock_run:
             mock_run.side_effect = subprocess.CalledProcessError(1, "git", stderr="error msg")
-            with pytest.raises(SystemExit):
+            with pytest.raises(ActionError):
                 git_ops.run_command(["git", "bad-cmd"], check=True)
 
     def test_failure_without_check(self, git_ops):
@@ -109,7 +109,7 @@ class TestRunCommand:
     def test_failure_no_stderr(self, git_ops):
         with patch("subprocess.run") as mock_run:
             mock_run.side_effect = subprocess.CalledProcessError(128, "git", stderr="")
-            with pytest.raises(SystemExit):
+            with pytest.raises(ActionError):
                 git_ops.run_command(["git", "fail"], check=True)
 
 
@@ -209,11 +209,17 @@ class TestSetupBranch:
 
 class TestHasStagedChanges:
     def test_has_changes(self, git_ops):
-        with patch.object(git_ops, "run_command", return_value=None):
+        with patch("subprocess.run") as mock_run:
+            mock_run.return_value = MagicMock(returncode=1)
             assert git_ops.has_staged_changes() is True
 
     def test_no_changes(self, git_ops):
-        with patch.object(git_ops, "run_command", return_value=""):
+        with patch("subprocess.run") as mock_run:
+            mock_run.return_value = MagicMock(returncode=0)
+            assert git_ops.has_staged_changes() is False
+
+    def test_exception(self, git_ops):
+        with patch("subprocess.run", side_effect=Exception("fail")):
             assert git_ops.has_staged_changes() is False
 
 
@@ -244,18 +250,29 @@ class TestCommitAndPush:
 
 class TestPushWithRetry:
     def test_success_first_attempt(self, git_ops):
-        with patch.object(git_ops, "run_command"):
+        with patch.object(git_ops, "_push_once"):
             git_ops._push_with_retry()
 
     def test_retry_then_success(self, git_ops):
-        with patch.object(git_ops, "run_command") as mock_cmd, \
+        with patch.object(git_ops, "_push_once") as mock_push, \
              patch("time.sleep"):
-            mock_cmd.side_effect = [Exception("fail"), None]
+            mock_push.side_effect = [ActionError("fail"), None]
             git_ops._push_with_retry()
 
     def test_all_retries_fail(self, git_ops):
-        with patch.object(git_ops, "run_command") as mock_cmd, \
+        with patch.object(git_ops, "_push_once") as mock_push, \
              patch("time.sleep"):
-            mock_cmd.side_effect = [Exception("fail")] * 2
-            with pytest.raises(SystemExit):
+            mock_push.side_effect = [ActionError("fail")] * 2
+            with pytest.raises(ActionError, match="Failed to push"):
                 git_ops._push_with_retry()
+
+    def test_push_once_success(self, git_ops):
+        with patch("subprocess.run") as mock_run:
+            mock_run.return_value = MagicMock(returncode=0, stderr="")
+            git_ops._push_once("https://example.com/repo")
+
+    def test_push_once_failure(self, git_ops):
+        with patch("subprocess.run") as mock_run:
+            mock_run.return_value = MagicMock(returncode=1, stderr="rejected")
+            with pytest.raises(ActionError, match="rejected"):
+                git_ops._push_once("https://example.com/repo")

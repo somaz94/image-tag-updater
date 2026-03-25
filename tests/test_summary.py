@@ -5,7 +5,7 @@ import pytest
 from unittest.mock import patch
 
 from src.config import Config
-from src.logger import Logger
+from src.logger import ActionError, Logger
 from src.summary import ChangeSummary
 
 
@@ -164,7 +164,7 @@ class TestSaveSummary:
         s = ChangeSummary(config, logger)
 
         with patch("builtins.open", side_effect=IOError("write fail")):
-            with pytest.raises(SystemExit):
+            with pytest.raises(ActionError):
                 s.save_summary(UPDATED_FILES, OLD_TAGS)
 
     def test_max_entries(self, config, logger, tmp_path):

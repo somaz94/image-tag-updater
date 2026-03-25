@@ -1,7 +1,7 @@
 """Tests for src/logger.py"""
 import pytest
 
-from src.logger import Logger
+from src.logger import ActionError, Logger
 
 
 class TestLogger:
@@ -43,9 +43,11 @@ class TestLogger:
 
     def test_error(self, capsys):
         logger = Logger()
-        with pytest.raises(SystemExit) as exc_info:
+        with pytest.raises(ActionError, match="fatal"):
             logger.error("fatal")
-        assert exc_info.value.code == 1
         err = capsys.readouterr().err
         assert "[X]" in err
         assert "fatal" in err
+
+    def test_action_error_is_runtime_error(self):
+        assert issubclass(ActionError, RuntimeError)
