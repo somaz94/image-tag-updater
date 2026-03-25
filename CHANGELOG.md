@@ -2,19 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased (2026-03-16)
+## [v1.5.1](https://github.com/somaz94/image-tag-updater/compare/v1.5.0...v1.5.1) (2026-03-25)
 
 ### Bug Fixes
 
+- replace sys.exit with ActionError, fix has_staged_changes, add repo validation ([7c8dbb1](https://github.com/somaz94/image-tag-updater/commit/7c8dbb1374c3db64b8ac338a246833d91b4302b8))
 - apache license -> mit license ([0848018](https://github.com/somaz94/image-tag-updater/commit/0848018c41c237682d34e7bb63f9f956ae9a32df))
 - skip major version tag deletion on first release ([07e1233](https://github.com/somaz94/image-tag-updater/commit/07e1233d24fed707abf149749462f4ba8d620a96))
 
 ### Documentation
 
-- update changelog ([11fc841](https://github.com/somaz94/image-tag-updater/commit/11fc841cbe961ad73441bf14f23d90717f28e810))
+- add no-push rule to CLAUDE.md ([7faca47](https://github.com/somaz94/image-tag-updater/commit/7faca47aa84b14bf01441170491f4193386fd933))
+- update CLAUDE.md with commit guidelines and language ([c001033](https://github.com/somaz94/image-tag-updater/commit/c00103349cbe04ef14e89e9b17c661c9c309dc81))
 
 ### Continuous Integration
 
+- skip auto-generated changelog and contributors commits in release notes ([e3c4c83](https://github.com/somaz94/image-tag-updater/commit/e3c4c833f2675dcfb431c35e149b7499ee495a4f))
+- revert to body_path RELEASE.md in release workflow ([08a4e87](https://github.com/somaz94/image-tag-updater/commit/08a4e87bdcc9b72276214b2e5320bf183c73079a))
+- use generate_release_notes instead of RELEASE.md ([d44fa3e](https://github.com/somaz94/image-tag-updater/commit/d44fa3eeba244a0c831e987045c0077f66379548))
+- migrate gitlab-mirror workflow to multi-git-mirror action ([ea3afd2](https://github.com/somaz94/image-tag-updater/commit/ea3afd2cfa384facba1b7517c5fe10991b891dbc))
+- use somaz94/contributors-action@v1 for contributors generation ([eaeced3](https://github.com/somaz94/image-tag-updater/commit/eaeced349fc2d877748c0b4d0fc4c7502d16e6e3))
+- use major-tag-action for version tag updates ([261c4da](https://github.com/somaz94/image-tag-updater/commit/261c4da03dfbf9a76c389f39d1c4554b709b5828))
 - migrate changelog generator to go-changelog-action ([b7b0703](https://github.com/somaz94/image-tag-updater/commit/b7b07030f15094e1f9df97e4340fb01d5741a912))
 - add dependabot auto-merge workflow ([ec7ca25](https://github.com/somaz94/image-tag-updater/commit/ec7ca254ce9b9ad7ca799ad807a81689b75ba666))
 - unify changelog-generator with flexible tag pattern ([d693e07](https://github.com/somaz94/image-tag-updater/commit/d693e0789d1f1c2ea159a954dbf53e379ed9e268))
@@ -25,9 +33,9 @@ All notable changes to this project will be documented in this file.
 
 ### Contributors
 
-- GitHub Action
-- GitHub Actions
 - somaz
+
+<br/>
 
 ## [v1.5.0](https://github.com/somaz94/image-tag-updater/compare/v1.4.2...v1.5.0) (2026-03-10)
 
@@ -50,7 +58,6 @@ All notable changes to this project will be documented in this file.
 
 - docs/TROUBLESHOOTING.md ([315921a](https://github.com/somaz94/image-tag-updater/commit/315921a32074c62a7cae2211a548a61e5a72cb17))
 - update documentation to reflect current project state ([82addc7](https://github.com/somaz94/image-tag-updater/commit/82addc7b5cd9cf32f0b8de84b49f8a6fa2610426))
-- update CONTRIBUTORS.md ([1211df4](https://github.com/somaz94/image-tag-updater/commit/1211df41a7eb24cabfda403aec20b78ce97d3bc8))
 
 ### Builds
 
@@ -68,9 +75,9 @@ All notable changes to this project will be documented in this file.
 
 ### Contributors
 
-- GitHub Actions
-- dependabot[bot]
 - somaz
+
+<br/>
 
 ## [v1.4.2](https://github.com/somaz94/image-tag-updater/compare/v1.4.1...v1.4.2) (2025-12-01)
 
@@ -80,8 +87,9 @@ All notable changes to this project will be documented in this file.
 
 ### Contributors
 
-- GitHub Actions
 - somaz
+
+<br/>
 
 ## [v1.4.1](https://github.com/somaz94/image-tag-updater/compare/v1.4.0...v1.4.1) (2025-12-01)
 
@@ -110,9 +118,9 @@ All notable changes to this project will be documented in this file.
 
 ### Contributors
 
-- GitHub Actions
-- dependabot[bot]
 - somaz
+
+<br/>
 
 ## [v1.4.0](https://github.com/somaz94/image-tag-updater/compare/v1.3.0...v1.4.0) (2025-10-30)
 
@@ -136,8 +144,9 @@ All notable changes to this project will be documented in this file.
 
 ### Contributors
 
-- GitHub Actions
 - somaz
+
+<br/>
 
 ## [v1.3.0](https://github.com/somaz94/image-tag-updater/compare/v1.2.2...v1.3.0) (2025-10-30)
 
@@ -163,9 +172,9 @@ All notable changes to this project will be documented in this file.
 
 ### Contributors
 
-- GitHub Actions
-- dependabot[bot]
 - somaz
+
+<br/>
 
 ## [v1.2.2](https://github.com/somaz94/image-tag-updater/compare/v1.2.1...v1.2.2) (2025-04-15)
 
@@ -175,8 +184,9 @@ All notable changes to this project will be documented in this file.
 
 ### Contributors
 
-- GitHub Actions
 - somaz
+
+<br/>
 
 ## [v1.2.1](https://github.com/somaz94/image-tag-updater/compare/v1.2.0...v1.2.1) (2025-04-11)
 
@@ -199,8 +209,9 @@ All notable changes to this project will be documented in this file.
 
 ### Contributors
 
-- GitHub Actions
 - somaz
+
+<br/>
 
 ## [v1.2.0](https://github.com/somaz94/image-tag-updater/compare/v1.1.0...v1.2.0) (2025-02-20)
 
@@ -230,6 +241,8 @@ All notable changes to this project will be documented in this file.
 
 - somaz
 
+<br/>
+
 ## [v1.1.0](https://github.com/somaz94/image-tag-updater/compare/v1.0.1...v1.1.0) (2025-02-13)
 
 ### Bug Fixes
@@ -256,8 +269,9 @@ All notable changes to this project will be documented in this file.
 
 ### Contributors
 
-- GitHub Actions
 - somaz
+
+<br/>
 
 ## [v1.0.1](https://github.com/somaz94/image-tag-updater/compare/v1.0.0...v1.0.1) (2025-02-07)
 
@@ -276,10 +290,11 @@ All notable changes to this project will be documented in this file.
 
 ### Contributors
 
-- GitHub Actions
 - somaz
 
-## v1.0.0 (2025-02-05)
+<br/>
+
+## [v1.0.0](https://github.com/somaz94/image-tag-updater/releases/tag/v1.0.0) (2025-02-05)
 
 ### Bug Fixes
 
@@ -319,7 +334,7 @@ All notable changes to this project will be documented in this file.
 
 ### Contributors
 
-- GitHub Action
-- dependabot[bot]
 - somaz
+
+<br/>
 
