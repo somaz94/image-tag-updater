@@ -1,9 +1,11 @@
 """File processing utilities for image tag updater."""
+from __future__ import annotations
+
 import os
 import re
 import shutil
+from glob import glob
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
 
 from .config import Config
 from .logger import Logger
@@ -15,8 +17,8 @@ class FileProcessor:
     def __init__(self, config: Config, logger: Logger):
         self.config = config
         self.logger = logger
-        self.updated_files: List[str] = []
-        self.old_tags: Dict[str, str] = {}  # file_path -> old_tag
+        self.updated_files: list[str] = []
+        self.old_tags: dict[str, str] = {}  # file_path -> old_tag
     
     def validate_file_content(self, file_path: str) -> None:
         """Validate that tag string exists in file."""
@@ -32,7 +34,7 @@ class FileProcessor:
                 )
         except FileNotFoundError:
             self.logger.error(f"File not found: {file_path}")
-        except Exception as e:
+        except OSError as e:
             self.logger.error(f"Failed to read file {file_path}: {e}")
     
     def get_current_tag(self, file_path: str) -> str:
@@ -46,10 +48,10 @@ class FileProcessor:
             if match:
                 return match.group(1).strip()
             return ""
-        except Exception as e:
+        except OSError as e:
             self.logger.error(f"Failed to get current tag from {file_path}: {e}")
     
-    def should_skip_update(self, file_path: str, current_tag: str, final_tag: str) -> Tuple[bool, Optional[str]]:
+    def should_skip_update(self, file_path: str, current_tag: str, final_tag: str) -> tuple[bool, str | None]:
         """Check if update should be skipped.
         
         Args:
@@ -96,7 +98,7 @@ class FileProcessor:
             
             self.logger.success(f"Updated {file_path}")
             return True
-        except Exception as e:
+        except OSError as e:
             self.logger.error(f"Failed to update file {file_path}: {e}")
             return False
     
@@ -133,7 +135,7 @@ class FileProcessor:
             try:
                 shutil.copy2(file_path, backup_path)
                 self.logger.debug(f"Backup created: {backup_path}")
-            except Exception as e:
+            except OSError as e:
                 self.logger.error(f"Failed to create backup: {e}")
         
         # Perform the update
@@ -142,14 +144,13 @@ class FileProcessor:
             return True
         return False
     
-    def get_files_to_process(self) -> List[str]:
+    def get_files_to_process(self) -> list[str]:
         """Get list of files to process based on configuration."""
         files = []
         
         if self.config.file_pattern:
             self.logger.debug(f"\nProcessing files: {self.config.file_pattern}")
             # Use glob pattern
-            from glob import glob
             matched_files = glob(self.config.file_pattern)
             if not matched_files:
                 self.logger.error(f"No files found matching pattern: {self.config.file_pattern}")

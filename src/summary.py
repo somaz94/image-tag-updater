@@ -1,9 +1,10 @@
 """Change summary utilities for image tag updater."""
+from __future__ import annotations
+
 import json
 import os
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Optional
 
 from .config import Config
 from .logger import Logger
@@ -20,10 +21,10 @@ class ChangeSummary:
     
     def create_summary(
         self,
-        updated_files: List[str],
-        old_tags: Dict[str, str],
-        commit_sha: Optional[str] = None
-    ) -> Dict:
+        updated_files: list[str],
+        old_tags: dict[str, str],
+        commit_sha: str | None = None
+    ) -> dict:
         """Create a summary of changes."""
         final_tag = self.config.get_final_tag()
         
@@ -53,9 +54,9 @@ class ChangeSummary:
     
     def save_summary(
         self,
-        updated_files: List[str],
-        old_tags: Dict[str, str],
-        commit_sha: Optional[str] = None
+        updated_files: list[str],
+        old_tags: dict[str, str],
+        commit_sha: str | None = None
     ) -> None:
         """Save change summary to file."""
         if not self.config.summary_file:
@@ -99,9 +100,9 @@ class ChangeSummary:
     
     def print_summary(
         self,
-        updated_files: List[str],
-        old_tags: Dict[str, str],
-        commit_sha: Optional[str] = None
+        updated_files: list[str],
+        old_tags: dict[str, str],
+        commit_sha: str | None = None
     ) -> None:
         """Print change summary to console."""
         if not updated_files:

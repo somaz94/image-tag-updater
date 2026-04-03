@@ -1,8 +1,9 @@
 """Git operations for image tag updater."""
+from __future__ import annotations
+
 import subprocess
 import sys
 import time
-from typing import List, Optional
 
 from .config import Config
 from .logger import ActionError, Logger
@@ -17,11 +18,11 @@ class GitOperations:
     
     def run_command(
         self, 
-        cmd: List[str], 
-        check: bool = True, 
+        cmd: list[str],
+        check: bool = True,
         capture: bool = False,
         show_output: bool = False
-    ) -> Optional[str]:
+    ) -> str | None:
         """Run a shell command with improved error handling.
         
         Args:
@@ -163,7 +164,7 @@ class GitOperations:
         except Exception:
             return False
     
-    def commit_and_push(self, file_info: str) -> Optional[str]:
+    def commit_and_push(self, file_info: str) -> str | None:
         """Commit and push changes. Returns commit SHA or None."""
         self.logger.debug("\nStaging changes...")
         self.run_command(["git", "add", "."])
@@ -196,9 +197,9 @@ class GitOperations:
                 self._push_once(remote_url)
                 self.logger.success(f"Successfully pushed changes to {self.config.branch}")
                 return
-            except (ActionError, Exception) as e:
+            except ActionError as e:
                 if attempt == self.config.max_retries:
-                    raise ActionError(f"Failed to push changes after {self.config.max_retries} attempts") from e
+                    raise ActionError(f"Failed to push changes after {self.config.max_retries} attempts: {e}") from e
                 self.logger.warning(f"Push failed, retrying... (Attempt {attempt} of {self.config.max_retries})")
                 time.sleep(5)
 

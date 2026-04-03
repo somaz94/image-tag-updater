@@ -177,19 +177,6 @@ class TestValidate:
 
 
 # ---------------------------------------------------------------------------
-# _validate_tag_format
-# ---------------------------------------------------------------------------
-
-class TestValidateTagFormat:
-    def test_valid(self, valid_config):
-        valid_config._validate_tag_format("v1.0.0", "test tag")
-
-    def test_invalid(self, valid_config):
-        with pytest.raises(ValueError, match="Invalid test tag format"):
-            valid_config._validate_tag_format("@bad!", "test tag")
-
-
-# ---------------------------------------------------------------------------
 # print_config
 # ---------------------------------------------------------------------------
 

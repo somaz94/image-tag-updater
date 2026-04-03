@@ -1,11 +1,13 @@
 """Configuration management for image tag updater."""
+from __future__ import annotations
+
 import os
 import re
 from dataclasses import dataclass
-from typing import List, Optional
 
 # Constants
 TAG_PATTERN = re.compile(r'^[a-zA-Z0-9][a-zA-Z0-9._-]*$')
+REPO_PATTERN = re.compile(r'^[a-zA-Z0-9._-]+/[a-zA-Z0-9._-]+$')
 REQUIRED_FIELDS = [
     "target_path", "new_tag", "tag_string",
     "git_user_name", "git_user_email", "github_token",
@@ -26,8 +28,8 @@ class Config:
     repo: str
     branch: str
     commit_message: str = "Update image tag"
-    target_values_file: Optional[str] = None
-    file_pattern: Optional[str] = None
+    target_values_file: str | None = None
+    file_pattern: str | None = None
     backup: bool = False
     dry_run: bool = False
     debug: bool = False
@@ -68,22 +70,6 @@ class Config:
         """Get the final tag with prefix and suffix applied."""
         return f"{self.tag_prefix}{self.new_tag}{self.tag_suffix}"
     
-    def _validate_tag_format(self, tag: str, tag_type: str) -> None:
-        """Validate tag format.
-        
-        Args:
-            tag: Tag string to validate
-            tag_type: Description of tag type for error message
-            
-        Raises:
-            ValueError: If tag format is invalid
-        """
-        if not TAG_PATTERN.match(tag):
-            raise ValueError(
-                f"Invalid {tag_type} format: {tag}. "
-                "Tags should only contain alphanumeric characters, dots, underscores, and hyphens."
-            )
-    
     def validate(self) -> None:
         """Validate configuration values."""
         # Check required fields
@@ -92,22 +78,22 @@ class Config:
             raise ValueError(f"Required fields are not set: {', '.join(missing)}")
         
         # Validate tag format (without prefix/suffix)
-        if not re.match(r'^[a-zA-Z0-9][a-zA-Z0-9._-]*$', self.new_tag):
+        if not TAG_PATTERN.match(self.new_tag):
             raise ValueError(
                 f"Invalid tag format: {self.new_tag}. "
                 "Tags should only contain alphanumeric characters, dots, underscores, and hyphens."
             )
-        
+
         # Validate final tag with prefix/suffix
         final_tag = self.get_final_tag()
-        if not re.match(r'^[a-zA-Z0-9][a-zA-Z0-9._-]*$', final_tag):
+        if not TAG_PATTERN.match(final_tag):
             raise ValueError(
                 f"Invalid final tag format (with prefix/suffix): {final_tag}. "
                 "Tags should only contain alphanumeric characters, dots, underscores, and hyphens."
             )
-        
+
         # Validate repo format (owner/name)
-        if not re.match(r'^[a-zA-Z0-9._-]+/[a-zA-Z0-9._-]+$', self.repo):
+        if not REPO_PATTERN.match(self.repo):
             raise ValueError(
                 f"Invalid repo format: {self.repo}. Expected 'owner/name' format."
             )
