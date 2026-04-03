@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.5.2](https://github.com/somaz94/image-tag-updater/compare/v1.5.1...v1.5.2) (2026-04-03)
+
+### Code Refactoring
+
+- unify regex constants, modernize types, narrow exceptions, and remove dead code ([2dc8294](https://github.com/somaz94/image-tag-updater/commit/2dc8294a52608c352537b3b6db3fff619ce3f50a))
+
+### Documentation
+
+- remove duplicate rules covered by global CLAUDE.md ([42513b1](https://github.com/somaz94/image-tag-updater/commit/42513b1cb276f48990732e3a969534615df8cc64))
+
+### Chores
+
+- remove duplicate rules from CLAUDE.md (moved to global) ([8f89ee6](https://github.com/somaz94/image-tag-updater/commit/8f89ee63ac42fc52942ac6e60b8fd822c7c02286))
+- add git config protection to CLAUDE.md ([0e0daf5](https://github.com/somaz94/image-tag-updater/commit/0e0daf5b5b1470a809a99e184070f1663141ea74))
+
+### Contributors
+
+- somaz
+
+<br/>
+
 ## [v1.5.1](https://github.com/somaz94/image-tag-updater/compare/v1.5.0...v1.5.1) (2026-03-25)
 
 ### Bug Fixes
