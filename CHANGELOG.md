@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Builds
 
+- **deps:** bump dependabot/fetch-metadata from 2 to 3 ([b2101ba](https://github.com/somaz94/image-tag-updater/commit/b2101baabe1f6888ac3cc2cae1115a01b982b8de))
 - **deps:** bump actions/github-script from 8 to 9 ([780d017](https://github.com/somaz94/image-tag-updater/commit/780d017d3e0ce0737d52187bba9c6fbc3cc0f03f))
 - **deps:** bump softprops/action-gh-release from 2 to 3 ([ef3c9ce](https://github.com/somaz94/image-tag-updater/commit/ef3c9ce52e2cc803002f3f1cdea170c24fbfb0f6))
 
