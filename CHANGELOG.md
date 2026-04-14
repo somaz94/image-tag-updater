@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased (2026-04-14)
+
+### Builds
+
+- **deps:** bump softprops/action-gh-release from 2 to 3 ([ef3c9ce](https://github.com/somaz94/image-tag-updater/commit/ef3c9ce52e2cc803002f3f1cdea170c24fbfb0f6))
+
+<br/>
+
 ## [v1.5.2](https://github.com/somaz94/image-tag-updater/compare/v1.5.1...v1.5.2) (2026-04-03)
 
 ### Code Refactoring
