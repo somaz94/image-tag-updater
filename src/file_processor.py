@@ -5,7 +5,6 @@ import os
 import re
 import shutil
 from glob import glob
-from pathlib import Path
 
 from .config import Config
 from .logger import Logger
@@ -50,6 +49,7 @@ class FileProcessor:
             return ""
         except OSError as e:
             self.logger.error(f"Failed to get current tag from {file_path}: {e}")
+            raise  # unreachable: logger.error() raises ActionError; kept for type-checker honesty
     
     def should_skip_update(self, file_path: str, current_tag: str, final_tag: str) -> tuple[bool, str | None]:
         """Check if update should be skipped.
