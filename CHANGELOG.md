@@ -2,13 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased (2026-04-14)
+## [v1.5.3](https://github.com/somaz94/image-tag-updater/compare/v1.5.2...v1.5.3) (2026-06-04)
+
+### Code Refactoring
+
+- remove unused imports, make get_current_tag return explicit ([876e667](https://github.com/somaz94/image-tag-updater/commit/876e6676510944ba279070de74c8528d5534b6d2))
 
 ### Builds
 
 - **deps:** bump dependabot/fetch-metadata from 2 to 3 ([b2101ba](https://github.com/somaz94/image-tag-updater/commit/b2101baabe1f6888ac3cc2cae1115a01b982b8de))
 - **deps:** bump actions/github-script from 8 to 9 ([780d017](https://github.com/somaz94/image-tag-updater/commit/780d017d3e0ce0737d52187bba9c6fbc3cc0f03f))
 - **deps:** bump softprops/action-gh-release from 2 to 3 ([ef3c9ce](https://github.com/somaz94/image-tag-updater/commit/ef3c9ce52e2cc803002f3f1cdea170c24fbfb0f6))
+
+### Continuous Integration
+
+- add concurrency guards to recurring workflows ([9498b93](https://github.com/somaz94/image-tag-updater/commit/9498b93b9cd4d987a560ece5827e84b082813461))
+
+### Contributors
+
+- somaz
 
 <br/>
 
