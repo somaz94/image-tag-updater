@@ -1,4 +1,5 @@
 """Tests for src/summary.py"""
+
 import json
 import pytest
 from unittest.mock import patch
@@ -11,6 +12,7 @@ from src.summary import ChangeSummary
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture
 def config():
@@ -45,6 +47,7 @@ OLD_TAGS = {"dev1.yaml": "v1.0.0", "dev2.yaml": "v1.1.0"}
 # create_summary
 # ---------------------------------------------------------------------------
 
+
 class TestCreateSummary:
     def test_with_commit_sha(self, summary):
         result = summary.create_summary(UPDATED_FILES, OLD_TAGS, "abc123")
@@ -69,6 +72,7 @@ class TestCreateSummary:
 # ---------------------------------------------------------------------------
 # save_summary
 # ---------------------------------------------------------------------------
+
 
 class TestSaveSummary:
     def test_no_summary_file(self, config, logger):
@@ -185,6 +189,7 @@ class TestSaveSummary:
 # ---------------------------------------------------------------------------
 # print_summary
 # ---------------------------------------------------------------------------
+
 
 class TestPrintSummary:
     def test_with_files(self, summary, capsys):

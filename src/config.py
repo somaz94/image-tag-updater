@@ -1,4 +1,5 @@
 """Configuration management for image tag updater."""
+
 from __future__ import annotations
 
 import os
@@ -6,19 +7,24 @@ import re
 from dataclasses import dataclass
 
 # Constants
-TAG_PATTERN = re.compile(r'^[a-zA-Z0-9][a-zA-Z0-9._-]*$')
-REPO_PATTERN = re.compile(r'^[a-zA-Z0-9._-]+/[a-zA-Z0-9._-]+$')
+TAG_PATTERN = re.compile(r"^[a-zA-Z0-9][a-zA-Z0-9._-]*$")
+REPO_PATTERN = re.compile(r"^[a-zA-Z0-9._-]+/[a-zA-Z0-9._-]+$")
 REQUIRED_FIELDS = [
-    "target_path", "new_tag", "tag_string",
-    "git_user_name", "git_user_email", "github_token",
-    "repo", "branch"
+    "target_path",
+    "new_tag",
+    "tag_string",
+    "git_user_name",
+    "git_user_email",
+    "github_token",
+    "repo",
+    "branch",
 ]
 
 
 @dataclass
 class Config:
     """Configuration class for image tag updater."""
-    
+
     target_path: str
     new_tag: str
     tag_string: str
@@ -39,7 +45,7 @@ class Config:
     update_if_contains: str = ""
     skip_if_contains: str = ""
     summary_file: str = ""
-    
+
     @classmethod
     def from_env(cls) -> "Config":
         """Create configuration from environment variables."""
@@ -65,18 +71,18 @@ class Config:
             skip_if_contains=os.getenv("SKIP_IF_CONTAINS", ""),
             summary_file=os.getenv("SUMMARY_FILE", ""),
         )
-    
+
     def get_final_tag(self) -> str:
         """Get the final tag with prefix and suffix applied."""
         return f"{self.tag_prefix}{self.new_tag}{self.tag_suffix}"
-    
+
     def validate(self) -> None:
         """Validate configuration values."""
         # Check required fields
         missing = [field for field in REQUIRED_FIELDS if not getattr(self, field)]
         if missing:
             raise ValueError(f"Required fields are not set: {', '.join(missing)}")
-        
+
         # Validate tag format (without prefix/suffix)
         if not TAG_PATTERN.match(self.new_tag):
             raise ValueError(
@@ -101,11 +107,13 @@ class Config:
         # Check if at least one of target_values_file or file_pattern is set
         if not self.target_values_file and not self.file_pattern:
             raise ValueError("Either target_values_file or file_pattern must be set")
-        
+
         # Check if both are set (not allowed)
         if self.target_values_file and self.file_pattern:
-            raise ValueError("Cannot set both target_values_file and file_pattern. Choose one.")
-    
+            raise ValueError(
+                "Cannot set both target_values_file and file_pattern. Choose one."
+            )
+
     def print_config(self) -> None:
         """Print current configuration."""
         print("Configuration:")

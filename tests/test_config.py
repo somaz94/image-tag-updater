@@ -1,4 +1,5 @@
 """Tests for src/config.py"""
+
 import os
 import pytest
 from unittest.mock import patch
@@ -9,6 +10,7 @@ from src.config import Config
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture
 def base_config_kwargs():
@@ -34,6 +36,7 @@ def valid_config(base_config_kwargs):
 # ---------------------------------------------------------------------------
 # from_env
 # ---------------------------------------------------------------------------
+
 
 class TestFromEnv:
     def test_from_env_basic(self):
@@ -87,9 +90,20 @@ class TestFromEnv:
             "BRANCH": "main",
         }
         # Remove keys that would interfere
-        for k in ["BACKUP", "DRY_RUN", "DEBUG", "TAG_PREFIX", "TAG_SUFFIX",
-                   "UPDATE_IF_CONTAINS", "SKIP_IF_CONTAINS", "SUMMARY_FILE",
-                   "COMMIT_MESSAGE", "MAX_RETRIES", "TARGET_VALUES_FILE", "FILE_PATTERN"]:
+        for k in [
+            "BACKUP",
+            "DRY_RUN",
+            "DEBUG",
+            "TAG_PREFIX",
+            "TAG_SUFFIX",
+            "UPDATE_IF_CONTAINS",
+            "SKIP_IF_CONTAINS",
+            "SUMMARY_FILE",
+            "COMMIT_MESSAGE",
+            "MAX_RETRIES",
+            "TARGET_VALUES_FILE",
+            "FILE_PATTERN",
+        ]:
             os.environ.pop(k, None)
 
         with patch.dict(os.environ, env, clear=False):
@@ -108,6 +122,7 @@ class TestFromEnv:
 # get_final_tag
 # ---------------------------------------------------------------------------
 
+
 class TestGetFinalTag:
     def test_no_prefix_suffix(self, valid_config):
         assert valid_config.get_final_tag() == "v1.0.0"
@@ -121,13 +136,21 @@ class TestGetFinalTag:
         assert cfg.get_final_tag() == "v1.0.0-prod"
 
     def test_with_both(self, base_config_kwargs):
-        cfg = Config(**{**base_config_kwargs, "new_tag": "1.0.0", "tag_prefix": "release-", "tag_suffix": "-staging"})
+        cfg = Config(
+            **{
+                **base_config_kwargs,
+                "new_tag": "1.0.0",
+                "tag_prefix": "release-",
+                "tag_suffix": "-staging",
+            }
+        )
         assert cfg.get_final_tag() == "release-1.0.0-staging"
 
 
 # ---------------------------------------------------------------------------
 # validate
 # ---------------------------------------------------------------------------
+
 
 class TestValidate:
     def test_valid_config(self, valid_config):
@@ -155,7 +178,9 @@ class TestValidate:
         base_config_kwargs["target_values_file"] = None
         base_config_kwargs["file_pattern"] = None
         cfg = Config(**base_config_kwargs)
-        with pytest.raises(ValueError, match="Either target_values_file or file_pattern"):
+        with pytest.raises(
+            ValueError, match="Either target_values_file or file_pattern"
+        ):
             cfg.validate()
 
     def test_both_file_and_pattern(self, base_config_kwargs):
@@ -180,6 +205,7 @@ class TestValidate:
 # print_config
 # ---------------------------------------------------------------------------
 
+
 class TestPrintConfig:
     def test_basic(self, valid_config, capsys):
         valid_config.print_config()
@@ -189,7 +215,14 @@ class TestPrintConfig:
         assert valid_config.new_tag in out
 
     def test_with_prefix_suffix(self, base_config_kwargs, capsys):
-        cfg = Config(**{**base_config_kwargs, "new_tag": "1.0.0", "tag_prefix": "v", "tag_suffix": "-rc"})
+        cfg = Config(
+            **{
+                **base_config_kwargs,
+                "new_tag": "1.0.0",
+                "tag_prefix": "v",
+                "tag_suffix": "-rc",
+            }
+        )
         cfg.print_config()
         out = capsys.readouterr().out
         assert "Final Tag" in out

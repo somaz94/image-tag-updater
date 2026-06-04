@@ -1,4 +1,5 @@
 """Tests for src/file_processor.py"""
+
 import os
 import pytest
 from unittest.mock import patch
@@ -11,6 +12,7 @@ from src.logger import ActionError, Logger
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture
 def base_kwargs():
@@ -46,6 +48,7 @@ YAML_CONTENT = 'image:\n  tag: "v1.0.0"\n  pullPolicy: Always\n'
 # validate_file_content
 # ---------------------------------------------------------------------------
 
+
 class TestValidateFileContent:
     def test_tag_found(self, base_kwargs, logger, tmp_path):
         fp = _write(str(tmp_path), "v.yaml", YAML_CONTENT)
@@ -75,6 +78,7 @@ class TestValidateFileContent:
 # get_current_tag
 # ---------------------------------------------------------------------------
 
+
 class TestGetCurrentTag:
     def test_match(self, base_kwargs, logger, tmp_path):
         fp = _write(str(tmp_path), "v.yaml", YAML_CONTENT)
@@ -101,6 +105,7 @@ class TestGetCurrentTag:
 # ---------------------------------------------------------------------------
 # should_skip_update
 # ---------------------------------------------------------------------------
+
 
 class TestShouldSkipUpdate:
     def _proc(self, base_kwargs, logger, **overrides):
@@ -146,6 +151,7 @@ class TestShouldSkipUpdate:
 # _perform_update
 # ---------------------------------------------------------------------------
 
+
 class TestPerformUpdate:
     def test_success(self, base_kwargs, logger, tmp_path):
         fp = _write(str(tmp_path), "v.yaml", YAML_CONTENT)
@@ -177,6 +183,7 @@ class TestPerformUpdate:
 # ---------------------------------------------------------------------------
 # update_file
 # ---------------------------------------------------------------------------
+
 
 class TestUpdateFile:
     def test_dry_run(self, base_kwargs, logger, tmp_path):
@@ -222,6 +229,7 @@ class TestUpdateFile:
 # get_files_to_process
 # ---------------------------------------------------------------------------
 
+
 class TestGetFilesToProcess:
     def test_single_file(self, base_kwargs, logger, tmp_path):
         fp = _write(str(tmp_path), "values.yaml", YAML_CONTENT)
@@ -234,13 +242,21 @@ class TestGetFilesToProcess:
         _write(str(tmp_path), "dev1.values.yaml", YAML_CONTENT)
         _write(str(tmp_path), "dev2.values.yaml", YAML_CONTENT)
         _write(str(tmp_path), "prod.values.yaml", YAML_CONTENT)
-        kw = {**base_kwargs, "target_values_file": None, "file_pattern": str(tmp_path / "dev*.values.yaml")}
+        kw = {
+            **base_kwargs,
+            "target_values_file": None,
+            "file_pattern": str(tmp_path / "dev*.values.yaml"),
+        }
         proc = FileProcessor(Config(**kw), logger)
         files = proc.get_files_to_process()
         assert len(files) == 2
 
     def test_no_match(self, base_kwargs, logger, tmp_path):
-        kw = {**base_kwargs, "target_values_file": None, "file_pattern": str(tmp_path / "nonexistent*.yaml")}
+        kw = {
+            **base_kwargs,
+            "target_values_file": None,
+            "file_pattern": str(tmp_path / "nonexistent*.yaml"),
+        }
         proc = FileProcessor(Config(**kw), logger)
         with pytest.raises(ActionError):
             proc.get_files_to_process()
@@ -255,6 +271,7 @@ class TestGetFilesToProcess:
 # ---------------------------------------------------------------------------
 # process_files
 # ---------------------------------------------------------------------------
+
 
 class TestProcessFiles:
     def test_changes_made(self, base_kwargs, logger, tmp_path):

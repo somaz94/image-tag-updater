@@ -1,10 +1,12 @@
 """Logging utilities for image tag updater."""
+
 import sys
 from typing import NoReturn
 
 
 class ActionError(RuntimeError):
     """Error raised for fatal action failures instead of calling sys.exit()."""
+
     pass
 
 

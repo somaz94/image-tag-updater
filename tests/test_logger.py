@@ -1,4 +1,5 @@
 """Tests for src/logger.py"""
+
 import pytest
 
 from src.logger import ActionError, Logger

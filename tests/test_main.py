@@ -1,4 +1,5 @@
 """Tests for main.py"""
+
 import os
 import pytest
 from unittest.mock import patch, MagicMock
@@ -9,6 +10,7 @@ from main import write_output, main
 # ---------------------------------------------------------------------------
 # write_output
 # ---------------------------------------------------------------------------
+
 
 class TestWriteOutput:
     def test_with_github_output(self, tmp_path):
@@ -42,6 +44,7 @@ class TestWriteOutput:
 # ---------------------------------------------------------------------------
 # main
 # ---------------------------------------------------------------------------
+
 
 class TestMain:
     def _env(self, tmpdir, **overrides):
@@ -105,7 +108,9 @@ class TestMain:
             assert exc_info.value.code == 1
 
     def test_debug_mode_error(self, tmp_path):
-        env = self._env(str(tmp_path), DEBUG="true", TARGET_VALUES_FILE="nonexistent.yaml")
+        env = self._env(
+            str(tmp_path), DEBUG="true", TARGET_VALUES_FILE="nonexistent.yaml"
+        )
         # Don't create the file, so file_processor will fail
         with patch.dict(os.environ, env, clear=False):
             with pytest.raises(SystemExit):
@@ -118,7 +123,9 @@ class TestMain:
         summary_file = str(tmp_path / "summary.json")
         github_output = str(tmp_path / "github_output")
 
-        env = self._env(str(tmp_path), GITHUB_OUTPUT=github_output, SUMMARY_FILE=summary_file)
+        env = self._env(
+            str(tmp_path), GITHUB_OUTPUT=github_output, SUMMARY_FILE=summary_file
+        )
         with patch.dict(os.environ, env, clear=False):
             main()
 
@@ -183,7 +190,12 @@ class TestMain:
         mock_git.commit_and_push.return_value = "abc123def4567890"
         mock_git_cls.return_value = mock_git
 
-        env = self._env(str(tmp_path), DRY_RUN="false", GITHUB_OUTPUT=github_output, SUMMARY_FILE=summary_file)
+        env = self._env(
+            str(tmp_path),
+            DRY_RUN="false",
+            GITHUB_OUTPUT=github_output,
+            SUMMARY_FILE=summary_file,
+        )
         with patch.dict(os.environ, env, clear=False):
             main()
 

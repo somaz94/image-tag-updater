@@ -1,4 +1,5 @@
 """Shared pytest fixtures for image-tag-updater tests."""
+
 import pytest
 
 # Legacy test files that manage their own env vars
@@ -20,14 +21,27 @@ def clean_env(request, monkeypatch):
         return
 
     env_keys = [
-        "TARGET_PATH", "NEW_TAG", "TAG_STRING",
-        "GIT_USER_NAME", "GIT_USER_EMAIL", "GITHUB_TOKEN",
-        "REPO", "BRANCH", "COMMIT_MESSAGE",
-        "TARGET_VALUES_FILE", "FILE_PATTERN",
-        "BACKUP", "DRY_RUN", "DEBUG", "MAX_RETRIES",
-        "TAG_PREFIX", "TAG_SUFFIX",
-        "UPDATE_IF_CONTAINS", "SKIP_IF_CONTAINS",
-        "SUMMARY_FILE", "GITHUB_OUTPUT",
+        "TARGET_PATH",
+        "NEW_TAG",
+        "TAG_STRING",
+        "GIT_USER_NAME",
+        "GIT_USER_EMAIL",
+        "GITHUB_TOKEN",
+        "REPO",
+        "BRANCH",
+        "COMMIT_MESSAGE",
+        "TARGET_VALUES_FILE",
+        "FILE_PATTERN",
+        "BACKUP",
+        "DRY_RUN",
+        "DEBUG",
+        "MAX_RETRIES",
+        "TAG_PREFIX",
+        "TAG_SUFFIX",
+        "UPDATE_IF_CONTAINS",
+        "SKIP_IF_CONTAINS",
+        "SUMMARY_FILE",
+        "GITHUB_OUTPUT",
     ]
     for key in env_keys:
         monkeypatch.delenv(key, raising=False)
