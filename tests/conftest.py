@@ -1,5 +1,4 @@
 """Shared pytest fixtures for image-tag-updater tests."""
-import os
 import pytest
 
 # Legacy test files that manage their own env vars

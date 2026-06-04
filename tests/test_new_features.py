@@ -2,7 +2,6 @@
 """Tests for new features: outputs and tag prefix/suffix."""
 import os
 import sys
-import tempfile
 from pathlib import Path
 
 # Add parent directory to path for imports

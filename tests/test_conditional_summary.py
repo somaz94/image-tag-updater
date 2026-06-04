@@ -176,7 +176,7 @@ def test_summary_file_saving():
         assert isinstance(data, list), "Summary should be a list"
         assert len(data) == 1, "Should have one entry"
         assert data[0]["commit_sha"] == "commit1"
-        print(f"[O] Summary content is correct (1 entry)")
+        print("[O] Summary content is correct (1 entry)")
         
         # Save second summary
         updated_files = ["file2.yaml"]
@@ -189,7 +189,7 @@ def test_summary_file_saving():
         
         assert len(data) == 2, "Should have two entries"
         assert data[1]["commit_sha"] == "commit2"
-        print(f"[O] Summary append worked (2 entries)")
+        print("[O] Summary append worked (2 entries)")
 
 
 def test_no_conditions():
@@ -199,14 +199,14 @@ def test_no_conditions():
     setup_test_env()
     os.environ["UPDATE_IF_CONTAINS"] = ""
     os.environ["SKIP_IF_CONTAINS"] = ""
-    
-    config = Config.from_env()
-    
+
+    Config.from_env()
+
     # All tags should be updateable when no conditions are set
     test_tags = ["latest", "v1.0.0", "v2.0.0-prod", "main"]
     
     for tag in test_tags:
-        should_update = True  # No conditions = always update
+        # No conditions = always update
         print(f"[O] Would update: {tag} (no conditions set)")
 
 

@@ -1,7 +1,7 @@
 """Tests for src/git_operations.py"""
 import subprocess
 import pytest
-from unittest.mock import patch, MagicMock, call
+from unittest.mock import patch, MagicMock
 
 from src.config import Config
 from src.git_operations import GitOperations

@@ -106,7 +106,6 @@ class TestMain:
 
     def test_debug_mode_error(self, tmp_path):
         env = self._env(str(tmp_path), DEBUG="true", TARGET_VALUES_FILE="nonexistent.yaml")
-        values = tmp_path / "nonexistent.yaml"
         # Don't create the file, so file_processor will fail
         with patch.dict(os.environ, env, clear=False):
             with pytest.raises(SystemExit):

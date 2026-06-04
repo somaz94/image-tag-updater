@@ -3,9 +3,6 @@
 import os
 import sys
 import tempfile
-import shutil
-import re
-from pathlib import Path
 
 # Add parent directory to path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -282,7 +279,7 @@ def test_valid_tag_formats():
     all_valid = True
     for tag in valid_tags:
         try:
-            config = Config(
+            Config(
                 target_path="/tmp",
                 new_tag=tag,
                 tag_string="tag",
