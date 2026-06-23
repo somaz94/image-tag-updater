@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased (2026-06-23)
+
+### Tests
+
+- remove unused imports and dead variables ([8636b65](https://github.com/somaz94/image-tag-updater/commit/8636b65f81bba9ec3aa84842e0ead512bd2e3336))
+
+### Builds
+
+- **deps:** bump actions/checkout from 6 to 7 ([2487dc8](https://github.com/somaz94/image-tag-updater/commit/2487dc8b72ec0dd99a7586ea6c4b5fb2de16d9b4))
+- add ruff to dev dependencies ([7408d3f](https://github.com/somaz94/image-tag-updater/commit/7408d3f445bd8bdb2339f36b435ebd2e414c521e))
+
+### Continuous Integration
+
+- add DCO check via shared reusable workflow ([099aacd](https://github.com/somaz94/image-tag-updater/commit/099aacdba253944713cc5178c08e92482e37dda4))
+
+### Styles
+
+- format codebase with ruff ([42c5df2](https://github.com/somaz94/image-tag-updater/commit/42c5df279b37cc647fe2c7c4a70c58cf14872d5e))
+
+### Contributors
+
+- somaz
+
+<br/>
+
 ## [v1.5.3](https://github.com/somaz94/image-tag-updater/compare/v1.5.2...v1.5.3) (2026-06-04)
 
 ### Code Refactoring
