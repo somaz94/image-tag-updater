@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased (2026-06-23)
+## Unreleased (2026-07-21)
 
 ### Tests
 
@@ -10,11 +10,20 @@ All notable changes to this project will be documented in this file.
 
 ### Builds
 
+- **deps:** bump actions/setup-python from 6 to 7 (#15) ([#15](https://github.com/somaz94/image-tag-updater/pull/15)) ([5bfd513](https://github.com/somaz94/image-tag-updater/commit/5bfd51362dfd0c449ac35b6abfad600f6f336e9a))
 - **deps:** bump actions/checkout from 6 to 7 ([2487dc8](https://github.com/somaz94/image-tag-updater/commit/2487dc8b72ec0dd99a7586ea6c4b5fb2de16d9b4))
 - add ruff to dev dependencies ([7408d3f](https://github.com/somaz94/image-tag-updater/commit/7408d3f445bd8bdb2339f36b435ebd2e414c521e))
 
 ### Continuous Integration
 
+- remove DCO workflow ([2aa84b1](https://github.com/somaz94/image-tag-updater/commit/2aa84b17d09022f3bbf31795d056af2c1c7c4be4))
+- adopt semantic-pr, labels, lock-threads, PR size, and auto-assign reusables ([179f75e](https://github.com/somaz94/image-tag-updater/commit/179f75e8cc00195542d212b8f5cf7172e95b863b))
+- use reusable stale-issues workflow ([af69dcc](https://github.com/somaz94/image-tag-updater/commit/af69dccaac59469b2d334055e6d39ebca44b6dce))
+- use reusable issue-greeting workflow ([1dac4f4](https://github.com/somaz94/image-tag-updater/commit/1dac4f4b1dac6d97259a9fba431ffa846c26ebc2))
+- use reusable dependabot-auto-merge workflow ([80890e9](https://github.com/somaz94/image-tag-updater/commit/80890e9156e32a78c49e88929a77df04d9e0b232))
+- use reusable contributors workflow ([c1fd4bf](https://github.com/somaz94/image-tag-updater/commit/c1fd4bf30a3b63539a1bebbaae6cd9bbbe15eed3))
+- add ok-to-test workflow stub ([290b90f](https://github.com/somaz94/image-tag-updater/commit/290b90f99073b0d88a8d4820a93584e697edf534))
+- add PR welcome workflow stub ([cd2c7ea](https://github.com/somaz94/image-tag-updater/commit/cd2c7ea7cf0c9b73f4deeb807006c7773f1cc925))
 - add DCO check via shared reusable workflow ([099aacd](https://github.com/somaz94/image-tag-updater/commit/099aacdba253944713cc5178c08e92482e37dda4))
 
 ### Styles
