@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased (2026-08-07)
+## [v1.6.0](https://github.com/somaz94/image-tag-updater/compare/v1.5.3...v1.6.0) (2026-08-07)
 
 ### Performance Improvements
 
