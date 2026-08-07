@@ -2,7 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased (2026-07-21)
+## Unreleased (2026-08-07)
+
+### Performance Improvements
+
+- ship a prebuilt multi-arch image instead of building per run ([8686711](https://github.com/somaz94/image-tag-updater/commit/86867115db5d64a5a36bdb0f3db9dcf854bb1991))
 
 ### Tests
 
