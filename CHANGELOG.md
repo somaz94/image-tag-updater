@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.6.2](https://github.com/somaz94/image-tag-updater/compare/v1.6.1...v1.6.2) (2026-09-29)
+
+### Bug Fixes
+
+- configure git through the process environment instead of ~/.gitconfig ([26e6bd7](https://github.com/somaz94/image-tag-updater/commit/26e6bd7a0e58112ca7aab404d3220b06f3c51a0f))
+
+### Code Refactoring
+
+- let git errors propagate from the branch and staged-change checks ([6a213f3](https://github.com/somaz94/image-tag-updater/commit/6a213f3a4a00f661fe825ea393b26495cd606192))
+
+### Chores
+
+- bump the action image to v1.6.2 ([df20aea](https://github.com/somaz94/image-tag-updater/commit/df20aeadce904c495a277238e7913e4eeab124ba))
+- log the injected git settings in debug mode ([79bd54b](https://github.com/somaz94/image-tag-updater/commit/79bd54ba83da016f3168af8de073505b8433fbcf))
+- move to ruff 0.16 and fix its new findings ([4a58db4](https://github.com/somaz94/image-tag-updater/commit/4a58db448b069495e1486dc480032f55fceec83d))
+
+### Contributors
+
+- somaz
+
+<br/>
+
 ## [v1.6.1](https://github.com/somaz94/image-tag-updater/compare/v1.6.0...v1.6.1) (2026-09-29)
 
 ### Bug Fixes
