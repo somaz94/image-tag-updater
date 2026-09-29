@@ -12,8 +12,6 @@ src/__pycache__/
 .gitattributes
 
 # Documentation
-README.md
-CHANGELOG.md
 LICENSE
 *.md
 docs/
@@ -33,7 +31,7 @@ backup/
 tests/
 test_*
 *_test.py
-pytest_cache/
+.pytest_cache/
 .coverage
 htmlcov/
 

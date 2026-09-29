@@ -1,6 +1,6 @@
 .PHONY: test test-local test-features test-conditional test-all coverage \
        lint lint-fix format format-check format-yaml \
-       docker-build docker-run docker-push docker-clean \
+       docker-build docker-run docker-clean \
        ci check clean help
 
 VENV           := venv
@@ -68,9 +68,6 @@ docker-build: ## Build Docker image
 
 docker-run: ## Run Docker container
 	$(DOCKER) run --rm $(DOCKER_IMAGE)
-
-docker-push: ## Push Docker image to registry
-	$(DOCKER) push $(DOCKER_IMAGE)
 
 docker-clean: ## Remove Docker image
 	$(DOCKER) rmi $(DOCKER_IMAGE) 2>/dev/null || true

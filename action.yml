@@ -1,7 +1,7 @@
 name: 'Image Tag Updater'
 description:
   'Updates a specific image tag in a specified file within a target directory.'
-author: 'Your Name'
+author: 'somaz94'
 branding:
   icon: 'edit'
   color: 'blue'
