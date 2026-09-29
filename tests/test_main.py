@@ -97,7 +97,8 @@ class TestMain:
                 main()
             assert exc_info.value.code == 1
 
-    def test_debug_mode_error(self, tmp_path):
+    @patch("main.GitOperations")
+    def test_debug_mode_error(self, mock_git_cls, tmp_path):
         env = self._env(
             str(tmp_path), DEBUG="true", TARGET_VALUES_FILE="nonexistent.yaml"
         )
