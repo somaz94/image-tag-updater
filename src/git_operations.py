@@ -2,12 +2,27 @@
 
 from __future__ import annotations
 
+import os
 import subprocess
 import sys
 import time
 
 from .config import Config
 from .logger import ActionError, Logger
+
+
+def add_config_env(key: str, value: str) -> None:
+    """Append key=value to the git config that child git processes read from the environment.
+
+    Git treats GIT_CONFIG_COUNT/KEY/VALUE as command-scope config, so safe.directory
+    is honoured and ~/.gitconfig is never touched.
+    """
+    count = int(os.environ.get("GIT_CONFIG_COUNT", "0"))
+    if count < 0:
+        raise ValueError(f"Invalid GIT_CONFIG_COUNT: {count}")
+    os.environ[f"GIT_CONFIG_KEY_{count}"] = key
+    os.environ[f"GIT_CONFIG_VALUE_{count}"] = value
+    os.environ["GIT_CONFIG_COUNT"] = str(count + 1)
 
 
 class GitOperations:
@@ -59,26 +74,18 @@ class GitOperations:
             self.logger.error(error_msg)
 
     def configure_git(self) -> None:
-        """Configure Git settings."""
+        """Configure Git for this process only; no git config file is written."""
         self.logger.debug("\nConfiguring Git...")
 
-        commands = [
-            ["git", "config", "--global", "--add", "safe.directory", "/usr/src"],
-            [
-                "git",
-                "config",
-                "--global",
-                "--add",
-                "safe.directory",
-                "/github/workspace",
-            ],
-            ["git", "config", "--global", "user.name", self.config.git_user_name],
-            ["git", "config", "--global", "user.email", self.config.git_user_email],
-            ["git", "config", "--global", "pull.rebase", "false"],
+        settings = [
+            ("safe.directory", "/usr/src"),
+            ("safe.directory", "/github/workspace"),
+            ("user.name", self.config.git_user_name),
+            ("user.email", self.config.git_user_email),
+            ("pull.rebase", "false"),
         ]
-
-        for cmd in commands:
-            self.run_command(cmd)
+        for key, value in settings:
+            add_config_env(key, value)
 
     def branch_exists_locally(self, branch: str) -> bool:
         """Check if branch exists locally."""

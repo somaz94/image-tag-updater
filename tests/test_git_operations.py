@@ -1,12 +1,13 @@
 """Tests for src/git_operations.py"""
 
+import os
 import subprocess
 from unittest.mock import MagicMock, patch
 
 import pytest
 
 from src.config import Config
-from src.git_operations import GitOperations
+from src.git_operations import GitOperations, add_config_env
 from src.logger import ActionError, Logger
 
 
@@ -109,11 +110,54 @@ class TestRunCommand:
                 git_ops.run_command(["git", "fail"], check=True)
 
 
+@pytest.fixture
+def git_env():
+    with patch.dict(os.environ):
+        for key in [k for k in os.environ if k.startswith("GIT_CONFIG_")]:
+            del os.environ[key]
+        yield os.environ
+
+
+def env_config(env):
+    return [
+        (env[f"GIT_CONFIG_KEY_{i}"], env[f"GIT_CONFIG_VALUE_{i}"])
+        for i in range(int(env["GIT_CONFIG_COUNT"]))
+    ]
+
+
+class TestAddConfigEnv:
+    def test_first_entry(self, git_env):
+        add_config_env("safe.directory", "/repo")
+        assert env_config(git_env) == [("safe.directory", "/repo")]
+
+    def test_appends_after_existing_entries(self, git_env):
+        git_env.update(
+            GIT_CONFIG_COUNT="1",
+            GIT_CONFIG_KEY_0="core.pager",
+            GIT_CONFIG_VALUE_0="cat",
+        )
+        add_config_env("user.name", "bot")
+        assert env_config(git_env) == [("core.pager", "cat"), ("user.name", "bot")]
+
+    @pytest.mark.parametrize("count", ["abc", "-1"])
+    def test_invalid_count(self, git_env, count):
+        git_env["GIT_CONFIG_COUNT"] = count
+        with pytest.raises(ValueError):
+            add_config_env("user.name", "bot")
+
+
 class TestConfigureGit:
-    def test_runs_all_commands(self, git_ops):
+    def test_sets_process_env_without_running_git(self, git_ops, git_env):
         with patch.object(git_ops, "run_command") as mock_cmd:
             git_ops.configure_git()
-            assert mock_cmd.call_count == 5
+        mock_cmd.assert_not_called()
+        assert env_config(git_env) == [
+            ("safe.directory", "/usr/src"),
+            ("safe.directory", "/github/workspace"),
+            ("user.name", git_ops.config.git_user_name),
+            ("user.email", git_ops.config.git_user_email),
+            ("pull.rebase", "false"),
+        ]
 
 
 class TestBranchExists:
