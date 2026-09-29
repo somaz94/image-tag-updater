@@ -86,6 +86,7 @@ class GitOperations:
         ]
         for key, value in settings:
             add_config_env(key, value)
+            self.logger.debug(f"  {key}={value}")
 
     def branch_exists_locally(self, branch: str) -> bool:
         """Check if branch exists locally."""
