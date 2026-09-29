@@ -131,7 +131,7 @@ class TestPerformUpdate:
     def test_success(self, base_kwargs, logger, tmp_path):
         fp = _write(str(tmp_path), "v.yaml", YAML_CONTENT)
         proc = FileProcessor(Config(**base_kwargs), logger)
-        assert proc._perform_update(fp, "v2.0.0") is True
+        proc._perform_update(fp, "v2.0.0")
         with open(fp) as f:
             assert "v2.0.0" in f.read()
 

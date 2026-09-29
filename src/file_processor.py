@@ -49,7 +49,6 @@ class FileProcessor:
             return ""
         except OSError as e:
             self.logger.error(f"Failed to get current tag from {file_path}: {e}")
-            raise  # unreachable: logger.error() raises ActionError
 
     def should_skip_update(
         self, file_path: str, current_tag: str, final_tag: str
@@ -84,15 +83,12 @@ class FileProcessor:
 
         return False, None
 
-    def _perform_update(self, file_path: str, final_tag: str) -> bool:
-        """Perform actual file update.
+    def _perform_update(self, file_path: str, final_tag: str) -> None:
+        """Perform actual file update; a read/write failure raises ActionError.
 
         Args:
             file_path: Path to the file to update
             final_tag: New tag value to set
-
-        Returns:
-            bool: Always True; a read/write failure raises ActionError.
         """
         try:
             self.logger.debug("\nUpdating image tag...")
@@ -107,10 +103,8 @@ class FileProcessor:
                 f.write(updated_content)
 
             self.logger.success(f"Updated {file_path}")
-            return True
         except OSError as e:
             self.logger.error(f"Failed to update file {file_path}: {e}")
-            return False
 
     def update_file(self, file_path: str) -> bool:
         """Update tag in file. Returns True if the file changed (or would, in dry run)."""
@@ -148,10 +142,9 @@ class FileProcessor:
             except OSError as e:
                 self.logger.error(f"Failed to create backup: {e}")
 
-        if self._perform_update(file_path, final_tag):
-            self.updated_files.append(file_path)
-            return True
-        return False
+        self._perform_update(file_path, final_tag)
+        self.updated_files.append(file_path)
+        return True
 
     def get_files_to_process(self) -> list[str]:
         """Get list of files to process based on configuration."""

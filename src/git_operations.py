@@ -52,13 +52,11 @@ class GitOperations:
             return None
 
         except subprocess.CalledProcessError as e:
-            if check:
-                error_msg = f"Command failed: {' '.join(cmd)}\n"
-                error_msg += f"Exit code: {e.returncode}\n"
-                if e.stderr:
-                    error_msg += f"Error: {e.stderr}"
-                self.logger.error(error_msg)
-            return None
+            error_msg = f"Command failed: {' '.join(cmd)}\n"
+            error_msg += f"Exit code: {e.returncode}\n"
+            if e.stderr:
+                error_msg += f"Error: {e.stderr}"
+            self.logger.error(error_msg)
 
     def configure_git(self) -> None:
         """Configure Git settings."""

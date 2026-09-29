@@ -101,12 +101,6 @@ class TestRunCommand:
             with pytest.raises(ActionError):
                 git_ops.run_command(["git", "bad-cmd"], check=True)
 
-    def test_failure_without_check(self, git_ops):
-        with patch("subprocess.run") as mock_run:
-            mock_run.side_effect = subprocess.CalledProcessError(1, "git", stderr="")
-            result = git_ops.run_command(["git", "bad-cmd"], check=False)
-            assert result is None
-
     def test_failure_no_stderr(self, git_ops):
         with patch("subprocess.run") as mock_run:
             mock_run.side_effect = subprocess.CalledProcessError(128, "git", stderr="")
