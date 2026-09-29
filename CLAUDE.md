@@ -88,6 +88,7 @@ tag push v* -> Create release
 ### CI Structure
 ```
 test-local ──> build-and-push-docker ──> matrix-test ──> ci-result
+unit-tests (ruff + pytest, coverage >= 90%) ──────────> ci-result
 ```
 
 ## Conventions

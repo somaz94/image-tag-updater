@@ -90,4 +90,8 @@ class TestMyFeature:
 
 ## Continuous Integration
 
-`.github/workflows/ci.yml` runs only the three legacy scripts (the `test-local` job), on every pull request and push to `main`, before the Docker build. Run the pytest suite and ruff locally with `make ci`.
+`.github/workflows/ci.yml` runs on every pull request and push to `main`:
+- `test-local` runs the three legacy scripts, before the Docker build
+- `unit-tests` runs ruff and the pytest suite, and fails below 90% coverage
+
+`make ci` runs the same lint and pytest checks locally.
