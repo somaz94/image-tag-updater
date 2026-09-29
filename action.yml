@@ -103,7 +103,7 @@ runs:
   # (~31s). Subtle: this version's image must be published (release.yml
   # workflow_dispatch) before its git tag is pushed, and a runner can pull only
   # the pushed platforms (linux/amd64, linux/arm64).
-  image: docker://ghcr.io/somaz94/image-tag-updater:v1.6.1
+  image: docker://ghcr.io/somaz94/image-tag-updater:v1.6.2
   env:
     TARGET_PATH: ${{ inputs.target_path }}
     TAG_STRING: ${{ inputs.tag_string }}
