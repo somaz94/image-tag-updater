@@ -7,11 +7,6 @@ from unittest.mock import patch, MagicMock
 from main import write_output, main
 
 
-# ---------------------------------------------------------------------------
-# write_output
-# ---------------------------------------------------------------------------
-
-
 class TestWriteOutput:
     def test_with_github_output(self, tmp_path):
         output_file = str(tmp_path / "output")
@@ -39,11 +34,6 @@ class TestWriteOutput:
             content = f.read()
         assert "k1" in content
         assert "k2" in content
-
-
-# ---------------------------------------------------------------------------
-# main
-# ---------------------------------------------------------------------------
 
 
 class TestMain:
@@ -133,7 +123,6 @@ class TestMain:
 
     @patch("main.GitOperations")
     def test_actual_run_with_changes(self, mock_git_cls, tmp_path):
-        """Non-dry-run: should commit and push via mocked git ops."""
         values = tmp_path / "values.yaml"
         values.write_text('image:\n  tag: "v1.0.0"\n')
         github_output = str(tmp_path / "github_output")
@@ -149,11 +138,10 @@ class TestMain:
         mock_git.commit_and_push.assert_called_once()
         with open(github_output) as f:
             content = f.read()
-        assert "abc123d" in content  # short sha
+        assert "abc123d" in content
 
     @patch("main.GitOperations")
     def test_debug_mode_directory_listing(self, mock_git_cls, tmp_path):
-        """Debug mode should list directory contents."""
         values = tmp_path / "values.yaml"
         values.write_text('image:\n  tag: "v1.0.0"\n')
         github_output = str(tmp_path / "github_output")
@@ -164,7 +152,6 @@ class TestMain:
 
     @patch("main.GitOperations")
     def test_non_dry_run_no_changes(self, mock_git_cls, tmp_path):
-        """Non-dry-run with same tag should exit without commit."""
         values = tmp_path / "values.yaml"
         values.write_text('image:\n  tag: "v2.0.0"\n')
         github_output = str(tmp_path / "github_output")
@@ -180,7 +167,6 @@ class TestMain:
 
     @patch("main.GitOperations")
     def test_actual_run_with_summary_file(self, mock_git_cls, tmp_path):
-        """Non-dry-run with summary file should save summary with commit SHA."""
         values = tmp_path / "values.yaml"
         values.write_text('image:\n  tag: "v1.0.0"\n')
         summary_file = str(tmp_path / "summary.json")
@@ -218,12 +204,10 @@ class TestMain:
 
         with open(github_output) as f:
             content = f.read()
-        # commit_sha should be empty string
         assert "commit_sha<<EOF" in content
 
     @patch("main.GitOperations")
     def test_unexpected_exception(self, mock_git_cls, tmp_path):
-        """Unexpected exception should be caught and exit with code 1."""
         values = tmp_path / "values.yaml"
         values.write_text('image:\n  tag: "v1.0.0"\n')
         github_output = str(tmp_path / "github_output")
@@ -238,7 +222,6 @@ class TestMain:
 
     @patch("main.GitOperations")
     def test_unexpected_exception_debug(self, mock_git_cls, tmp_path):
-        """Unexpected exception in debug mode should print traceback."""
         values = tmp_path / "values.yaml"
         values.write_text('image:\n  tag: "v1.0.0"\n')
         github_output = str(tmp_path / "github_output")

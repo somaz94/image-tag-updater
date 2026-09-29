@@ -2,7 +2,6 @@
 
 import pytest
 
-# Legacy test files that manage their own env vars
 LEGACY_TEST_FILES = {
     "test_local.py",
     "test_new_features.py",

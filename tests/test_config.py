@@ -7,11 +7,6 @@ from unittest.mock import patch
 from src.config import Config
 
 
-# ---------------------------------------------------------------------------
-# Fixtures
-# ---------------------------------------------------------------------------
-
-
 @pytest.fixture
 def base_config_kwargs():
     """Minimal valid Config keyword arguments."""
@@ -31,11 +26,6 @@ def base_config_kwargs():
 @pytest.fixture
 def valid_config(base_config_kwargs):
     return Config(**base_config_kwargs)
-
-
-# ---------------------------------------------------------------------------
-# from_env
-# ---------------------------------------------------------------------------
 
 
 class TestFromEnv:
@@ -89,7 +79,6 @@ class TestFromEnv:
             "REPO": "org/repo",
             "BRANCH": "main",
         }
-        # Remove keys that would interfere
         for k in [
             "BACKUP",
             "DRY_RUN",
@@ -118,11 +107,6 @@ class TestFromEnv:
         assert cfg.commit_message == "Update image tag"
 
 
-# ---------------------------------------------------------------------------
-# get_final_tag
-# ---------------------------------------------------------------------------
-
-
 class TestGetFinalTag:
     def test_no_prefix_suffix(self, valid_config):
         assert valid_config.get_final_tag() == "v1.0.0"
@@ -145,11 +129,6 @@ class TestGetFinalTag:
             }
         )
         assert cfg.get_final_tag() == "release-1.0.0-staging"
-
-
-# ---------------------------------------------------------------------------
-# validate
-# ---------------------------------------------------------------------------
 
 
 class TestValidate:
@@ -199,11 +178,6 @@ class TestValidate:
         base_config_kwargs["repo"] = "my-org/my-repo.name"
         cfg = Config(**base_config_kwargs)
         cfg.validate()  # should not raise
-
-
-# ---------------------------------------------------------------------------
-# print_config
-# ---------------------------------------------------------------------------
 
 
 class TestPrintConfig:

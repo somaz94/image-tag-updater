@@ -5,7 +5,7 @@ import os
 import sys
 import tempfile
 
-# Add parent directory to path
+# CI runs this file as a script, where only tests/ is on sys.path.
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src.config import Config
@@ -16,7 +16,6 @@ from src.logger import Logger
 def create_test_values_file(
     content: str, directory: str, filename: str = "values.yaml"
 ) -> str:
-    """Create a test values file."""
     file_path = os.path.join(directory, filename)
     with open(file_path, "w") as f:
         f.write(content)
@@ -24,7 +23,6 @@ def create_test_values_file(
 
 
 def test_basic_tag_update():
-    """Test basic tag update."""
     print("\nTest 1: Basic tag update")
 
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -64,7 +62,6 @@ image:
 
 
 def test_already_updated():
-    """Test when tag is already updated."""
     print("\nTest 2: Already updated tag")
 
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -102,7 +99,6 @@ image:
 
 
 def test_actual_file_update():
-    """Test actual file update (not dry run)."""
     print("\nTest 3: Actual file update with backup")
 
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -148,11 +144,9 @@ image:
 
 
 def test_multiple_files_pattern():
-    """Test multiple files with pattern matching."""
     print("\nTest 4: Multiple files with pattern (dev*.values.yaml)")
 
     with tempfile.TemporaryDirectory() as tmpdir:
-        # Create multiple files
         files = {
             "dev1.values.yaml": 'image:\n  tag: "v1.0.0"',
             "dev2.values.yaml": 'image:\n  tag: "v1.0.0"',
@@ -186,7 +180,6 @@ def test_multiple_files_pattern():
 
             matched_files = processor.get_files_to_process()
 
-            # Should match dev1 and dev2, but not prod
             if len(matched_files) == 2 and all("dev" in f for f in matched_files):
                 print(
                     f"   [O] PASS: Pattern matched {len(matched_files)} files correctly"
@@ -202,7 +195,6 @@ def test_multiple_files_pattern():
 
 
 def test_custom_tag_string():
-    """Test custom tag string."""
     print("\nTest 5: Custom tag string (imageTag)")
 
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -216,7 +208,7 @@ app:
         config = Config(
             target_path=tmpdir,
             new_tag="v2.0.0",
-            tag_string="imageTag",  # Custom tag string
+            tag_string="imageTag",
             git_user_name="test",
             git_user_email="test@example.com",
             github_token="token",
@@ -241,13 +233,12 @@ app:
 
 
 def test_invalid_tag_format():
-    """Test invalid tag format validation."""
     print("\nTest 6: Invalid tag format validation")
 
     try:
         config = Config(
             target_path="/tmp",
-            new_tag="@invalid@tag!",  # Invalid characters
+            new_tag="@invalid@tag!",
             tag_string="tag",
             git_user_name="test",
             git_user_email="test@example.com",
@@ -258,7 +249,7 @@ def test_invalid_tag_format():
             dry_run=True,
             debug=False,
         )
-        config.validate()  # Trigger validation
+        config.validate()
         print("   [X] FAIL: Invalid tag was accepted")
         return False
     except ValueError as e:
@@ -271,7 +262,6 @@ def test_invalid_tag_format():
 
 
 def test_valid_tag_formats():
-    """Test various valid tag formats."""
     print("\nTest 7: Valid tag formats")
 
     valid_tags = [
@@ -311,7 +301,6 @@ def test_valid_tag_formats():
 
 
 def test_no_backup():
-    """Test file update without backup."""
     print("\nTest 8: File update without backup")
 
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -332,7 +321,7 @@ image:
             branch="main",
             target_values_file="values.yaml",
             dry_run=False,
-            backup=False,  # No backup
+            backup=False,
             debug=False,
         )
 
@@ -351,7 +340,6 @@ image:
 
 
 def test_nested_yaml_structure():
-    """Test nested YAML structure."""
     print("\nTest 9: Nested YAML structure")
 
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -389,7 +377,6 @@ global:
         with open(file_path, "r") as f:
             updated_content = f.read()
 
-        # Count occurrences of new tag
         new_tag_count = updated_content.count("v2.0.0")
 
         if changed and new_tag_count == 2:  # Both frontend and backend
@@ -401,7 +388,6 @@ global:
 
 
 def test_config_validation():
-    """Test configuration validation."""
     print("\nTest 10: Configuration validation")
 
     test_cases = [
@@ -441,7 +427,7 @@ def test_config_validation():
     for test_case in test_cases:
         try:
             config = Config(**test_case["params"])
-            config.validate()  # Trigger validation
+            config.validate()
             if test_case["should_fail"]:
                 print(f"   [X] {test_case['name']}: Should have failed")
                 all_passed = False
@@ -460,7 +446,6 @@ def test_config_validation():
 
 
 def test_debug_mode():
-    """Test debug mode logging."""
     print("\nTest 11: Debug mode logging")
 
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -470,7 +455,6 @@ image:
 """
         file_path = create_test_values_file(content, tmpdir)
 
-        # Test with debug mode
         config = Config(
             target_path=tmpdir,
             new_tag="v2.0.0",
@@ -482,7 +466,7 @@ image:
             branch="main",
             target_values_file="values.yaml",
             dry_run=True,
-            debug=True,  # Enable debug
+            debug=True,
         )
 
         logger = Logger(debug=True)
@@ -500,7 +484,6 @@ image:
 
 
 def test_empty_file():
-    """Test handling empty file."""
     print("\nTest 12: Empty file handling")
 
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -524,17 +507,12 @@ def test_empty_file():
         logger = Logger(debug=False)
         processor = FileProcessor(config, logger)
 
-        # Empty file means current_tag is empty string
-        # new_tag is v2.0.0, so they're different, will return True
-        # But it's dry_run so file won't actually change
+        # update_file() skips validate_file_content(); a tagless file is a change.
         changed = processor.update_file(file_path)
 
-        # Read file to confirm it wasn't changed (dry run)
         with open(file_path, "r") as f:
             final_content = f.read()
 
-        # For empty file with no tag field, it should detect "change" in dry-run
-        # but file should remain empty
         if changed and final_content == "":
             print(
                 "   [O] PASS: Empty file handled correctly (dry-run detected potential change)"
@@ -546,7 +524,6 @@ def test_empty_file():
 
 
 def test_file_without_tag():
-    """Test file without target tag string."""
     print("\nTest 13: File without target tag")
 
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -575,15 +552,11 @@ image:
         logger = Logger(debug=False)
         processor = FileProcessor(config, logger)
 
-        # File without tag field will have empty current_tag
-        # This will be detected as change in dry-run mode
         changed = processor.update_file(file_path)
 
-        # Read file to confirm it wasn't changed (dry run)
         with open(file_path, "r") as f:
             final_content = f.read()
 
-        # Should detect potential change but not modify file in dry-run
         if changed and "v2.0.0" not in final_content:
             print("   [O] PASS: File without tag handled correctly (would add tag)")
             return True
@@ -593,7 +566,6 @@ image:
 
 
 def main():
-    """Run all tests."""
     print("=" * 50)
     print("Test Image Tag Updater - Comprehensive Test Suite")
     print("=" * 50)

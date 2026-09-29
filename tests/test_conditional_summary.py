@@ -7,7 +7,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-# Add parent directory to path for imports
+# CI runs this file as a script, where only tests/ is on sys.path.
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from src.config import Config
@@ -16,7 +16,6 @@ from src.summary import ChangeSummary
 
 
 def setup_test_env():
-    """Setup test environment variables."""
     os.environ.update(
         {
             "TARGET_PATH": "/tmp/test",
@@ -36,7 +35,6 @@ def setup_test_env():
 
 
 def test_update_if_contains():
-    """Test update_if_contains condition."""
     print("\n=== Testing update_if_contains ===")
 
     setup_test_env()
@@ -44,18 +42,15 @@ def test_update_if_contains():
 
     config = Config.from_env()
 
-    # Simulate current tag checks
     current_tag_v1 = "v1.0.0"
     current_tag_v2 = "v2.0.0"
 
-    # Should update v1.x tags
     should_update = config.update_if_contains in current_tag_v1
     assert should_update, f"Should update {current_tag_v1}"
     print(
         f"[O] Would update: {current_tag_v1} (contains '{config.update_if_contains}')"
     )
 
-    # Should skip v2.x tags
     should_skip = config.update_if_contains not in current_tag_v2
     assert should_skip, f"Should skip {current_tag_v2}"
     print(
@@ -64,7 +59,6 @@ def test_update_if_contains():
 
 
 def test_skip_if_contains():
-    """Test skip_if_contains condition."""
     print("\n=== Testing skip_if_contains ===")
 
     setup_test_env()
@@ -72,18 +66,15 @@ def test_skip_if_contains():
 
     config = Config.from_env()
 
-    # Simulate current tag checks
     current_tag_latest = "latest"
     current_tag_version = "v1.0.0"
 
-    # Should skip 'latest' tags
     should_skip = config.skip_if_contains in current_tag_latest
     assert should_skip, f"Should skip {current_tag_latest}"
     print(
         f"[O] Would skip: {current_tag_latest} (contains '{config.skip_if_contains}')"
     )
 
-    # Should update version tags
     should_update = config.skip_if_contains not in current_tag_version
     assert should_update, f"Should update {current_tag_version}"
     print(
@@ -92,7 +83,6 @@ def test_skip_if_contains():
 
 
 def test_combined_conditions():
-    """Test both conditions together."""
     print("\n=== Testing Combined Conditions ===")
 
     setup_test_env()
@@ -123,7 +113,6 @@ def test_combined_conditions():
 
 
 def test_summary_creation():
-    """Test change summary creation."""
     print("\n=== Testing Summary Creation ===")
 
     setup_test_env()
@@ -133,15 +122,12 @@ def test_summary_creation():
     logger = Logger(debug=False)
     summary = ChangeSummary(config, logger)
 
-    # Create test data
     updated_files = ["dev1.yaml", "dev2.yaml"]
     old_tags = {"dev1.yaml": "v1.0.0", "dev2.yaml": "v1.0.1"}
     commit_sha = "abc123"
 
-    # Create summary
     result = summary.create_summary(updated_files, old_tags, commit_sha)
 
-    # Verify summary structure
     assert result["repository"] == "test/repo"
     assert result["branch"] == "main"
     assert result["commit_sha"] == "abc123"
@@ -159,7 +145,6 @@ def test_summary_creation():
 
 
 def test_summary_file_saving():
-    """Test saving summary to file."""
     print("\n=== Testing Summary File Saving ===")
 
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -172,16 +157,13 @@ def test_summary_file_saving():
         logger = Logger(debug=False)
         summary = ChangeSummary(config, logger)
 
-        # Save first summary
         updated_files = ["file1.yaml"]
         old_tags = {"file1.yaml": "v1.0.0"}
         summary.save_summary(updated_files, old_tags, "commit1")
 
-        # Verify file was created
         assert os.path.exists(summary_file), "Summary file was not created"
         print(f"[O] Summary file created: {summary_file}")
 
-        # Read and verify content
         with open(summary_file, "r") as f:
             data = json.load(f)
 
@@ -190,12 +172,10 @@ def test_summary_file_saving():
         assert data[0]["commit_sha"] == "commit1"
         print("[O] Summary content is correct (1 entry)")
 
-        # Save second summary
         updated_files = ["file2.yaml"]
         old_tags = {"file2.yaml": "v1.1.0"}
         summary.save_summary(updated_files, old_tags, "commit2")
 
-        # Verify append worked
         with open(summary_file, "r") as f:
             data = json.load(f)
 
@@ -205,7 +185,6 @@ def test_summary_file_saving():
 
 
 def test_no_conditions():
-    """Test that action works without any conditions set."""
     print("\n=== Testing No Conditions ===")
 
     setup_test_env()
@@ -214,16 +193,13 @@ def test_no_conditions():
 
     Config.from_env()
 
-    # All tags should be updateable when no conditions are set
     test_tags = ["latest", "v1.0.0", "v2.0.0-prod", "main"]
 
     for tag in test_tags:
-        # No conditions = always update
         print(f"[O] Would update: {tag} (no conditions set)")
 
 
 def main():
-    """Run all tests."""
     print("=" * 60)
     print("Testing Conditional Updates and Change Summary")
     print("=" * 60)

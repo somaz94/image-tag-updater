@@ -9,11 +9,6 @@ from src.file_processor import FileProcessor
 from src.logger import ActionError, Logger
 
 
-# ---------------------------------------------------------------------------
-# Fixtures
-# ---------------------------------------------------------------------------
-
-
 @pytest.fixture
 def base_kwargs():
     return {
@@ -44,11 +39,6 @@ def _write(directory, filename, content):
 YAML_CONTENT = 'image:\n  tag: "v1.0.0"\n  pullPolicy: Always\n'
 
 
-# ---------------------------------------------------------------------------
-# validate_file_content
-# ---------------------------------------------------------------------------
-
-
 class TestValidateFileContent:
     def test_tag_found(self, base_kwargs, logger, tmp_path):
         fp = _write(str(tmp_path), "v.yaml", YAML_CONTENT)
@@ -74,11 +64,6 @@ class TestValidateFileContent:
                 proc.validate_file_content(fp)
 
 
-# ---------------------------------------------------------------------------
-# get_current_tag
-# ---------------------------------------------------------------------------
-
-
 class TestGetCurrentTag:
     def test_match(self, base_kwargs, logger, tmp_path):
         fp = _write(str(tmp_path), "v.yaml", YAML_CONTENT)
@@ -100,11 +85,6 @@ class TestGetCurrentTag:
         with patch("builtins.open", side_effect=IOError("fail")):
             with pytest.raises(ActionError):
                 proc.get_current_tag("/tmp/fake.yaml")
-
-
-# ---------------------------------------------------------------------------
-# should_skip_update
-# ---------------------------------------------------------------------------
 
 
 class TestShouldSkipUpdate:
@@ -147,11 +127,6 @@ class TestShouldSkipUpdate:
         assert reason is None
 
 
-# ---------------------------------------------------------------------------
-# _perform_update
-# ---------------------------------------------------------------------------
-
-
 class TestPerformUpdate:
     def test_success(self, base_kwargs, logger, tmp_path):
         fp = _write(str(tmp_path), "v.yaml", YAML_CONTENT)
@@ -174,15 +149,9 @@ class TestPerformUpdate:
                 raise PermissionError("read-only")
             return original_open(*args, **kwargs)
 
-        # logger.error calls sys.exit(1), so return False is unreachable
         with patch("builtins.open", side_effect=side_effect_open):
             with pytest.raises(ActionError):
                 proc._perform_update(fp, "v2.0.0")
-
-
-# ---------------------------------------------------------------------------
-# update_file
-# ---------------------------------------------------------------------------
 
 
 class TestUpdateFile:
@@ -225,11 +194,6 @@ class TestUpdateFile:
                 proc.update_file(fp)
 
 
-# ---------------------------------------------------------------------------
-# get_files_to_process
-# ---------------------------------------------------------------------------
-
-
 class TestGetFilesToProcess:
     def test_single_file(self, base_kwargs, logger, tmp_path):
         fp = _write(str(tmp_path), "values.yaml", YAML_CONTENT)
@@ -266,11 +230,6 @@ class TestGetFilesToProcess:
         proc = FileProcessor(Config(**kw), logger)
         with pytest.raises(ActionError):
             proc.get_files_to_process()
-
-
-# ---------------------------------------------------------------------------
-# process_files
-# ---------------------------------------------------------------------------
 
 
 class TestProcessFiles:

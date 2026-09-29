@@ -9,11 +9,6 @@ from src.git_operations import GitOperations
 from src.logger import ActionError, Logger
 
 
-# ---------------------------------------------------------------------------
-# Fixtures
-# ---------------------------------------------------------------------------
-
-
 @pytest.fixture
 def config():
     return Config(
@@ -61,11 +56,6 @@ def debug_git_ops(config, debug_logger):
         debug=True,
     )
     return GitOperations(cfg, debug_logger)
-
-
-# ---------------------------------------------------------------------------
-# run_command
-# ---------------------------------------------------------------------------
 
 
 class TestRunCommand:
@@ -124,21 +114,11 @@ class TestRunCommand:
                 git_ops.run_command(["git", "fail"], check=True)
 
 
-# ---------------------------------------------------------------------------
-# configure_git
-# ---------------------------------------------------------------------------
-
-
 class TestConfigureGit:
     def test_runs_all_commands(self, git_ops):
         with patch.object(git_ops, "run_command") as mock_cmd:
             git_ops.configure_git()
             assert mock_cmd.call_count == 5
-
-
-# ---------------------------------------------------------------------------
-# branch_exists_locally / remotely
-# ---------------------------------------------------------------------------
 
 
 class TestBranchExists:
@@ -171,11 +151,6 @@ class TestBranchExists:
             assert git_ops.branch_exists_remotely("x") is False
 
 
-# ---------------------------------------------------------------------------
-# check_branch_existence
-# ---------------------------------------------------------------------------
-
-
 class TestCheckBranchExistence:
     def test_both(self, git_ops):
         with (
@@ -185,11 +160,6 @@ class TestCheckBranchExistence:
             local, remote = git_ops.check_branch_existence("main")
             assert local is True
             assert remote is False
-
-
-# ---------------------------------------------------------------------------
-# setup_branch
-# ---------------------------------------------------------------------------
 
 
 class TestSetupBranch:
@@ -239,11 +209,6 @@ class TestSetupBranch:
             git_ops.setup_branch()
 
 
-# ---------------------------------------------------------------------------
-# has_staged_changes
-# ---------------------------------------------------------------------------
-
-
 class TestHasStagedChanges:
     def test_has_changes(self, git_ops):
         with patch("subprocess.run") as mock_run:
@@ -258,11 +223,6 @@ class TestHasStagedChanges:
     def test_exception(self, git_ops):
         with patch("subprocess.run", side_effect=Exception("fail")):
             assert git_ops.has_staged_changes() is False
-
-
-# ---------------------------------------------------------------------------
-# commit_and_push
-# ---------------------------------------------------------------------------
 
 
 class TestCommitAndPush:
@@ -284,11 +244,6 @@ class TestCommitAndPush:
             mock_cmd.return_value = None
             sha = git_ops.commit_and_push("values.yaml")
             assert sha is None
-
-
-# ---------------------------------------------------------------------------
-# _push_with_retry
-# ---------------------------------------------------------------------------
 
 
 class TestPushWithRetry:

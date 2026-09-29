@@ -1,21 +1,19 @@
 #!/usr/bin/env python3
-"""Tests for new features: outputs and tag prefix/suffix."""
+"""Legacy script tests for tag prefix/suffix and final-tag validation."""
 
 import os
 import sys
 from pathlib import Path
 
-# Add parent directory to path for imports
+# CI runs this file as a script, where only tests/ is on sys.path.
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from src.config import Config
 
 
 def test_tag_prefix():
-    """Test tag prefix functionality."""
     print("\n=== Testing Tag Prefix ===")
 
-    # Set environment variables
     os.environ.update(
         {
             "TARGET_PATH": "/tmp/test",
@@ -38,7 +36,6 @@ def test_tag_prefix():
 
 
 def test_tag_suffix():
-    """Test tag suffix functionality."""
     print("\n=== Testing Tag Suffix ===")
 
     os.environ.update({"NEW_TAG": "latest", "TAG_PREFIX": "", "TAG_SUFFIX": "-prod"})
@@ -51,7 +48,6 @@ def test_tag_suffix():
 
 
 def test_tag_prefix_and_suffix():
-    """Test both prefix and suffix."""
     print("\n=== Testing Tag Prefix and Suffix ===")
 
     os.environ.update(
@@ -68,7 +64,6 @@ def test_tag_prefix_and_suffix():
 
 
 def test_no_prefix_suffix():
-    """Test without prefix/suffix."""
     print("\n=== Testing No Prefix/Suffix ===")
 
     os.environ.update({"NEW_TAG": "v1.0.0", "TAG_PREFIX": "", "TAG_SUFFIX": ""})
@@ -81,7 +76,6 @@ def test_no_prefix_suffix():
 
 
 def test_tag_validation_with_prefix_suffix():
-    """Test tag validation with prefix/suffix."""
     print("\n=== Testing Tag Validation ===")
 
     # Valid case
@@ -125,7 +119,6 @@ def test_tag_validation_with_prefix_suffix():
 
 
 def test_print_config():
-    """Test config printing with prefix/suffix."""
     print("\n=== Testing Config Print ===")
 
     os.environ.update(
@@ -145,7 +138,6 @@ def test_print_config():
 
 
 def main():
-    """Run all tests."""
     print("=" * 60)
     print("Testing New Features: Outputs and Tag Prefix/Suffix")
     print("=" * 60)

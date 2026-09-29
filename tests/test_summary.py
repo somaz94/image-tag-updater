@@ -9,11 +9,6 @@ from src.logger import ActionError, Logger
 from src.summary import ChangeSummary
 
 
-# ---------------------------------------------------------------------------
-# Fixtures
-# ---------------------------------------------------------------------------
-
-
 @pytest.fixture
 def config():
     return Config(
@@ -43,11 +38,6 @@ UPDATED_FILES = ["dev1.yaml", "dev2.yaml"]
 OLD_TAGS = {"dev1.yaml": "v1.0.0", "dev2.yaml": "v1.1.0"}
 
 
-# ---------------------------------------------------------------------------
-# create_summary
-# ---------------------------------------------------------------------------
-
-
 class TestCreateSummary:
     def test_with_commit_sha(self, summary):
         result = summary.create_summary(UPDATED_FILES, OLD_TAGS, "abc123")
@@ -67,11 +57,6 @@ class TestCreateSummary:
     def test_missing_old_tag(self, summary):
         result = summary.create_summary(["unknown.yaml"], {})
         assert result["changes"][0]["old_tag"] == ""
-
-
-# ---------------------------------------------------------------------------
-# save_summary
-# ---------------------------------------------------------------------------
 
 
 class TestSaveSummary:
@@ -96,10 +81,8 @@ class TestSaveSummary:
         sf = str(tmp_path / "summary.json")
         config.summary_file = sf
 
-        # First save
         s = ChangeSummary(config, logger)
         s.save_summary(["f1.yaml"], {"f1.yaml": "v1"}, "sha1")
-        # Second save
         s.save_summary(["f2.yaml"], {"f2.yaml": "v2"}, "sha2")
 
         with open(sf) as f:
@@ -107,7 +90,6 @@ class TestSaveSummary:
         assert len(data) == 2
 
     def test_existing_is_dict(self, config, logger, tmp_path):
-        """When existing file contains a dict instead of list."""
         sf = str(tmp_path / "summary.json")
         with open(sf, "w") as f:
             json.dump({"old": True}, f)
@@ -136,7 +118,6 @@ class TestSaveSummary:
 
     def test_ioerror_read(self, config, logger, tmp_path):
         sf = str(tmp_path / "summary.json")
-        # Create a file that exists but will error on read
         with open(sf, "w") as f:
             f.write("[]")
 
@@ -153,13 +134,12 @@ class TestSaveSummary:
                 raise IOError("read fail")
             return original_open(*args, **kwargs)
 
-        # Use patch on Path.exists to trigger the read path, then IOError
+        # First open() is the read: save_summary catches it and starts a fresh list.
         with patch("builtins.open", side_effect=mock_open):
-            # This may raise or handle gracefully depending on flow
             try:
                 s.save_summary(UPDATED_FILES, OLD_TAGS)
             except (SystemExit, IOError):
-                pass  # acceptable
+                pass
 
     def test_ioerror_write(self, config, logger, tmp_path):
         sf = str(tmp_path / "nosuchdir" / "deep" / "summary.json")
@@ -172,7 +152,6 @@ class TestSaveSummary:
 
     def test_max_entries(self, config, logger, tmp_path):
         sf = str(tmp_path / "summary.json")
-        # Pre-fill with MAX_ENTRIES entries
         existing = [{"entry": i} for i in range(ChangeSummary.MAX_ENTRIES)]
         with open(sf, "w") as f:
             json.dump(existing, f)
@@ -184,11 +163,6 @@ class TestSaveSummary:
         with open(sf) as f:
             data = json.load(f)
         assert len(data) == ChangeSummary.MAX_ENTRIES
-
-
-# ---------------------------------------------------------------------------
-# print_summary
-# ---------------------------------------------------------------------------
 
 
 class TestPrintSummary:
