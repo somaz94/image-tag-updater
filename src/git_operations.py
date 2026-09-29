@@ -24,16 +24,16 @@ class GitOperations:
         capture: bool = False,
         show_output: bool = False,
     ) -> str | None:
-        """Run a shell command with improved error handling.
+        """Run a command; with check=True a non-zero exit logs and raises ActionError.
 
         Args:
             cmd: Command and arguments to run
             check: Whether to raise exception on non-zero exit
             capture: Whether to capture and return stdout
-            show_output: Whether to show stdout/stderr (overrides debug mode)
+            show_output: Show stdout/stderr even when debug mode is off
 
         Returns:
-            Optional[str]: Captured stdout if capture=True, None otherwise
+            str | None: Stripped stdout if capture=True, None otherwise
         """
         self.logger.debug(f"Running: {' '.join(cmd)}")
 
@@ -153,8 +153,8 @@ class GitOperations:
     def has_staged_changes(self) -> bool:
         """Check if there are staged changes.
 
-        git diff --cached --quiet exits with 1 when changes exist and 0 when clean.
-        We use subprocess directly to inspect the return code reliably.
+        Calls subprocess directly: run_command() drops the exit code, and
+        `git diff --cached --quiet` signals changes with exit 1.
         """
         try:
             result = subprocess.run(

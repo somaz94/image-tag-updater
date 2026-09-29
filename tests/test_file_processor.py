@@ -43,7 +43,7 @@ class TestValidateFileContent:
     def test_tag_found(self, base_kwargs, logger, tmp_path):
         fp = _write(str(tmp_path), "v.yaml", YAML_CONTENT)
         proc = FileProcessor(Config(**base_kwargs), logger)
-        proc.validate_file_content(fp)  # should not raise/exit
+        proc.validate_file_content(fp)  # should not raise
 
     def test_tag_not_found(self, base_kwargs, logger, tmp_path):
         fp = _write(str(tmp_path), "v.yaml", "nothing: here\n")
@@ -138,7 +138,6 @@ class TestPerformUpdate:
     def test_write_error(self, base_kwargs, logger, tmp_path):
         fp = _write(str(tmp_path), "v.yaml", YAML_CONTENT)
         proc = FileProcessor(Config(**base_kwargs), logger)
-        # Patch open so reading succeeds but writing fails
         original_open = open
         call_count = 0
 
@@ -161,7 +160,6 @@ class TestUpdateFile:
         proc = FileProcessor(Config(**kw), logger)
         assert proc.update_file(fp) is True
         assert fp in proc.updated_files
-        # File content should NOT change in dry run
         with open(fp) as f:
             assert "v1.0.0" in f.read()
 

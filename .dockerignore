@@ -18,7 +18,7 @@ LICENSE
 *.md
 docs/
 
-# GitHub workflows
+# GitHub config
 .github/
 
 # Development files
@@ -42,7 +42,7 @@ venv/
 env/
 ENV/
 
-# Charts (not needed in action image)
+# Charts
 charts/
 
 # OS files

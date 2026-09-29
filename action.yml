@@ -1,5 +1,3 @@
-# action.yml
-
 name: 'Image Tag Updater'
 description:
   'Updates a specific image tag in a specified file within a target directory.'

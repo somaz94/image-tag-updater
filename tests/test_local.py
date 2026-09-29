@@ -156,7 +156,7 @@ def test_multiple_files_pattern():
         for filename, content in files.items():
             create_test_values_file(content, tmpdir, filename)
 
-        # Change to tmpdir to test pattern matching
+        # file_pattern is relative, and glob() resolves it against the cwd.
         original_cwd = os.getcwd()
         os.chdir(tmpdir)
 

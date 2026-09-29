@@ -16,7 +16,7 @@ def write_output(name: str, value: str) -> None:
     github_output = os.getenv("GITHUB_OUTPUT")
     if github_output:
         with open(github_output, "a") as f:
-            # Use multiline format for safety
+            # Heredoc form, since name=value breaks on a value containing a newline.
             f.write(f"{name}<<EOF\n")
             f.write(f"{value}\n")
             f.write("EOF\n")

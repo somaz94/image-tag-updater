@@ -13,7 +13,8 @@ LEGACY_TEST_FILES = {
 def clean_env(request, monkeypatch):
     """Remove environment variables that could leak between tests.
 
-    Skipped for legacy script-based tests that manage env vars manually.
+    Skipped for the legacy script tests: test_new_features.py chains os.environ
+    from one test to the next.
     """
     test_file = request.fspath.basename
     if test_file in LEGACY_TEST_FILES:

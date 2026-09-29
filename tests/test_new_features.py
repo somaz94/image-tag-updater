@@ -78,7 +78,6 @@ def test_no_prefix_suffix():
 def test_tag_validation_with_prefix_suffix():
     print("\n=== Testing Tag Validation ===")
 
-    # Valid case
     os.environ.update(
         {
             "NEW_TAG": "1.2.3",
@@ -97,7 +96,7 @@ def test_tag_validation_with_prefix_suffix():
         print(f"[X] Validation failed: {e}")
         sys.exit(1)
 
-    # Invalid case - final tag starts with special character
+    # "@" prefix: TAG_PATTERN requires an alphanumeric first character.
     print("\nTesting invalid tag format...")
     os.environ.update(
         {

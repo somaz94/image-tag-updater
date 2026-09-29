@@ -62,7 +62,7 @@ class FileProcessor:
             final_tag: Target tag value
 
         Returns:
-            Tuple[bool, Optional[str]]: (should_skip, reason)
+            tuple[bool, str | None]: (should_skip, reason)
         """
         if (
             self.config.update_if_contains
@@ -113,7 +113,7 @@ class FileProcessor:
             return False
 
     def update_file(self, file_path: str) -> bool:
-        """Update tag in file. Returns True if changes were made."""
+        """Update tag in file. Returns True if the file changed (or would, in dry run)."""
         self.logger.debug(f"\nProcessing file: {file_path}")
 
         current_tag = self.get_current_tag(file_path)
@@ -174,7 +174,7 @@ class FileProcessor:
         return files
 
     def process_files(self) -> bool:
-        """Process all files. Returns True if any changes were made."""
+        """Process all files. Returns True if any file changed (or would, in dry run)."""
         files = self.get_files_to_process()
         changes_made = False
 
