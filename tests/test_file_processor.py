@@ -70,6 +70,23 @@ class TestGetCurrentTag:
         proc = FileProcessor(Config(**base_kwargs), logger)
         assert proc.get_current_tag(fp) == "v1.0.0"
 
+    @pytest.mark.parametrize(
+        "line, expected",
+        [
+            ('  tag: "v1.0.0"  # pinned', "v1.0.0"),
+            ("  tag: v1.0.0 # pinned", "v1.0.0"),
+            ("  tag: 'v1.0.0'", "v1.0.0"),
+            ("  tag: v1.0.0#build", "v1.0.0#build"),
+            ('  tag: ""', ""),
+            ("  tag:", ""),
+            ("  tag: # set by CI", ""),
+        ],
+    )
+    def test_value_forms(self, base_kwargs, logger, tmp_path, line, expected):
+        fp = _write(str(tmp_path), "v.yaml", f"image:\n{line}\n  pullPolicy: Always\n")
+        proc = FileProcessor(Config(**base_kwargs), logger)
+        assert proc.get_current_tag(fp) == expected
+
     def test_no_match(self, base_kwargs, logger, tmp_path):
         fp = _write(str(tmp_path), "v.yaml", "nothing: here\n")
         proc = FileProcessor(Config(**base_kwargs), logger)
@@ -134,6 +151,31 @@ class TestPerformUpdate:
         proc._perform_update(fp, "v2.0.0")
         with open(fp) as f:
             assert "v2.0.0" in f.read()
+
+    @pytest.mark.parametrize(
+        "line, expected",
+        [
+            ('  tag: "v1.0.0"  # pinned', '  tag: "v2.0.0"  # pinned'),
+            ("  tag: v1.0.0 # pinned", '  tag: "v2.0.0" # pinned'),
+            ("  tag: 'v1.0.0'", '  tag: "v2.0.0"'),
+            ("  tag:", '  tag: "v2.0.0"'),
+            ("  tag: # set by CI", '  tag: "v2.0.0" # set by CI'),
+        ],
+    )
+    def test_line_forms(self, base_kwargs, logger, tmp_path, line, expected):
+        fp = _write(str(tmp_path), "v.yaml", f"image:\n{line}\n  pullPolicy: Always\n")
+        proc = FileProcessor(Config(**base_kwargs), logger)
+        proc._perform_update(fp, "v2.0.0")
+        with open(fp) as f:
+            assert f.read() == f"image:\n{expected}\n  pullPolicy: Always\n"
+
+    def test_updates_every_tag_line(self, base_kwargs, logger, tmp_path):
+        content = 'a:\n  tag: "v1"  # a\nb:\n  tag: v1\n'
+        fp = _write(str(tmp_path), "v.yaml", content)
+        proc = FileProcessor(Config(**base_kwargs), logger)
+        proc._perform_update(fp, "v2.0.0")
+        with open(fp) as f:
+            assert f.read() == 'a:\n  tag: "v2.0.0"  # a\nb:\n  tag: "v2.0.0"\n'
 
     def test_write_error(self, base_kwargs, logger, tmp_path):
         fp = _write(str(tmp_path), "v.yaml", YAML_CONTENT)

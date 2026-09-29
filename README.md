@@ -416,6 +416,7 @@ Valid examples: `v1.0.0`, `2024.01.15`, `main-abc123`
 - **GitHub Token**: Ensure your token has `repo` write permissions
 - **File Selection**: Use either `file_pattern` or `target_values_file` (not both)
 - **Backup Files**: When enabled, creates `.bak` files before modifications
+- **Tag Lines**: Every line whose key is `tag_string` gets the new value in double quotes, and a trailing `# comment` on that line is kept. The skip conditions read the first matching line
 - **Security**: The action validates all inputs and handles errors safely
 
 For detailed information, see:

@@ -36,16 +36,27 @@ class FileProcessor:
         except OSError as e:
             self.logger.error(f"Failed to read file {file_path}: {e}")
 
+    def _tag_line_pattern(self) -> re.Pattern[str]:
+        """Match a `<tag_string>:` line: key, quoted or plain value, inline comment."""
+        key = re.escape(self.config.tag_string)
+        # [ \t], not \s: \s spans newlines, so an empty `tag:` would swallow the next line.
+        return re.compile(
+            rf"^([ \t]*{key}:)[ \t]*"
+            r"""(?:"([^"\n]*)"|'([^'\n]*)'|([^\s#][^\n]*?))?"""
+            r"([ \t]+#[^\n]*)?[ \t]*$",
+            re.MULTILINE,
+        )
+
     def get_current_tag(self, file_path: str) -> str:
         """Extract current tag value from file."""
         try:
             with open(file_path, "r") as f:
                 content = f.read()
 
-            pattern = rf'^\s*{re.escape(self.config.tag_string)}:\s*"?([^"\n]+)"?'
-            match = re.search(pattern, content, re.MULTILINE)
+            match = self._tag_line_pattern().search(content)
             if match:
-                return match.group(1).strip()
+                value = next((g for g in match.group(2, 3, 4) if g is not None), "")
+                return value.strip()
             return ""
         except OSError as e:
             self.logger.error(f"Failed to get current tag from {file_path}: {e}")
@@ -95,9 +106,9 @@ class FileProcessor:
             with open(file_path, "r") as f:
                 content = f.read()
 
-            pattern = rf"(^\s*{re.escape(self.config.tag_string)}:)\s*.*$"
-            replacement = rf'\1 "{final_tag}"'
-            updated_content = re.sub(pattern, replacement, content, flags=re.MULTILINE)
+            updated_content = self._tag_line_pattern().sub(
+                lambda m: f'{m.group(1)} "{final_tag}"{m.group(5) or ""}', content
+            )
 
             with open(file_path, "w") as f:
                 f.write(updated_content)
