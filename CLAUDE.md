@@ -7,7 +7,7 @@ GitHub Action that automates image tag updates in YAML configuration files for G
 ```
 main.py                           # Main entrypoint (Config, FileProcessor, GitOps orchestration)
 src/
-  __init__.py                     # Package init (version, exports)
+  __init__.py                     # Package init (exports)
   config.py                      # Config dataclass (from_env, validate, get_final_tag)
   file_processor.py              # File operations (validate, get_current_tag, update, glob)
   git_operations.py              # Git operations (configure, branch, commit, push with retry)
@@ -29,10 +29,10 @@ docs/
   ADVANCED_USAGE.md              # Matrix strategies, integration patterns
   TROUBLESHOOTING.md             # Common issues and debugging guide
 Dockerfile                       # Single-stage (python:3.14-slim)
-action.yml                       # GitHub Action definition (14 inputs, 7 outputs)
+action.yml                       # GitHub Action definition
 Makefile                         # Development commands (test, coverage, lint, docker)
 pyproject.toml                   # pytest and coverage configuration
-requirements-dev.txt             # Dev dependencies (pytest, pytest-cov)
+requirements-dev.txt             # Dev dependencies
 cliff.toml                       # git-cliff config for release notes
 CODEOWNERS                       # Repository code owners
 CONTRIBUTORS.md                  # Contributors list
@@ -42,7 +42,7 @@ CONTRIBUTORS.md                  # Contributors list
 
 ```bash
 make venv          # Create virtualenv and install dev dependencies
-make test          # Run unit tests with coverage (133 tests, 98%)
+make test          # Run unit tests with coverage
 make test-local    # Run legacy integration tests
 make test-all      # Run all tests (unit + local)
 make coverage      # Generate HTML coverage report
@@ -71,35 +71,33 @@ make help          # Show all available commands
 | Workflow | Name | Trigger |
 |----------|------|---------|
 | `ci.yml` | `Continuous Integration` | push(main), PR, dispatch |
-| `release.yml` | `Create release` | tag push `v*` |
+| `release.yml` | `Create release` | tag push `v*`, dispatch (image seed before the tag) |
 | `changelog-generator.yml` | `Generate changelog` | after release, PR merge, dispatch |
 | `use-action.yml` | `Smoke Test (Released Action)` | after release, dispatch |
-| `use-action-v2.yml` | `Smoke Test (Cross-Repo)` | after release, dispatch |
-| `contributors.yml` | `Generator Contributors` | after changelog, dispatch |
-| `gitlab-mirror.yml` | `GitLab Mirroring` | push(main), dispatch |
+| `use-action-v2.yml` | `Smoke Test (Cross-Repo)` | dispatch |
+| `contributors.yml` | `Generate Contributors` | after changelog, dispatch |
+| `gitlab-mirror.yml` | `Backup GitHub to GitLab` | push(main), dispatch |
 
 ### Workflow Chain
 ```
 tag push v* -> Create release
                 ├-> Smoke Test (Released Action)
-                ├-> Smoke Test (Cross-Repo)
-                └-> Generate changelog -> Generator Contributors
+                └-> Generate changelog -> Generate Contributors
 ```
 
 ### CI Structure
 ```
-test-local ─────────────┐
-build-and-push-docker ──> matrix-test ──> ci-result
+test-local ──> build-and-push-docker ──> matrix-test ──> ci-result
 ```
 
 ## Conventions
 
 - **Commits**: Conventional Commits (`feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `ci:`, `chore:`)
 - **Branches**: `main` (production)
-- **Secrets**: `PAT_TOKEN` (cross-repo ops), `GITHUB_TOKEN` (changelog, releases)
+- **Secrets**: `PAT` (cross-repo ops in CI and smoke tests), `PAT_TOKEN` (release checkout and major-tag update, via `secrets: inherit`), `GITHUB_TOKEN` (changelog, releases), `GITLAB_TOKEN` (mirror)
 - **Docker**: Single-stage build, python:3.14-slim base
 - **Comments**: English only
 - **Testing**: pytest with coverage, fixtures in conftest.py
 - **Release**: `git switch` (not `git checkout`), git-cliff for RELEASE.md
-- **paths-ignore**: `.github/workflows/**`, `**/*.md`, `backup/**`
+- **paths-ignore** (ci.yml): `.github/workflows/**`, `**/*.md`, `charts/**`, `backup/**`
 - Do NOT commit directly - recommend commit messages only
