@@ -1,8 +1,9 @@
 """Tests for src/git_operations.py"""
 
 import subprocess
+from unittest.mock import MagicMock, patch
+
 import pytest
-from unittest.mock import patch, MagicMock
 
 from src.config import Config
 from src.git_operations import GitOperations
@@ -126,9 +127,12 @@ class TestBranchExists:
             mock_run.return_value = MagicMock(returncode=1)
             assert git_ops.branch_exists_locally("feature") is False
 
-    def test_local_exception(self, git_ops):
-        with patch("subprocess.run", side_effect=Exception("fail")):
-            assert git_ops.branch_exists_locally("x") is False
+    def test_local_git_missing_propagates(self, git_ops):
+        with (
+            patch("subprocess.run", side_effect=FileNotFoundError("git")),
+            pytest.raises(FileNotFoundError),
+        ):
+            git_ops.branch_exists_locally("x")
 
     def test_remote_exists(self, git_ops):
         with patch.object(
@@ -214,9 +218,12 @@ class TestHasStagedChanges:
             mock_run.return_value = MagicMock(returncode=0)
             assert git_ops.has_staged_changes() is False
 
-    def test_exception(self, git_ops):
-        with patch("subprocess.run", side_effect=Exception("fail")):
-            assert git_ops.has_staged_changes() is False
+    def test_git_missing_propagates(self, git_ops):
+        with (
+            patch("subprocess.run", side_effect=FileNotFoundError("git")),
+            pytest.raises(FileNotFoundError),
+        ):
+            git_ops.has_staged_changes()
 
 
 class TestCommitAndPush:

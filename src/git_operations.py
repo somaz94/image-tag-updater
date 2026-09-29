@@ -82,15 +82,12 @@ class GitOperations:
 
     def branch_exists_locally(self, branch: str) -> bool:
         """Check if branch exists locally."""
-        try:
-            result = subprocess.run(
-                ["git", "show-ref", "--verify", "--quiet", f"refs/heads/{branch}"],
-                capture_output=True,
-                check=False,
-            )
-            return result.returncode == 0
-        except Exception:
-            return False
+        result = subprocess.run(
+            ["git", "show-ref", "--verify", "--quiet", f"refs/heads/{branch}"],
+            capture_output=True,
+            check=False,
+        )
+        return result.returncode == 0
 
     def branch_exists_remotely(self, branch: str) -> bool:
         """Check if branch exists on remote."""
@@ -154,15 +151,12 @@ class GitOperations:
         Calls subprocess directly: run_command() drops the exit code, and
         `git diff --cached --quiet` signals changes with exit 1.
         """
-        try:
-            result = subprocess.run(
-                ["git", "diff", "--cached", "--quiet"],
-                capture_output=True,
-                check=False,
-            )
-            return result.returncode != 0
-        except Exception:
-            return False
+        result = subprocess.run(
+            ["git", "diff", "--cached", "--quiet"],
+            capture_output=True,
+            check=False,
+        )
+        return result.returncode != 0
 
     def commit_and_push(self, file_info: str) -> str | None:
         """Commit and push changes. Returns commit SHA or None."""
