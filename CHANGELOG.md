@@ -2,6 +2,53 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.6.1](https://github.com/somaz94/image-tag-updater/compare/v1.6.0...v1.6.1) (2026-09-29)
+
+### Bug Fixes
+
+- keep inline comments and the next line when updating a tag line ([c82f50f](https://github.com/somaz94/image-tag-updater/commit/c82f50f7af12ed24904d19e1cc54aca8abf4041b))
+
+### Code Refactoring
+
+- remove unreachable code after logger.error ([c894e01](https://github.com/somaz94/image-tag-updater/commit/c894e0162cc4b5c3c2b813175634fa7e29897c74))
+- trim redundant comments and fix stale docstring in src ([ea7a67f](https://github.com/somaz94/image-tag-updater/commit/ea7a67fe334b65f3c600dddaea6dc0a3c0ee0de9))
+
+### Documentation
+
+- correct stale facts in CLAUDE.md and tests README ([9653b30](https://github.com/somaz94/image-tag-updater/commit/9653b3034b92f147dcb75d348644b47a6c2ced2d))
+
+### Tests
+
+- put the repo root on pytest's pythonpath ([2ecf0a6](https://github.com/somaz94/image-tag-updater/commit/2ecf0a65466f3b1084de4ecb758c0565eb04b949))
+- stop test_debug_mode_error from writing the global git config ([6028abb](https://github.com/somaz94/image-tag-updater/commit/6028abbef1672df256f5ad6f4f90048e90a8fb2b))
+- trim redundant and stale comments ([5d8d596](https://github.com/somaz94/image-tag-updater/commit/5d8d5967ac8d3eaab5edae87bf01c6bd169fa8b1))
+
+### Continuous Integration
+
+- pin ruff so CI lints with the same rule set as local ([bf502c7](https://github.com/somaz94/image-tag-updater/commit/bf502c7e5960103c4f27cf93b087790756189c35))
+- run ruff and pytest in CI and drop an unused step ([b8d719f](https://github.com/somaz94/image-tag-updater/commit/b8d719f28759255e8887f9b59b7c3c45fe6794c8))
+- correct stale image-seeding comments ([7a393af](https://github.com/somaz94/image-tag-updater/commit/7a393afd7af198a4aef0c5b3875c0db25edffcfd))
+- trim redundant comments in gitlab-mirror workflow ([88381be](https://github.com/somaz94/image-tag-updater/commit/88381bee7bf7383b7dabb3da3ce02f5857fc0c59))
+- correct the image-seeding comment in the release workflow ([8a07621](https://github.com/somaz94/image-tag-updater/commit/8a07621bcb94e33eecddd72cd19e42b6dea388a4))
+- retry mirror pushes on transient remote failures ([9f3350e](https://github.com/somaz94/image-tag-updater/commit/9f3350e7bc6f7d1e2649c8c59959929e02b2bfe7))
+- drop the dead issue-close trigger from changelog generation ([0671da6](https://github.com/somaz94/image-tag-updater/commit/0671da6c1c9a1a68f007650de0b273f9c6cc212b))
+- skip release-triggered runs on the image-seeding dispatch ([250b81e](https://github.com/somaz94/image-tag-updater/commit/250b81e9cfa1d86dcae826d156f97b39c7662d0f))
+
+### Chores
+
+- bump the action image to v1.6.1 ([ac2ec61](https://github.com/somaz94/image-tag-updater/commit/ac2ec61ebc770e2304cf4c4ed94fa6422f14218f))
+- fix the pytest cache ignore, drop docker-push, set the action author ([14231d5](https://github.com/somaz94/image-tag-updater/commit/14231d517fff08a26c58f88f6ceb38941877daf8))
+- translate dependabot example comments to English ([f66c400](https://github.com/somaz94/image-tag-updater/commit/f66c40018c40ca8d0847245a07fa7652311a0e14))
+- sharpen remaining comments and docstrings ([e1cbc1f](https://github.com/somaz94/image-tag-updater/commit/e1cbc1f24159b5c7ecc4371803b5765b3ce55a61))
+- trim redundant comments in build and CI config ([30f96fa](https://github.com/somaz94/image-tag-updater/commit/30f96fa5e8f3f6753917e47fd9adb37be7e71ffa))
+- drop Node.js boilerplate from .gitignore ([27a4c24](https://github.com/somaz94/image-tag-updater/commit/27a4c2430922dbfebf00a72b3d89cfc188edc4a6))
+
+### Contributors
+
+- somaz
+
+<br/>
+
 ## [v1.6.0](https://github.com/somaz94/image-tag-updater/compare/v1.5.3...v1.6.0) (2026-08-07)
 
 ### Performance Improvements
