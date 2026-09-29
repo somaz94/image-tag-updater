@@ -1,4 +1,4 @@
 pytest
 pytest-cov
 # ruff widens its default rule set between minor versions; bump it on purpose.
-ruff==0.15.15
+ruff==0.16.9

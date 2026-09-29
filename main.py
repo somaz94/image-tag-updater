@@ -104,7 +104,7 @@ def main() -> None:
     except (ValueError, ActionError) as e:
         print(f"[X] Error: {e}", file=sys.stderr)
         sys.exit(1)
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         print(f"[X] Error: Unexpected error: {e}", file=sys.stderr)
         if debug_mode:
             import traceback

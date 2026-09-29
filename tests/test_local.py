@@ -590,7 +590,7 @@ def main():
     for test_func in tests:
         try:
             results.append(test_func())
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             print(f"   [X] EXCEPTION: {e}")
             results.append(False)
 

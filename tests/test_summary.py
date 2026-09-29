@@ -1,8 +1,9 @@
 """Tests for src/summary.py"""
 
 import json
-import pytest
 from unittest.mock import patch
+
+import pytest
 
 from src.config import Config
 from src.logger import ActionError, Logger
@@ -131,14 +132,14 @@ class TestSaveSummary:
             nonlocal call_count
             call_count += 1
             if call_count == 1 and "r" in str(args[1:]):
-                raise IOError("read fail")
+                raise OSError("read fail")
             return original_open(*args, **kwargs)
 
         # First open() is the read: save_summary catches it and starts a fresh list.
         with patch("builtins.open", side_effect=mock_open):
             try:
                 s.save_summary(UPDATED_FILES, OLD_TAGS)
-            except (SystemExit, IOError):
+            except (OSError, SystemExit):
                 pass
 
     def test_ioerror_write(self, config, logger, tmp_path):
@@ -146,9 +147,11 @@ class TestSaveSummary:
         config.summary_file = sf
         s = ChangeSummary(config, logger)
 
-        with patch("builtins.open", side_effect=IOError("write fail")):
-            with pytest.raises(ActionError):
-                s.save_summary(UPDATED_FILES, OLD_TAGS)
+        with (
+            patch("builtins.open", side_effect=OSError("write fail")),
+            pytest.raises(ActionError),
+        ):
+            s.save_summary(UPDATED_FILES, OLD_TAGS)
 
     def test_max_entries(self, config, logger, tmp_path):
         sf = str(tmp_path / "summary.json")

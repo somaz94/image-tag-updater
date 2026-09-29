@@ -78,7 +78,7 @@ class ChangeSummary:
             except json.JSONDecodeError as e:
                 self.logger.warning(f"Invalid JSON in summary file: {e}")
                 summaries = []
-            except IOError as e:
+            except OSError as e:
                 self.logger.warning(f"Could not read summary file: {e}")
                 summaries = []
 
@@ -92,7 +92,7 @@ class ChangeSummary:
                 json.dump(summaries, f, indent=2)
             self.logger.success(f"Summary saved to: {self.config.summary_file}")
             self.logger.debug(f"Summary content:\n{json.dumps(summary, indent=2)}")
-        except IOError as e:
+        except OSError as e:
             self.logger.error(f"Failed to write summary file: {e}")
 
     def print_summary(

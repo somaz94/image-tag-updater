@@ -1,10 +1,11 @@
 """Tests for main.py"""
 
 import os
-import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
-from main import write_output, main
+import pytest
+
+from main import main, write_output
 
 
 class TestWriteOutput:
@@ -103,9 +104,8 @@ class TestMain:
             str(tmp_path), DEBUG="true", TARGET_VALUES_FILE="nonexistent.yaml"
         )
         # Don't create the file, so file_processor will fail
-        with patch.dict(os.environ, env, clear=False):
-            with pytest.raises(SystemExit):
-                main()
+        with patch.dict(os.environ, env, clear=False), pytest.raises(SystemExit):
+            main()
 
     @patch("main.GitOperations")
     def test_dry_run_with_summary_file(self, mock_git_cls, tmp_path):

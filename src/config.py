@@ -46,7 +46,7 @@ class Config:
     summary_file: str = ""
 
     @classmethod
-    def from_env(cls) -> "Config":
+    def from_env(cls) -> Config:
         """Create configuration from environment variables."""
         return cls(
             target_path=os.getenv("TARGET_PATH", ""),

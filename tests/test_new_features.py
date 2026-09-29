@@ -153,7 +153,7 @@ def main():
         print("[O] All tests passed!")
         print("=" * 60)
 
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         print(f"\n[X] Test failed: {e}")
         import traceback
 

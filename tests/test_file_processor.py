@@ -1,8 +1,9 @@
 """Tests for src/file_processor.py"""
 
 import os
-import pytest
 from unittest.mock import patch
+
+import pytest
 
 from src.config import Config
 from src.file_processor import FileProcessor
@@ -59,9 +60,11 @@ class TestValidateFileContent:
     def test_read_error(self, base_kwargs, logger, tmp_path):
         fp = _write(str(tmp_path), "v.yaml", YAML_CONTENT)
         proc = FileProcessor(Config(**base_kwargs), logger)
-        with patch("builtins.open", side_effect=PermissionError("denied")):
-            with pytest.raises(ActionError):
-                proc.validate_file_content(fp)
+        with (
+            patch("builtins.open", side_effect=PermissionError("denied")),
+            pytest.raises(ActionError),
+        ):
+            proc.validate_file_content(fp)
 
 
 class TestGetCurrentTag:
@@ -99,9 +102,11 @@ class TestGetCurrentTag:
 
     def test_read_error(self, base_kwargs, logger, tmp_path):
         proc = FileProcessor(Config(**base_kwargs), logger)
-        with patch("builtins.open", side_effect=IOError("fail")):
-            with pytest.raises(ActionError):
-                proc.get_current_tag("/tmp/fake.yaml")
+        with (
+            patch("builtins.open", side_effect=OSError("fail")),
+            pytest.raises(ActionError),
+        ):
+            proc.get_current_tag("/tmp/fake.yaml")
 
 
 class TestShouldSkipUpdate:
@@ -190,9 +195,11 @@ class TestPerformUpdate:
                 raise PermissionError("read-only")
             return original_open(*args, **kwargs)
 
-        with patch("builtins.open", side_effect=side_effect_open):
-            with pytest.raises(ActionError):
-                proc._perform_update(fp, "v2.0.0")
+        with (
+            patch("builtins.open", side_effect=side_effect_open),
+            pytest.raises(ActionError),
+        ):
+            proc._perform_update(fp, "v2.0.0")
 
 
 class TestUpdateFile:
@@ -229,9 +236,11 @@ class TestUpdateFile:
         kw = {**base_kwargs, "backup": True}
         fp = _write(str(tmp_path), "v.yaml", YAML_CONTENT)
         proc = FileProcessor(Config(**kw), logger)
-        with patch("shutil.copy2", side_effect=OSError("disk full")):
-            with pytest.raises(ActionError):
-                proc.update_file(fp)
+        with (
+            patch("shutil.copy2", side_effect=OSError("disk full")),
+            pytest.raises(ActionError),
+        ):
+            proc.update_file(fp)
 
 
 class TestGetFilesToProcess:
