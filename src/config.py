@@ -6,7 +6,6 @@ import os
 import re
 from dataclasses import dataclass
 
-# Constants
 TAG_PATTERN = re.compile(r"^[a-zA-Z0-9][a-zA-Z0-9._-]*$")
 REPO_PATTERN = re.compile(r"^[a-zA-Z0-9._-]+/[a-zA-Z0-9._-]+$")
 REQUIRED_FIELDS = [
@@ -78,19 +77,16 @@ class Config:
 
     def validate(self) -> None:
         """Validate configuration values."""
-        # Check required fields
         missing = [field for field in REQUIRED_FIELDS if not getattr(self, field)]
         if missing:
             raise ValueError(f"Required fields are not set: {', '.join(missing)}")
 
-        # Validate tag format (without prefix/suffix)
         if not TAG_PATTERN.match(self.new_tag):
             raise ValueError(
                 f"Invalid tag format: {self.new_tag}. "
                 "Tags should only contain alphanumeric characters, dots, underscores, and hyphens."
             )
 
-        # Validate final tag with prefix/suffix
         final_tag = self.get_final_tag()
         if not TAG_PATTERN.match(final_tag):
             raise ValueError(
@@ -98,17 +94,14 @@ class Config:
                 "Tags should only contain alphanumeric characters, dots, underscores, and hyphens."
             )
 
-        # Validate repo format (owner/name)
         if not REPO_PATTERN.match(self.repo):
             raise ValueError(
                 f"Invalid repo format: {self.repo}. Expected 'owner/name' format."
             )
 
-        # Check if at least one of target_values_file or file_pattern is set
         if not self.target_values_file and not self.file_pattern:
             raise ValueError("Either target_values_file or file_pattern must be set")
 
-        # Check if both are set (not allowed)
         if self.target_values_file and self.file_pattern:
             raise ValueError(
                 "Cannot set both target_values_file and file_pattern. Choose one."

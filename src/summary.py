@@ -13,7 +13,7 @@ from .logger import Logger
 class ChangeSummary:
     """Handle change summary generation and storage."""
 
-    MAX_ENTRIES = 100  # Maximum number of summary entries to keep
+    MAX_ENTRIES = 100
 
     def __init__(self, config: Config, logger: Logger):
         self.config = config
@@ -28,7 +28,6 @@ class ChangeSummary:
         """Create a summary of changes."""
         final_tag = self.config.get_final_tag()
 
-        # Create change records for each file
         changes = []
         for file_path in updated_files:
             old_tag = old_tags.get(file_path, "")
@@ -66,11 +65,9 @@ class ChangeSummary:
 
         summary = self.create_summary(updated_files, old_tags, commit_sha)
 
-        # Ensure parent directory exists
         summary_path = Path(self.config.summary_file)
         summary_path.parent.mkdir(parents=True, exist_ok=True)
 
-        # Load existing summaries if file exists
         summaries = []
         if summary_path.exists():
             try:
@@ -85,13 +82,11 @@ class ChangeSummary:
                 self.logger.warning(f"Could not read summary file: {e}")
                 summaries = []
 
-        # Append new summary
         summaries.append(summary)
 
         # Keep only last N entries to prevent file from growing too large
         summaries = summaries[-self.MAX_ENTRIES :]
 
-        # Write updated summaries
         try:
             with open(summary_path, "w") as f:
                 json.dump(summaries, f, indent=2)

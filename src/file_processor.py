@@ -26,7 +26,6 @@ class FileProcessor:
             with open(file_path, "r") as f:
                 content = f.read()
 
-            # Check if tag_string exists in the file
             pattern = rf"^\s*{re.escape(self.config.tag_string)}:"
             if not re.search(pattern, content, re.MULTILINE):
                 self.logger.error(
@@ -50,7 +49,7 @@ class FileProcessor:
             return ""
         except OSError as e:
             self.logger.error(f"Failed to get current tag from {file_path}: {e}")
-            raise  # unreachable: logger.error() raises ActionError; kept for type-checker honesty
+            raise  # unreachable: logger.error() raises ActionError
 
     def should_skip_update(
         self, file_path: str, current_tag: str, final_tag: str
@@ -93,14 +92,13 @@ class FileProcessor:
             final_tag: New tag value to set
 
         Returns:
-            bool: True if update succeeded, False otherwise
+            bool: Always True; a read/write failure raises ActionError.
         """
         try:
             self.logger.debug("\nUpdating image tag...")
             with open(file_path, "r") as f:
                 content = f.read()
 
-            # Replace the tag value with final tag (including prefix/suffix)
             pattern = rf"(^\s*{re.escape(self.config.tag_string)}:)\s*.*$"
             replacement = rf'\1 "{final_tag}"'
             updated_content = re.sub(pattern, replacement, content, flags=re.MULTILINE)
@@ -118,13 +116,10 @@ class FileProcessor:
         """Update tag in file. Returns True if changes were made."""
         self.logger.debug(f"\nProcessing file: {file_path}")
 
-        # Get current tag value
         current_tag = self.get_current_tag(file_path)
 
-        # Get final tag with prefix/suffix
         final_tag = self.config.get_final_tag()
 
-        # Check if update should be skipped
         should_skip, skip_reason = self.should_skip_update(
             file_path, current_tag, final_tag
         )
@@ -132,10 +127,8 @@ class FileProcessor:
             self.logger.info(f"Skipping {file_path}: {skip_reason}")
             return False
 
-        # Store old tag for output
         self.old_tags[file_path] = current_tag
 
-        # Dry run mode - show what would change
         if self.config.dry_run:
             self.logger.info(
                 f"Current tag in {file_path}: {self.config.tag_string}: {current_tag}"
@@ -146,7 +139,6 @@ class FileProcessor:
             self.updated_files.append(file_path)
             return True
 
-        # Create backup if requested
         if self.config.backup:
             self.logger.debug("\nCreating backup...")
             backup_path = f"{file_path}.bak"
@@ -156,7 +148,6 @@ class FileProcessor:
             except OSError as e:
                 self.logger.error(f"Failed to create backup: {e}")
 
-        # Perform the update
         if self._perform_update(file_path, final_tag):
             self.updated_files.append(file_path)
             return True
@@ -168,7 +159,6 @@ class FileProcessor:
 
         if self.config.file_pattern:
             self.logger.debug(f"\nProcessing files: {self.config.file_pattern}")
-            # Use glob pattern
             matched_files = glob(self.config.file_pattern)
             if not matched_files:
                 self.logger.error(

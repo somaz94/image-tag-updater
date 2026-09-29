@@ -40,14 +40,12 @@ class GitOperations:
         try:
             result = subprocess.run(cmd, check=check, capture_output=True, text=True)
 
-            # Show output if requested or in debug mode
             if show_output or self.config.debug:
                 if result.stdout:
                     print(result.stdout)
                 if result.stderr:
                     print(result.stderr, file=sys.stderr)
 
-            # Return captured output if requested
             if capture:
                 return result.stdout.strip()
 
@@ -120,28 +118,22 @@ class GitOperations:
         """Setup Git branch."""
         self.logger.debug(f"\nSetting up branch: {self.config.branch}")
 
-        # Fetch from remote
         self.run_command(["git", "fetch", "origin"])
 
-        # Check current branch
         current_branch = self.run_command(
             ["git", "branch", "--show-current"], capture=True
         )
 
         if self.branch_exists_locally(self.config.branch):
-            # Branch exists locally
             if current_branch != self.config.branch:
                 self.logger.debug(f"Switching to existing branch: {self.config.branch}")
                 self.run_command(["git", "checkout", self.config.branch])
 
-            # Pull if remote branch exists
             if self.branch_exists_remotely(self.config.branch):
                 self.logger.debug("\nPulling latest changes...")
                 self.run_command(["git", "pull", "origin", self.config.branch])
         else:
-            # Branch doesn't exist locally
             if self.branch_exists_remotely(self.config.branch):
-                # Remote branch exists, checkout and track it
                 self.logger.debug(f"Checking out remote branch: {self.config.branch}")
                 self.run_command(
                     [
@@ -155,7 +147,6 @@ class GitOperations:
                 self.logger.debug("\nPulling latest changes...")
                 self.run_command(["git", "pull", "origin", self.config.branch])
             else:
-                # Create new branch locally
                 self.logger.debug(f"Creating new local branch: {self.config.branch}")
                 self.run_command(["git", "checkout", "-b", self.config.branch])
 
@@ -171,7 +162,6 @@ class GitOperations:
                 capture_output=True,
                 check=False,
             )
-            # returncode 0 = no changes, 1 = changes exist
             return result.returncode != 0
         except Exception:
             return False
@@ -181,12 +171,10 @@ class GitOperations:
         self.logger.debug("\nStaging changes...")
         self.run_command(["git", "add", "."])
 
-        # Check if there are staged changes
         if not self.has_staged_changes():
             self.logger.info("\n[O] No changes to commit. Nothing to push.")
             return None
 
-        # Create commit message
         commit_msg = (
             f"{self.config.commit_message} {self.config.target_path} ({file_info})"
         )
@@ -194,10 +182,8 @@ class GitOperations:
         self.logger.debug("\nCreating commit...")
         self.run_command(["git", "commit", "-m", commit_msg])
 
-        # Get commit SHA
         commit_sha = self.run_command(["git", "rev-parse", "HEAD"], capture=True)
 
-        # Push changes with retry logic
         self._push_with_retry()
 
         return commit_sha
